@@ -13,27 +13,11 @@ class Users extends Model
         
         // Call parent constructor
         parent::__construct($app);
+        
+        $this->defaultOrderBy = "id ASC";
     }
     
-    public function getList($filters, $orderBy = "id ASC", $page = 0, &$totalBeans = 0)
-    {        
-        $values = array();
-        $this->applyFilters($filters, $where, $values);
-        
-        if($page > 0) {
-            // Count all the beans                      
-            $beans = R::findAll($this->table, $where, $values);
-            $totalBeans = count($beans);
-        }
-        
-        $suffix = $this->applyOrderAndLimit($orderBy, $page);
-        
-        // Get the result taking into account limit and offset           
-        $beans = R::findAll($this->table, $where . $suffix, $values);
-        return $beans;        
-    }
-    
-    private function applyFilters($filters, &$where = "", &$values = array()) 
+    protected function applyFilters($filters, &$where = "", &$values = array()) 
     {
         if(array_key_exists("email", $filters)) {
             $where .= " email = ? "; 
@@ -66,5 +50,24 @@ class Users extends Model
         $password = hash("SHA256", $input . $salt);
 
         return true;
+    }
+    
+    public function login($email, $password)
+    {
+        if((empty($email)) || (empty($password))) {
+            return false;
+        }
+        
+        $users = $this->getList(array("email" => $email));
+        if(count($users) != 1) {
+            return false;             
+        }
+        
+        print_r($users);
+        
+        $user = $users[0];
+        
+        die("HERE");        
+        
     }    
 }

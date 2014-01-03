@@ -36,5 +36,19 @@
 
         $controller = new \Myndie\Controller\Users($app);
         $controller->save($id);
-    })->conditions(array("id" => '\d+'));         
+    })->conditions(array("id" => '\d+'));     
+    
+    /***
+    * Saves a user to the database
+    * If an ID of 0 is passed, a new user will be created
+    * ID #3
+    */    
+    $app->get('/api/users/login', function () use ($app) {       
+        // Inject test data
+        $_POST["email"] = "bill@smith.com.au";
+        $_POST["password"] = "Buff8loB1ll";
+
+        $controller = new \Myndie\Controller\Users($app);
+        $controller->login();
+    });             
    

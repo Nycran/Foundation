@@ -78,6 +78,19 @@ class Users extends Controller
         $this->send();     
     }
     
+    public function login()
+    {
+        $email = Input::post("email");
+        $password = Input::post("password");
+        
+        if(!$this->model->login($email, $password)) {
+            $this->result["message"] = "Sorry, your login failed.  Please try again.";
+            $this->send();            
+        }
+        
+        die("OK");
+    }
+    
     /***
     * Returns the form validation rules for adding a new user.
     * @param boolean $add_new_mode Set to true if we're adding a new user
