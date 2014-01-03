@@ -1,19 +1,20 @@
 <?php
-namespace Model;  
+namespace Myndie\Model;  
+
 use RedBean_Facade as R; 
 
-class Countries extends Base
+class States extends Model
 {
     public function __construct($app)
     {
         $this->app = $app;
-        $this->table = "countries";
+        $this->table = "states";
         
         // Call parent constructor
         parent::__construct($app);
     }
     
-    public function getList($filters, $orderBy = "country ASC", $page = 0, &$totalBeans = 0)
+    public function getList($filters, $orderBy = "state ASC", $page = 0, &$totalBeans = 0)
     {        
         $values = array();
         $this->applyFilters($filters, $where, $values);
@@ -33,6 +34,9 @@ class Countries extends Base
     
     private function applyFilters($filters, &$where = "", &$values = array()) 
     {
- 
+        if(array_key_exists("country_id", $filters)) {
+            $where .= " country_id = ? "; 
+            $values[] = $filters["country_id"];   
+        }
     }
 }

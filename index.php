@@ -1,28 +1,32 @@
 <?php
     /***
-    * SIMB Foundation framework
+    * Myndie Foundation Framework
     * Version 0.0.1
     * Copyright SIMB.com.au 2014
     * Authors: Andrew Chapman, Others will go here
     */
+    
+    // Define Myndie autoloader
+    spl_autoload_register(function ($class) {
+        // Only autoload Myndie classes
+        if(!strstr($class, "Myndie")) {
+            return;
+        }
+        
+        // Convert "\" namespace charters to "/" for paths, and convert to lower case
+        $path = str_replace('\\', '/', strtolower($class)) . '.class.php';
+        require $path;
+    });     
+    
 
     // Setup backend constants
-    require 'backend/config/constants.php';
+    require 'myndie/config/constants.php';
         
     // Composer Autoload
-    require 'vendor/autoload.php';
+    require 'vendor/autoload.php';   
     
     // Setup RedBean ORM
-    require 'backend/config/db.php';
-    
-    // Require base classes
-    require 'backend/controllers/base.class.php';
-    require 'backend/models/base.class.php';
-    
-    // Require any global libraries
-    require 'backend/libraries/strings.class.php';
-    require 'backend/libraries/input.class.php';
-    require 'backend/libraries/utils.class.php';
+    require 'myndie/config/db.php';
     
     // Setup SLIM PHP   
     $settings = array();
@@ -32,7 +36,7 @@
     $app = new \Slim\Slim($settings);    
     
     // Include routes     
-    require 'backend/routes/routes.php';
+    require 'myndie/route/routes.php';
     
     // Run the app
-    $app->run();
+    $app->run();  

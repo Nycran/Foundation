@@ -1,10 +1,10 @@
 <?php
-namespace Controller;  // All hanlders should be in the handler namespace
+namespace Myndie\Controller; 
+
 use RedBean_Facade as R;
 
-class Base
+class Controller
 {
-    protected $requiredModels;      // An array containing required models for this handler
     protected $app;                 // An instance of the Slim Framework
     protected $model;               // An instance of the primary model for this handler.
     protected $result;              // An return array with STATUS and MESSAGE nodes
@@ -12,42 +12,45 @@ class Base
     public function __construct()
     {
         $this->result = array("status" => false, "message" => "An unspecified error occured");
-        
-        // Include any required models
-        $this->includeDependencies();
-    }
-
-    /***
-    * Includes any required models, libs etc as defined by the protected class variables.
-    */
-    protected function includeDependencies()
-    {
-        foreach($this->requiredModels as $modelClass) {
-            if(!$this->loadModelByClassName($modelClass)) {
-                die("Controller::Base::includeDependencies Model file $modelClass does not exist");
-            }
-        }
     }
     
     /***
-    * Ensures that the specified model has been included  so it can be used.
+    * Gets a singular item for the controller's model.
+    * and returns the item in JSON format.
     * 
-    * @param string $modelClass The name of the model class to load
+    * @param integer $id The id of the item to load and output the JSON for
     */
-    protected function loadModelByClassName($modelClass)
+    public function get($id)
     {
-        if(!class_exists('\\Model\\' . $modelClass)) {
-            $modelFile = "backend/models/" . strtolower($modelClass) . ".class.php";
-            
-            if(!file_exists($modelFile)) {
-                return false;
-            }
-            
-            require_once($modelFile);    
-        } 
+        if(!is_numeric($id)) {
+            return false;
+        }
         
-        return true;       
-    }
+        $bean = $this->model->get($id);
+        
+        if(!$bean->id) {
+            $this->result["message"] = "Invalid ID";
+            $this->send();  
+        }
+        
+        $this->outputBeansAsJson($bean);       
+    }    
+
+    /***
+    * Gets a list of the items from the controller's model.
+    * The $_POST array will be used by the model to achieve any filtering necessary.
+    */
+    public function getList()
+    {
+        $beans = $this->model->getList($_POST);
+        $this->outputBeansAsJson($beans);       
+    }  
+    
+    public function save($id)
+    {
+        $this->handleJSONContentType();
+    }  
+
     
     /**
     * Outputs a collection of beans as a json encoded response.  Very useful for loading
@@ -66,6 +69,12 @@ class Base
         }
     }
     
+    /***
+    * Outputs the class result array as a json message
+    * Used extensively for AJAX communications
+    * 
+    * @param boolean $exit Set to false if the app should NOT exit after the message is sent.
+    */
     protected function send($exit = true)
     {
         echo json_encode($this->result);
@@ -75,6 +84,10 @@ class Base
         }        
     }
     
+    /***
+    * The Angular JS framework oftens sends data to the server in JSON format, rather than
+    * standard post vars.  This method detects JSON encoding and converts the variables back to post.
+    */
     protected function handleJSONContentType()
     {
         // Detect a JSON submission and convert to $_POST

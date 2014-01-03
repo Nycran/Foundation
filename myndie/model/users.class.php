@@ -1,8 +1,10 @@
 <?php
-namespace Model;  
-use RedBean_Facade as R; 
+namespace Myndie\Model;  
 
-class Users extends Base
+use RedBean_Facade as R; 
+use Myndie\Lib\Strings;
+
+class Users extends Model
 {
     public function __construct($app)
     {
@@ -60,7 +62,7 @@ class Users extends Base
             return true;
         }
         
-        $salt = \Strings::createRandomString();
+        $salt = Strings::createRandomString();
         $password = hash("SHA256", $input . $salt);
 
         return true;

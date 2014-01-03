@@ -1,41 +1,26 @@
 <?php
-namespace Controller;  // All hanlders should be in the handler namespace
-use RedBean_Facade as R;
+namespace Myndie\Controller; 
 
-class Users extends Base
+use RedBean_Facade as R;
+use Myndie\Lib\Input;
+use Myndie\Lib\Utils;   
+
+class Users extends Controller
 {
     public function __construct($app)
     {
         $this->app = $app;
-        $this->requiredModels = array("Users");
         
         // Call parent constructor
         parent::__construct();
         
-        $this->model = new \Model\Users($this->app);
-    }
-    
-    public function get($id)
-    {
-        $bean = $this->model->get($id);
-        
-        if(!$bean->id) {
-            $this->result["message"] = "Invalid ID";
-            $this->send();  
-        }
-        
-        $this->outputBeansAsJson($bean);       
+        $this->model = new \Myndie\Model\Users($this->app);
     }    
-
-    public function getList()
-    {
-        $beans = $this->model->getList($_POST);
-        $this->outputBeansAsJson($beans);       
-    }     
     
     public function save($id)
     {
-        $this->handleJSONContentType();
+        // Invoke the base class save method to do any preparation work
+        parent::save($id);
         
         $add_new_mode = ($id == 0);     // Will be true if we're adding a new user (i.e. id == 0)
         
@@ -65,7 +50,7 @@ class Users extends Base
         
         if($add_new_mode) {
             // If we're adding a new user, ensure this email address does NOT already exist
-            $email = \INPUT::post("email");
+            $email = INPUT::post("email");
             $users = $this->model->getList(array("email" => $email));
             if(count($users) > 0) {
                 $this->result["message"] = "Sorry, an account with this email address already exists";
@@ -78,9 +63,9 @@ class Users extends Base
             $data["salt"] = $salt;
         } else {
             // If we're updating an existing user, the password and salt values may NOT be changed by using this method.
-            \Utils::removeArrayKey($data, "password");            
-            \Utils::removeArrayKey($data, "password_repeat");
-            \Utils::removeArrayKey($data, "salt");
+            Utils::removeArrayKey($data, "password");            
+            Utils::removeArrayKey($data, "password_repeat");
+            Utils::removeArrayKey($data, "salt");
         }
         
         // TODO 2 -o achapman -c flow: Start a DB transaction, and after the saving, update/insert the attributes record
@@ -132,7 +117,7 @@ class Users extends Base
                     ],
                     'Password Match' => [
                         'constraint' => function($in) {
-                        return ($in == \INPUT::post("password_repeat"));
+                        return ($in == INPUT::post("password_repeat"));
                         },
                         'error' => 'Your passwords do not match.  Please reenter your passwords and try again.',
                         'skipEmpty' => false,

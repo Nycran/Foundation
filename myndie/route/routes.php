@@ -4,8 +4,8 @@
     * ID #1
     */
     $app->get('/api/countries/list', function () use ($app) {       
-        require_once("backend/controllers/countries.class.php");
-        $controller = new \Controller\Countries($app);
+        //require_once("myndie/controllers/countries.class.php");
+        $controller = new \Myndie\Controller\Countries($app);
         $controller->getList();
     }); 
     
@@ -16,9 +16,7 @@
     $app->get('/api/states/list/:id', function ($country_id) use ($app) {       
         // Inject country ID filter
         $_POST["country_id"] = $country_id;
-        
-        require_once("backend/controllers/states.class.php");
-        $controller = new \Controller\States($app);
+        $controller = new \Myndie\Controller\States($app);
         $controller->getList();
     })->conditions(array("id" => '\d+')); 
     
@@ -36,8 +34,7 @@
         $_POST["password"] = "Buff8loB1ll";
         $_POST["password_repeat"] = "Buff8loB1ll";
 
-        require_once("backend/controllers/users.class.php");
-        $controller = new \Controller\Users($app);
+        $controller = new \Myndie\Controller\Users($app);
         $controller->save($id);
     })->conditions(array("id" => '\d+'));         
    

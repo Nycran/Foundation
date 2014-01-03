@@ -1,4 +1,6 @@
 <?php
+namespace Myndie\Lib;
+
 class Utils
 {
     public static function removeArrayKey(&$array, $key)

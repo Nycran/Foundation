@@ -1,4 +1,6 @@
 <?php
+namespace Myndie\Lib;
+
 class Input
 {
     /***
