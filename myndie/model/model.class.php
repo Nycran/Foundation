@@ -10,18 +10,40 @@ class Model
     protected $defaultOrderBy;  // The default orderBy when returning a list
     protected $itemsPerPage;    // The default number of items per page
 
+    /***
+    * The class constructor.  Sets default items per page for 
+    * pagination and initialises other variables.
+    * 
+    * @param mixed $app
+    * @return Model
+    */
     function __construct($app)
     {
-        $this->itemsPerPage = 10;
-        $this->defaultOrderBy = "";
+        $this->itemsPerPage = ITEMS_PER_PAGE;   // Defaults items per page to the value defined in the constants file.
+        $this->defaultOrderBy = ""; // Default order by must be set on a model by model basis.
     }
     
+    /***
+    * Loads a single bean from the database for the current table
+    * 
+    * @param integer  $id The ID of the bean being loaded
+    * @return \RedBean_OODBBean
+    */
     public function get($id)
     {
         $bean = R::load($this->table, $id);
         return $bean;
     }  
     
+    /***
+    * Loads a list of beans from the database, taking into account any filters specified in the database.
+    * 
+    * @param array $filters An associative array of any filters to apply
+    * @param string $orderBy An order by statement.  If not provided, the models default order by will be used.
+    * @param int $page If you want to load a limited set of the data for pagination, specify the current page number.  Pass 0 for no pagination.
+    * @param int $totalBeans An output param, if you're using pagination this will populate with the total number of beans.
+    * @return \RedBean_OODBBean[]
+    */
     public function getList($filters, $orderBy="", $page = 0, &$totalBeans = 0)
     {        
         $values = array();
@@ -48,6 +70,14 @@ class Model
         return $beans;        
     }      
     
+    /***
+    * Saves a record/bean to the database.  If the id value is blank or 0, a new bean will be created.
+    * Otherwise the bean will be updated.
+    * 
+    * @param \RedBean_OODB $id  The id of the bean
+    * @param array $data  An associative array of the data to update/insert.
+    * @return The id of the record after saving/inserting.
+    */
     public function save($id, $data)
     {
         // Manually inject the database table type
@@ -58,15 +88,59 @@ class Model
             $data["id"] = $id;
         }
         
-        // Use the RB Cooker to convert the data array to a bean
-        $bean = R::graph($data);
+        // Create a transaction to ensure the record AND its metadata are both updated/created
+        // before ccommitting.
+        R::begin();
         
-        // Save the bean
-        $id = R::store($bean);  
-        
-        return $id;          
+        try {
+            // Use the RB Cooker to convert the data array to a bean
+            $bean = R::graph($data);
+            
+            // Save the bean
+            $id = R::store($bean);
+            
+            // Don't create a metadata record for metadata records :-)
+            if($this->table == "metadata") {
+                R::commit();
+                
+                return $id;
+            }  
+            
+            // See if an existing metadata bean exists for this record
+            $objMetadata = new \Myndie\Model\Metadata($this->app);
+            $metadata = $objMetadata->getSingleBean(array("foreign_type" => $this->table, "foreign_id" => $id));
+            
+            // If no existing metadata record exists, create a new one.
+            if(!$metadata) {
+                // Create a new metadata record
+                $metadata = R::dispense("metadata");            
+                $metadata->foreign_id = $id;
+                $metadata->foreign_type = $this->table;
+                $metadata->created_dtm = date("Y-m-d H:i:s");
+            }
+            
+            // TODO 2 -o achapman -c flow: Set created by and modified by if the user is logged in.
+
+            // Update last modified details
+            $metadata->modified_dtm = date("Y-m-d H:i:s");
+            $meta_id = R::store($metadata);
+            
+            R::commit();
+
+            return $id; 
+        }
+        catch(Exception $e) {
+            R::rollback();
+            return false;
+        }         
     }
     
+    /***
+    * Deletes a record/bean from the database
+    * 
+    * @param integer $id The id of the bean to delete.
+    * @return true on successful delete, false on failure.
+    */
     public function delete($id)
     {
         // Make sure the bean exists before attempting to delete
@@ -81,6 +155,13 @@ class Model
         return true; 
     }
     
+    /***
+    * Constructs the Order By and LIMIT/OFFSET statement based on variables 
+    * set within the model.
+    * 
+    * @param string $orderBy The column to order the results by
+    * @param int $page The current page number for pagination.  If the page is 0, no LIMIT or OFFSET will be applied.
+    */
     protected function applyOrderAndLimit($orderBy, $page)
     {
         $suffix = "ORDER BY " . $orderBy . " ";
@@ -94,17 +175,20 @@ class Model
         return $suffix;        
     }
     
-    public function setItemsPerPage($itemsPerPage)
+    /***
+    * Returns the first bean that matches the specified filters
+    * 
+    * @param array $filters The array of filters
+    * @returns a RedBean bean
+    */
+    public function getSingleBean($filters)
     {
-        if(!is_numeric($itemsPerPage)) {
-            throw new \Exception("Invalid itemsPerPage value $itemsPerPage");
+        $beans = $this->getList($filters);
+        if(count($beans) < 1) {
+            return false;             
         }
         
-        $this->itemsPerPage = $itemsPerPage;
-    }
-    
-    public function setDefaultOrderBy($orderBy)
-    {
-        $this->defaultOrderBy = $orderBy;
+        $bean = array_pop($beans);
+        return $bean;
     }
 }

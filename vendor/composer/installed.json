@@ -44,51 +44,6 @@
         ]
     },
     {
-        "name": "gabordemooij/redbean",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/gabordemooij/redbean.git",
-            "reference": "10a4052e640e9fe3f50c1f3bb4e26ede3b6e2c28"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/gabordemooij/redbean/zipball/10a4052e640e9fe3f50c1f3bb4e26ede3b6e2c28",
-            "reference": "10a4052e640e9fe3f50c1f3bb4e26ede3b6e2c28",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.2.0"
-        },
-        "time": "2013-12-11 20:27:24",
-        "type": "library",
-        "installation-source": "source",
-        "autoload": {
-            "psr-0": {
-                "RedBean_": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "BSD"
-        ],
-        "authors": [
-            {
-                "name": "Gabor de Mooij",
-                "email": "gabordemooij@gmail.com",
-                "homepage": "http://www.redbeanphp.com",
-                "role": "Developer"
-            }
-        ],
-        "description": "Easy ORM for PHP",
-        "homepage": "http://github.com/gabordemooij/redbean",
-        "keywords": [
-            "Object Relational Mapping",
-            "orm"
-        ]
-    },
-    {
         "name": "slim/slim",
         "version": "2.4.0",
         "version_normalized": "2.4.0.0",
@@ -134,6 +89,92 @@
             "microframework",
             "rest",
             "router"
+        ]
+    },
+    {
+        "name": "ircmaxell/password-compat",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/ircmaxell/password_compat.git",
+            "reference": "1f482f79b9c336b1f658eb08d7bbf2b9901d9aee"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/ircmaxell/password_compat/zipball/1f482f79b9c336b1f658eb08d7bbf2b9901d9aee",
+            "reference": "1f482f79b9c336b1f658eb08d7bbf2b9901d9aee",
+            "shasum": ""
+        },
+        "time": "2013-09-10 15:32:56",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "files": [
+                "lib/password.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Anthony Ferrara",
+                "email": "ircmaxell@php.net",
+                "homepage": "http://blog.ircmaxell.com"
+            }
+        ],
+        "description": "A compatibility library for the proposed simplified password hashing algorithm: https://wiki.php.net/rfc/password_hash",
+        "homepage": "https://github.com/ircmaxell/password_compat",
+        "keywords": [
+            "hashing",
+            "password"
+        ]
+    },
+    {
+        "name": "gabordemooij/redbean",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/gabordemooij/redbean.git",
+            "reference": "70f0936430d2311d60241db88a8b78b888e85175"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/gabordemooij/redbean/zipball/70f0936430d2311d60241db88a8b78b888e85175",
+            "reference": "70f0936430d2311d60241db88a8b78b888e85175",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.2.0"
+        },
+        "time": "2014-01-02 22:38:45",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "psr-0": {
+                "RedBean_": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD"
+        ],
+        "authors": [
+            {
+                "name": "Gabor de Mooij",
+                "email": "gabordemooij@gmail.com",
+                "homepage": "http://www.redbeanphp.com",
+                "role": "Developer"
+            }
+        ],
+        "description": "Easy ORM for PHP",
+        "homepage": "http://github.com/gabordemooij/redbean",
+        "keywords": [
+            "Object Relational Mapping",
+            "orm"
         ]
     }
 ]

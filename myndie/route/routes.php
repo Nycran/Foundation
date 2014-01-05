@@ -28,11 +28,11 @@
     */    
     $app->get('/api/users/save/:id', function ($id) use ($app) {       
         // Inject test data
-        $_POST["first_name"] = "Bill";
-        $_POST["last_name"] = "Smith";
-        $_POST["email"] = "bill@smith.com.au";
-        $_POST["password"] = "Buff8loB1ll";
-        $_POST["password_repeat"] = "Buff8loB1ll";
+        $_POST["first_name"] = "Andrew";
+        $_POST["last_name"] = "Chapman";
+        $_POST["email"] = "andy@simb.com.au";
+        $_POST["password"] = "mango77z";
+        $_POST["password_repeat"] = "mango77z";
 
         $controller = new \Myndie\Controller\Users($app);
         $controller->save($id);
@@ -45,8 +45,8 @@
     */    
     $app->get('/api/users/login', function () use ($app) {       
         // Inject test data
-        $_POST["email"] = "bill@smith.com.au";
-        $_POST["password"] = "Buff8loB1ll";
+        $_POST["email"] = "andy@simb.com.au";
+        $_POST["password"] = "mango77z";
 
         $controller = new \Myndie\Controller\Users($app);
         $controller->login();

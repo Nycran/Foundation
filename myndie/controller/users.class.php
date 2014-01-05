@@ -3,7 +3,8 @@ namespace Myndie\Controller;
 
 use RedBean_Facade as R;
 use Myndie\Lib\Input;
-use Myndie\Lib\Utils;   
+use Myndie\Lib\Utils;  
+use Myndie\Lib\Session; 
 
 class Users extends Controller
 {
@@ -68,8 +69,6 @@ class Users extends Controller
             Utils::removeArrayKey($data, "salt");
         }
         
-        // TODO 2 -o achapman -c flow: Start a DB transaction, and after the saving, update/insert the attributes record
-        
         // Save the client record (if id = 0 then a new record will be created)
         $id = $this->model->save($id, $data);
 
@@ -88,7 +87,15 @@ class Users extends Controller
             $this->send();            
         }
         
-        die("OK");
+        $this->result["status"] = "OK";
+        $this->result["message"] = "";
+        $this->result["session_id"] = Session::getSessionID();
+        $this->result["user_id"] = Session::get("user_id");
+        $this->result["user_first_name"] = Session::get("user_first_name");
+        $this->result["user_last_name"] = Session::get("user_last_name");
+        $this->result["user_email"] = Session::get("user_email");
+        
+        $this->send();
     }
     
     /***
