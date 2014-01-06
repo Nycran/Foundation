@@ -3,7 +3,7 @@ namespace Myndie\Controller;
 
 use RedBean_Facade as R;
 
-class States extends Controller
+class State extends Controller
 {
     public function __construct($app)
     {
@@ -12,6 +12,6 @@ class States extends Controller
         // Call parent constructor
         parent::__construct();
         
-        $this->model = new \Myndie\Model\States($this->app);
+        $this->model = new \Myndie\Model\State($this->app);
     }
 }

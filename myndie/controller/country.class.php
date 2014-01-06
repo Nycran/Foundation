@@ -3,15 +3,15 @@ namespace Myndie\Controller;
 
 use RedBean_Facade as R;
 
-class Countries extends Controller
+class Country extends Controller
 {
     public function __construct($app)
     {
         $this->app = $app;
         
-        // Call parent constructor
+        // Call parent constructor to initialise and enforce permissions
         parent::__construct();
         
-        $this->model = new \Myndie\Model\Countries($this->app);
+        $this->model = new \Myndie\Model\Country($this->app);
     }
 }

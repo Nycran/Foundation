@@ -5,12 +5,12 @@ use RedBean_Facade as R;
 use Myndie\Lib\Strings;
 use Myndie\Lib\Session;
 
-class Users extends Model
+class User extends Model
 {
     public function __construct($app)
     {
         $this->app = $app;
-        $this->table = "users";
+        $this->table = "user";
         
         // Call parent constructor
         parent::__construct($app);
@@ -29,7 +29,7 @@ class Users extends Model
     /***
     * Hashes the specific input password, and generates a resultant hash.
     * Note the hash will either be BCRYPT or SHA256, depending on the 
-    * PASSWORD_HASH_MODE setting in the contants file.
+    * MYNDIE_HASH_MODE setting in the contants file.
     * 
     * @param string $input The plain text password to hash
     * @param string $password An output param - the resultant hash
@@ -41,7 +41,7 @@ class Users extends Model
             return false;
         }
         
-        if(PASSWORD_HASH_MODE == "BCRYPT") {
+        if(MYNDIE_HASH_MODE == "BCRYPT") {
             $password = password_hash($input, PASSWORD_BCRYPT);
             $salt = "";
             return true;
@@ -67,10 +67,10 @@ class Users extends Model
         $user = $this->getSingleBean(array("email" => $email));
         if(!$user) {
             return false;    
-        }
+        }       
         
         // If we're using PHP's built in password hashing system, use the password_verify to test.
-        if(PASSWORD_HASH_MODE == "BCRYPT") {
+        if(MYNDIE_HASH_MODE == "BCRYPT") {
             if(!password_verify($password, $user->password)) {
                 return false;
             }
@@ -84,12 +84,35 @@ class Users extends Model
             }
         }
         
+        // Create a new session
+        if(!Session::createSession()) {
+            $this->app->error(new \Exception("Myndie/Model/User::login - Failed to create session"));
+        }
+        
+        // Get the user's roles
+        $roles = $user->sharedRole;
+        $numRoles = count($roles);
+        
+        if($numRoles == 0) {
+            $app->error(new \Exception("Myndie/Lib/Firewall::run - No roles assigned to this user"));        
+        }
+        
+        $roleCSV = "";
+        
+        foreach($roles as $role) {
+            if(!empty($roleCSV)) {
+                $roleCSV .= ",";
+            }
+            
+            $roleCSV .= $role->id;
+        }         
+        
         // Setup session data
         Session::set("user_id", $user->id);
-        die("HERE");
         Session::set("user_first_name", $user->first_name);
         Session::set("user_last_name", $user->last_name);
         Session::set("user_email", $user->email);
+        Session::set("user_roles", $roleCSV);
         
         return true;
     }    

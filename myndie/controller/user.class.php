@@ -6,7 +6,7 @@ use Myndie\Lib\Input;
 use Myndie\Lib\Utils;  
 use Myndie\Lib\Session; 
 
-class Users extends Controller
+class User extends Controller
 {
     public function __construct($app)
     {
@@ -15,7 +15,7 @@ class Users extends Controller
         // Call parent constructor
         parent::__construct();
         
-        $this->model = new \Myndie\Model\Users($this->app);
+        $this->model = new \Myndie\Model\User($this->app);
     }    
     
     public function save($id)
@@ -23,14 +23,14 @@ class Users extends Controller
         // Invoke the base class save method to do any preparation work
         parent::save($id);
         
-        $add_new_mode = ($id == 0);     // Will be true if we're adding a new user (i.e. id == 0)
+        $addNewMode = ($id == 0);     // Will be true if we're adding a new user (i.e. id == 0)
         
         /************ VALIDATION **************/
         $profile = new \DataFilter\Profile();
         
         // Set global validation checks
         $profile->addPreFilters(['Trim', 'StripHtml']);
-        $profile->setAttribs($this->getValidationAttribs($add_new_mode)); // Set the password required if id == 0 (i.e. we're adding a new user)
+        $profile->setAttribs($this->getValidationAttribs($addNewMode)); // Set the password required if id == 0 (i.e. we're adding a new user)
           
         // Perform validation checks
         if (!$profile->check($_POST)) {
@@ -49,7 +49,7 @@ class Users extends Controller
         // The form was valid.  Get the validated and transformed data from the profile.
         $data = $profile->getLastResult()->getValidData();
         
-        if($add_new_mode) {
+        if($addNewMode) {
             // If we're adding a new user, ensure this email address does NOT already exist
             $email = INPUT::post("email");
             $users = $this->model->getList(array("email" => $email));
@@ -71,6 +71,29 @@ class Users extends Controller
         
         // Save the client record (if id = 0 then a new record will be created)
         $id = $this->model->save($id, $data);
+        
+        // If we're adding a new user, we also need to add the user role.
+        // For now the role is set as the DEFAULT user role which is member, as we can't allow
+        // unsecure sources to add ADMIN user roles.  However we will need to allow requests (logged in as Administrator)
+        // to set any role they want.
+        if($addNewMode) {
+            // Load the user bean
+            $user = $this->model->get($id);
+            if(!$user) {
+                $this->result["message"] = "Your account could not be created";
+                $this->send();                
+            }
+            
+            $objRole = new \Myndie\Model\Role($this->app);
+            $roleBean = $objRole->get(MYNDIE_DEFAULT_USER_ROLE_ID);
+            if(!$roleBean) {
+                $this->result["message"] = "Default role is invalid";
+                $this->send();                 
+            }
+            
+            $user->sharedRole[] = $roleBean;    // Users to Roles is a many to many relationship so we use a shared list.
+            R::store($user);
+        }
 
         $this->result["status"] = true;
         $this->result["message"] = $id;
@@ -79,6 +102,8 @@ class Users extends Controller
     
     public function login()
     {
+        $this->handleJSONContentType();
+        
         $email = Input::post("email");
         $password = Input::post("password");
         
@@ -100,9 +125,9 @@ class Users extends Controller
     
     /***
     * Returns the form validation rules for adding a new user.
-    * @param boolean $add_new_mode Set to true if we're adding a new user
+    * @param boolean $addNewMode Set to true if we're adding a new user
     */
-    private function getValidationAttribs($add_new_mode)
+    private function getValidationAttribs($addNewMode)
     {
         $attribs = [
             'first_name' => true,
@@ -123,7 +148,7 @@ class Users extends Controller
                 ]               
             ],
             'password' => [
-                'required' => $add_new_mode, 
+                'required' => $addNewMode, 
                 'matchAny' => false, 
                 'default' => null, 
                 'missing' => 'This password field is missing', 

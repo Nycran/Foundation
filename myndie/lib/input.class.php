@@ -74,6 +74,9 @@ class Input
         return $ipaddress;        
     }
     
+    /***
+    * Returns the user agent sent from the users browser
+    */
     public static function userAgent()
     {
         $userAgent = "";

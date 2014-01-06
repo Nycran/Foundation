@@ -3,12 +3,12 @@ namespace Myndie\Model;
 
 use RedBean_Facade as R; 
 
-class Countries extends Model
+class Country extends Model
 {
     public function __construct($app)
     {
         $this->app = $app;
-        $this->table = "countries";
+        $this->table = "country";
         
         // Call parent constructor
         parent::__construct($app);        

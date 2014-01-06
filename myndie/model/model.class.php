@@ -19,7 +19,7 @@ class Model
     */
     function __construct($app)
     {
-        $this->itemsPerPage = ITEMS_PER_PAGE;   // Defaults items per page to the value defined in the constants file.
+        $this->itemsPerPage = MYNDIE_ITEMS_PER_PAGE;   // Defaults items per page to the value defined in the constants file.
         $this->defaultOrderBy = ""; // Default order by must be set on a model by model basis.
     }
     
@@ -57,7 +57,7 @@ class Model
         
         // Ensure a sensible ordering statement has been set
         if((empty($orderBy)) && (empty($this->defaultOrderBy))) {
-            throw new \Exception("OrderBy not set and no default order set either");
+            $this->app->error(new \Exception("Myndie/Model/Model::getList - OrderBy not set and no default order set either"));
         } else if((empty($orderBy)) && (!empty($this->defaultOrderBy))) {
             $orderBy = $this->defaultOrderBy;    
         }
@@ -74,65 +74,35 @@ class Model
     * Saves a record/bean to the database.  If the id value is blank or 0, a new bean will be created.
     * Otherwise the bean will be updated.
     * 
-    * @param \RedBean_OODB $id  The id of the bean
+    * @param \RedBean_OODB $id  The id of the bean/record.  If 0 is passed, a new been will be created.
     * @param array $data  An associative array of the data to update/insert.
     * @return The id of the record after saving/inserting.
     */
     public function save($id, $data)
     {
         // Manually inject the database table type
-        $data["type"] = $this->table; 
+        $data["type"] = $this->table;
+        
+        // Manually inject the modified_dtm field
+        $data["modified_dtm"] = date("Y-m-d H:i:s"); 
         
         // If an ID was provided, we are updating an existing record.
+        $newBean = true;
         if((is_numeric($id)) && ($id > 0)) {
             $data["id"] = $id;
+            $newBean = false;
+        } else {
+            // We're creating a new record - store the created date.
+            $data["created_dtm"] = date("Y-m-d H:i:s");            
         }
         
-        // Create a transaction to ensure the record AND its metadata are both updated/created
-        // before ccommitting.
-        R::begin();
+        // Use the RB Cooker to convert the data array to a bean
+        $bean = R::graph($data);
         
-        try {
-            // Use the RB Cooker to convert the data array to a bean
-            $bean = R::graph($data);
-            
-            // Save the bean
-            $id = R::store($bean);
-            
-            // Don't create a metadata record for metadata records :-)
-            if($this->table == "metadata") {
-                R::commit();
-                
-                return $id;
-            }  
-            
-            // See if an existing metadata bean exists for this record
-            $objMetadata = new \Myndie\Model\Metadata($this->app);
-            $metadata = $objMetadata->getSingleBean(array("foreign_type" => $this->table, "foreign_id" => $id));
-            
-            // If no existing metadata record exists, create a new one.
-            if(!$metadata) {
-                // Create a new metadata record
-                $metadata = R::dispense("metadata");            
-                $metadata->foreign_id = $id;
-                $metadata->foreign_type = $this->table;
-                $metadata->created_dtm = date("Y-m-d H:i:s");
-            }
-            
-            // TODO 2 -o achapman -c flow: Set created by and modified by if the user is logged in.
-
-            // Update last modified details
-            $metadata->modified_dtm = date("Y-m-d H:i:s");
-            $meta_id = R::store($metadata);
-            
-            R::commit();
-
-            return $id; 
-        }
-        catch(Exception $e) {
-            R::rollback();
-            return false;
-        }         
+        // Save the bean
+        $id = R::store($bean);
+        
+        return $id;         
     }
     
     /***
