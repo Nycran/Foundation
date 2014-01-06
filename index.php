@@ -4,6 +4,8 @@
     * Version 0.0.2
     * Copyright SIMB.com.au 2014
     * Authors: Andrew Chapman, Others will go here
+    * Please use the PSR-2 Coding Standard
+    * https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md
     */
     
     // Define Myndie autoloader
