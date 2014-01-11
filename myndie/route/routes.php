@@ -30,9 +30,10 @@
         // Inject test data
         $_POST["first_name"] = "Andrew";
         $_POST["last_name"] = "Chapman";
-        $_POST["email"] = "andy@simb.com.au";
+        $_POST["email"] = "tester1@simb.com.au";
         $_POST["password"] = "mango77z";
         $_POST["password_repeat"] = "mango77z";
+        $_POST["roles"] = "1,2";    // Test adding multiple roles
 
         $controller = new \Myndie\Controller\User($app);
         $controller->save($id);

@@ -24,7 +24,8 @@ class Firewall
     // Note, if the method takes additional parameters, e.g. /api/states/list/1, leave out the parameter
     // so just add /api/ then the controller name, then the method name, e.g. /api/states/list
     private static $publicURI = array(
-        "/api/user/login"   // Allow user logins publically
+        "/api/user/login",   // Allow user logins publically
+        "/api/user/save"      // Allow user registrations publically
     );
     
     // If your entire controllers should be restircted to specific user roles, add them here

@@ -105,8 +105,8 @@ class User extends Model
             }
             
             $roleCSV .= $role->id;
-        }         
-        
+        }       
+
         // Setup session data
         Session::set("user_id", $user->id);
         Session::set("user_first_name", $user->first_name);

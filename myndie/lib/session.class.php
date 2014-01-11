@@ -108,12 +108,12 @@ class Session
     * @param string $sessionID The session ID to check.
     * @return True if the session is valid, false if not.
     */
-    public static function sessionValid($sessionID = "")
+    public static function sessionValid($sessionID = "", $throwException = true)
     {
         global $app;
         
         if(self::$sessionBean) {
-            return;
+            return true;
         }
         
         // If no session ID was provided, check for the myndie session cookie
@@ -123,7 +123,11 @@ class Session
         
         // If we still have no session ID, the session is NOT valid
         if(empty($sessionID)) {
-            $app->error(new \Exception("Myndie/Lib/Session::sessionValid - Invalid Session - Error Code 1"));   
+            if($throwException) {
+                $app->error(new \Exception("Myndie/Lib/Session::sessionValid - Invalid Session - Error Code 1"));   
+            } else {
+                return false;
+            }
         }
         
         // Attempt to load the session from the database
@@ -131,7 +135,11 @@ class Session
         $bean = self::$objSession->getSingleBean(array("session_id" => $sessionID));
         if(!$bean) {
             // There is no session in the database with this ID.
-            $app->error(new \Exception("Myndie/Lib/Session::sessionValid - Invalid Session - Error Code 2")); 
+            if($throwException) {
+                $app->error(new \Exception("Myndie/Lib/Session::sessionValid - Invalid Session - Error Code 2")); 
+            } else {
+                return false;
+            }
         }
         
         // We have a valid session record. 
@@ -140,7 +148,11 @@ class Session
         // IP address that created the session is the same IP address as the one checking now.
         if(MYNDIE_SESSION_CHECK_IP) {
             if($bean->ip_address != Input::ipAddress()) {
-                $app->error(new \Exception("Myndie/Lib/Session::sessionValid - Invalid Session - Error Code 4"));   
+                if($throwException) {
+                    $app->error(new \Exception("Myndie/Lib/Session::sessionValid - Invalid Session - Error Code 4"));   
+                } else {
+                    return false;
+                }
             }
         }
         
@@ -148,18 +160,28 @@ class Session
         // UserAgent that created the session is the same UserAgent as the one checking now.        
         if(MYNDIE_SESSION_CHECK_AGENT) {
             if($bean->user_agent != Input::userAgent()) {
-                $app->error(new \Exception("Myndie/Lib/Session::sessionValid - Invalid Session - Error Code 4"));
+                if($throwException) {
+                    $app->error(new \Exception("Myndie/Lib/Session::sessionValid - Invalid Session - Error Code 4"));
+                } else {
+                    return false;
+                }
             }
         }
         
         // Test Last Activity
         if($bean->timeout < time()) {
-            $app->error(new \Exception("Myndie/Lib/Session::sessionValid - Invalid Session - Error Code 5"));
+            if($throwException) {
+                $app->error(new \Exception("Myndie/Lib/Session::sessionValid - Invalid Session - Error Code 5"));
+            } else {
+                return false;
+            }
         }
         
         // The session is valid. 
         self::$sessionID = $sessionID;
-        self::$sessionBean = $bean;      
+        self::$sessionBean = $bean; 
+        
+        return true;    
     }
 
     
@@ -174,5 +196,19 @@ class Session
             global $app;
             self::$objSession = new \Myndie\Model\Session($app);
         }        
+    }
+    
+    public static function checkRole($role, $sessionID = "")
+    {
+        if(!self::sessionValid($sessionID, false)) {
+            return false;
+        }
+        
+        $roles = Session::get("user_roles");
+        if(empty($roles)) {
+            return false;
+        }
+
+        return Strings::matchInCSV($role, $roles);
     }
 }
