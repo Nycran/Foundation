@@ -13,7 +13,10 @@
     define("MYNDIE_SESSION_CHECK_IP", "true");                 // If set to true, the session ID will be validated against the users IP address.
     define("MYNDIE_SESSION_CHECK_AGENT", "true");              // If set to true, the session ID will be validated against the browsers user agent string.
     
-    define("MYNDIE_DEFAULT_USER_ROLE_ID", 2);                  // The ID of the default user role when a new user registers
+    // Define user roles here for convenience and code readability
+    define("MYNDIE_ROLE_ADMIN", 1);
+    define("MYNDIE_ROLE_MEMBER", 2);
+    define("MYNDIE_DEFAULT_USER_ROLE", MYNDIE_ROLE_MEMBER);  // The ID of the default user role when a new user registers
     
     if(MYNDIE_MODE == "development") {
         ini_set("display_errors", "On");

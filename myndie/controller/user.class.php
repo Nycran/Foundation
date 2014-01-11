@@ -85,7 +85,7 @@ class User extends Controller
             }
             
             $objRole = new \Myndie\Model\Role($this->app);
-            $roleBean = $objRole->get(MYNDIE_DEFAULT_USER_ROLE_ID);
+            $roleBean = $objRole->get(MYNDIE_DEFAULT_USER_ROLE);
             if(!$roleBean) {
                 $this->result["message"] = "Default role is invalid";
                 $this->send();                 

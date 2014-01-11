@@ -1,8 +1,16 @@
 <?php
+/***
+* firewall.class.php
+* Version 1.0.0
+* Copyright SIMB.com.au 2014
+* Authors: Andrew Chapman
+*/
+
 namespace Myndie\Lib;
 
 use \Myndie\Lib\Input;
 use \Myndie\Lib\Session;
+use \Myndie\Lib\Strings;
 
 /***
 * 
@@ -10,7 +18,7 @@ use \Myndie\Lib\Session;
 class Firewall
 {
     // Add any controllers where the ENTIRE controller and all its methods are open to the public here.
-    private static $publicController = array("country", "state");  
+    private static $publicController = array("country");  
     
     // Add any method uris where the specific controller method is open to the public here
     // Note, if the method takes additional parameters, e.g. /api/states/list/1, leave out the parameter
@@ -18,7 +26,27 @@ class Firewall
     private static $publicURI = array(
         "/api/user/login"   // Allow user logins publically
     );
+    
+    // If your entire controllers should be restircted to specific user roles, add them here
+    // e.g. "state" => array(MYNDIE_ROLE_ADMIN, MYNDIE_ROLE_MEMBER)    
+    private static $restrictedControllers = array(
+        "state" => array(MYNDIE_ROLE_ADMIN, MYNDIE_ROLE_MEMBER)    
+    );    
+
+    // Add any URIS here that should be restricted to particular login roles.
+    // e.g.  "/api/state/list" => array(MYNDIE_ROLE_ADMIN, MYNDIE_ROLE_MEMBER) 
+    // You can specify as many roles as you want with comma separated values.
+    // Note, if a URI is NOT in this array, as long as the user is logged in, they will be able to access it.
+    private static $restrictedURIs = array(
+        "/api/state/list" => array(MYNDIE_ROLE_ADMIN, MYNDIE_ROLE_MEMBER)    
+    );
      
+    /***
+    * Runs the firewall rules.
+    * Is invoked in index.php
+    * 
+    * @param object $app An instance of the Slim app object
+    */
     public static function run($app)
     {
         // Get the URI currently being invoked
@@ -67,9 +95,30 @@ class Firewall
         
         // Check if the session is valid - an exception will be thrown if it is not valid
         Session::sessionValid($sessionID);
-
-        $roles = Session::get("user_roles");
+        
+        // Get the roles that the user is associated with
+        $roles = Session::get("user_roles");        
+        
+        // Is the current controller restricted?
+        if(array_key_exists($controller, self::$restrictedControllers)) {
+            // This entire controller is restircted to specific user roles
+            // Is this users role allowed to view this controller?
+            if(!Strings::matchInCSV($roles, self::$restrictedControllers[$controller])) {
+                $app->error(new \Exception("Myndie/Lib/Firewall::run - Access Denied"));    
+            }
+        }        
+        
+        // Is the current URI restricted?
+        if(!array_key_exists($uri, self::$restrictedURIs)) {
+            // The URI is not restricted, let the request pass
+            return;
+        }
+        
+        // Is this users role allowed to view this URI?
+        if(Strings::matchInCSV($roles, self::$restrictedURIs[$uri])) {
+            return true;
+        }
                                            
-        die("OK $roles");      
+        $app->error(new \Exception("Myndie/Lib/Firewall::run - Access Denied"));
     }
 }
