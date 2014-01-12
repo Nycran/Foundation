@@ -44,12 +44,50 @@
     * Both email and password should be passed via HTTP Post
     * ID #4
     */    
-    $app->get('/api/user/login', function () use ($app) {       
-        // Inject test data
-        $_POST["email"] = "andy@simb.com.au";
-        $_POST["password"] = "mango77z";
-
+    $app->post('/api/user/login', function () use ($app) {       
         $controller = new \Myndie\Controller\User($app);
         $controller->login();
-    });             
+    }); 
+    
+    /***
+    * Saves a new template template
+    * ID #5
+    */    
+    $app->get('/api/emailtemplate/save/:id', function ($id) use ($app) {       
+        // Inject test data
+        $_POST["code"] = "new_user_registered";
+        $_POST["name"] = "New User Registered";
+        $_POST["subject"] = "Thanks for registering with Myndie Corp";
+        $_POST["from"] = "webmaster@myndie.com";
+        $_POST["is_html"] = 1;
+        $_POST["message"] = "<p>Hi {first_name} {last_name}, thanks for registering with Myndie Corp.</p>";   
+
+        $controller = new \Myndie\Controller\Emailtemplate($app);
+        $controller->save($id);
+    })->conditions(array("id" => '\d+')); 
+    
+    /***
+    * Gets the details of a single email template
+    */    
+    $app->get('/api/emailtemplate/get/:id', function ($id) use ($app) {       
+        $controller = new \Myndie\Controller\Emailtemplate($app);
+        $controller->get($id);
+    })->conditions(array("id" => '\d+'));   
+    
+    /***
+    * Gets a list of email templates
+    */    
+    $app->get('/api/emailtemplate/list', function () use ($app) {       
+        $controller = new \Myndie\Controller\Emailtemplate($app);
+        $controller->getList();
+    });
+    
+    /***
+    * Deletes either an individual emailtemplate or the list of specified templates
+    */     
+    $app->post('/api/emailtemplate/delete', function () use ($app) {       
+        // Inject test data 
+        $controller = new \Myndie\Controller\Emailtemplate($app);
+        $controller->delete();
+    });    
    

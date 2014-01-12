@@ -159,6 +159,14 @@ class User extends Controller
         $email = Input::post("email");
         $password = Input::post("password");
         
+        if(empty($email)) {
+            $this->error("Please provide a valid email address");
+        }
+        
+        if(empty($password)) {
+            $this->error("Please provide a valid password");
+        }        
+        
         if(!$this->model->login($email, $password)) {
             $this->result["message"] = "Sorry, your login failed.  Please try again.";
             $this->send();            

@@ -2,6 +2,7 @@
 namespace Myndie\Controller; 
 
 use RedBean_Facade as R;
+use \Myndie\Lib\Input;
 
 class Controller
 {
@@ -46,10 +47,48 @@ class Controller
         $this->outputBeansAsJson($beans);       
     }  
     
+    /***
+    * The base save method does not handle any of the save operation,
+    * as the functionality required from case to case is to specific.
+    * It does however do any generic preparation work.
+    * 
+    * @param int $id The id of the item to save
+    */
     public function save($id)
     {
         $this->handleJSONContentType();
     }  
+    
+    /***
+    * The delete method deletes specified items from the target model
+    * The ids must be provided in a HTTP post variable called "ids". 
+    * If there are multiple ids, they should be comma separated, e.g. 1,2,3
+    */
+    public function delete()
+    {
+        $ids = Input::post("ids");
+        
+        if(empty($ids)) {
+            $this->result["message"] = "Please specify valid ids to delete";
+            $this->send();             
+        }
+        
+        $targets = array();
+        if(is_numeric($ids)) {
+            $targets[] = $ids;
+        } else {
+            $targets = explode(",", $ids);
+        }
+        
+        foreach($targets as $target_id) {
+            if(!$this->model->delete($target_id)) {
+                $this->result["message"] = "Item with an id of $target_id could not be deleted";
+                $this->send();                
+            }
+        }
+
+        $this->ok();          
+    }
 
     
     /**
@@ -82,6 +121,29 @@ class Controller
         if($exit) {
             exit();
         }        
+    }
+    
+    /***
+    * Sends a JSON encoded "OK" result to the client
+    */
+    protected function ok()
+    {
+        $this->result["status"] = true;
+        $this->result["message"] = "";
+        $this->send();
+    }
+    
+
+    /***
+    * Sends a JSON encoded "ERROR" result to the client
+    *     
+    * @param string $message The error message to send
+    */
+    protected function error($message)
+    {
+        $this->result["status"] = false;
+        $this->result["message"] = $message;
+        $this->send();        
     }
     
     /***

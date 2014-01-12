@@ -3,6 +3,7 @@
         "slim/slim": "2.*",
 	    "datafilter/datafilter": "dev-master",
         "gabordemooij/redbean": "dev-master",
-        "ircmaxell/password-compat": "dev-master"
+        "ircmaxell/password-compat": "dev-master",
+        "twig/twig": "1.*"
     }
 }

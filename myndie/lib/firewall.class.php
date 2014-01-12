@@ -18,7 +18,7 @@ use \Myndie\Lib\Strings;
 class Firewall
 {
     // Add any controllers where the ENTIRE controller and all its methods are open to the public here.
-    private static $publicController = array("country");  
+    private static $publicController = array("country", "state");  
     
     // Add any method uris where the specific controller method is open to the public here
     // Note, if the method takes additional parameters, e.g. /api/states/list/1, leave out the parameter
@@ -31,7 +31,7 @@ class Firewall
     // If your entire controllers should be restircted to specific user roles, add them here
     // e.g. "state" => array(MYNDIE_ROLE_ADMIN, MYNDIE_ROLE_MEMBER)    
     private static $restrictedControllers = array(
-        "state" => array(MYNDIE_ROLE_ADMIN, MYNDIE_ROLE_MEMBER)    
+        "emailtemplate" => array(MYNDIE_ROLE_ADMIN)    // Only admin should have access to the email template controller
     );    
 
     // Add any URIS here that should be restricted to particular login roles.
