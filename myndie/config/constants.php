@@ -18,6 +18,9 @@
     define("MYNDIE_ROLE_MEMBER", 2);
     define("MYNDIE_DEFAULT_USER_ROLE", MYNDIE_ROLE_MEMBER);  // The ID of the default user role when a new user registers
     
+    define("MYNDIE_SMTP_HOST", "localhost");
+    define("MYNDIE_SMTP_PORT", 25);
+    
     if(MYNDIE_MODE == "development") {
         ini_set("display_errors", "On");
         error_reporting(E_ALL);

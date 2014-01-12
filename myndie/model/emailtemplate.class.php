@@ -47,7 +47,7 @@ class Emailtemplate extends Model
         
         // Use the SWIFT Mailer engine to send the email
         // Define the transport engine
-        $swiftTransport = new \Swift_SmtpTransport("localhost", 25);
+        $swiftTransport = new \Swift_SmtpTransport(MYNDIE_SMTP_HOST, MYNDIE_SMTP_PORT);
         
         // Create the mailer object
         $swiftMailer = \Swift_Mailer::newInstance($swiftTransport);
@@ -58,10 +58,12 @@ class Emailtemplate extends Model
         $swiftMessage->setTo($recipients);
         $swiftMessage->setContentType("text/html");
         
+        // If carbon copy recipients are defined, send this email to them also.
         if(is_array($cc)) {
             $swiftMessage->setCC($cc);
         }
         
+        // If blind carbon copy recipients are defined, send this email to them also.
         if(is_array($bcc)) {
             $swiftMessage->setCC($bcc);
         }        
