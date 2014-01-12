@@ -4,7 +4,11 @@ namespace Myndie\Controller;
 use RedBean_Facade as R;
 use \Myndie\Lib\Input;
 
-class Controller
+/**
+* The Controller abstract class provides the skeleton that all
+* controllers should inherit from.  
+*/
+abstract class Controller
 {
     protected $app;                 // An instance of the Slim Framework
     protected $model;               // An instance of the primary model for this handler.
@@ -15,7 +19,7 @@ class Controller
         $this->result = array("status" => false, "message" => "An unspecified error occured");
     }
     
-    /***
+    /**
     * Gets a singular item for the controller's model.
     * and returns the item in JSON format.
     * 
@@ -37,7 +41,7 @@ class Controller
         $this->outputBeansAsJson($bean);       
     }    
 
-    /***
+    /**
     * Gets a list of the items from the controller's model.
     * The $_POST array will be used by the model to achieve any filtering necessary.
     */
@@ -47,7 +51,7 @@ class Controller
         $this->outputBeansAsJson($beans);       
     }  
     
-    /***
+    /**
     * The base save method does not handle any of the save operation,
     * as the functionality required from case to case is to specific.
     * It does however do any generic preparation work.
@@ -59,7 +63,7 @@ class Controller
         $this->handleJSONContentType();
     }  
     
-    /***
+    /**
     * The delete method deletes specified items from the target model
     * The ids must be provided in a HTTP post variable called "ids". 
     * If there are multiple ids, they should be comma separated, e.g. 1,2,3
@@ -108,7 +112,7 @@ class Controller
         }
     }
     
-    /***
+    /**
     * Outputs the class result array as a json message
     * Used extensively for AJAX communications
     * 
@@ -123,18 +127,18 @@ class Controller
         }        
     }
     
-    /***
+    /**
     * Sends a JSON encoded "OK" result to the client
     */
-    protected function ok()
+    protected function ok($message = "")
     {
         $this->result["status"] = true;
-        $this->result["message"] = "";
+        $this->result["message"] = $message;
         $this->send();
     }
     
 
-    /***
+    /**
     * Sends a JSON encoded "ERROR" result to the client
     *     
     * @param string $message The error message to send
@@ -146,7 +150,7 @@ class Controller
         $this->send();        
     }
     
-    /***
+    /**
     * The Angular JS framework oftens sends data to the server in JSON format, rather than
     * standard post vars.  This method detects JSON encoding and converts the variables back to post.
     */

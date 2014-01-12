@@ -152,6 +152,80 @@ class User extends Controller
         $this->send();     
     }
     
+    /***
+    * Handles new user registrations
+    */
+    public function register()
+    {
+        // Invoke the base class save method to do any preparation work
+        parent::save("");
+        
+        /************ VALIDATION **************/
+        $profile = new \DataFilter\Profile();
+        
+        // Set global validation checks
+        $profile->addPreFilters(['Trim', 'StripHtml']);
+        $profile->setAttribs($this->getValidationAttribs(true));
+          
+        // Perform validation checks
+        if (!$profile->check($_POST)) {
+            // The form is NOT valid.
+            $message = "Validation Error:\n";
+            $res = $profile->getLastResult();
+            foreach ($res->getAllErrors() as $error) {
+                $message .= "Err: $error\n";
+            }            
+            
+            // Send the validation errors back to the browser
+            $this->result["message"] = $message;
+            $this->send();
+        }
+        
+        // The form was valid.  Get the validated and transformed data from the profile.
+        $data = $profile->getLastResult()->getValidData();
+        
+        // If we're adding a new user, ensure this email address does NOT already exist
+        $email = INPUT::post("email");
+        $users = $this->model->getList(array("email" => $email));
+        if(count($users) > 0) {
+            $this->result["message"] = "Sorry, an account with this email address already exists";
+            $this->send();                
+        }
+        
+        // Hash the password
+        $this->model->hashPassword($data["password"], $hashed_password, $salt);
+        $data["password"] = $hashed_password;
+        $data["salt"] = $salt;
+  
+        // Save the client record (if id = 0 then a new record will be created)
+        $id = $this->model->save(0, $data);
+        
+        // If we're adding a new user, we also need to add the user role.
+        // Tthe role is set as the DEFAULT user role which is MYNDIE_ROLE_MEMBER (id 2) as we can't allow
+        // unsecure sources to add ADMIN user roles.  
+
+        // Load the user bean
+        $user = $this->model->get($id);
+        if(!$user) {
+            $this->result["message"] = "Your account could not be created";
+            $this->send();                
+        }
+        
+        // Create the default role.
+        $objRole = new \Myndie\Model\Role($this->app);
+        $roleBean = $objRole->get(MYNDIE_DEFAULT_USER_ROLE);
+        if(!$roleBean) {
+            $this->result["message"] = "Default role is invalid";
+            $this->send();                 
+        }
+        
+        $user->sharedRole[] = $roleBean;    // Users to Roles is a many to many relationship so we use a shared list.
+        R::store($user);
+
+        // Send the OK result back, along with the ID of the new user.
+        $this->OK($id);    
+    }  
+    
     public function login()
     {
         $this->handleJSONContentType();

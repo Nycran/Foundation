@@ -1,7 +1,6 @@
 <?php
     /***
     * Get list of countries
-    * ID #1
     */
     $app->get('/api/country/list', function () use ($app) {       
         //require_once("myndie/controllers/countries.class.php");
@@ -11,7 +10,6 @@
     
     /***
     * Get list of states for a specific country
-    * ID #2
     */    
     $app->get('/api/state/list/:id', function ($country_id) use ($app) {       
         // Inject country ID filter
@@ -24,7 +22,6 @@
     /***
     * Saves a user to the database
     * If an ID of 0 is passed, a new user will be created
-    * ID #3
     */    
     $app->get('/api/user/save/:id', function ($id) use ($app) {       
         // Inject test data
@@ -37,12 +34,28 @@
 
         $controller = new \Myndie\Controller\User($app);
         $controller->save($id);
-    })->conditions(array("id" => '\d+'));     
+    })->conditions(array("id" => '\d+'));
+    
+    /***
+    * Saves a user to the database
+    * If an ID of 0 is passed, a new user will be created
+    */    
+    $app->get('/api/user/save/:id', function ($id) use ($app) {       
+        // Inject test data
+        $_POST["first_name"] = "Andrew";
+        $_POST["last_name"] = "Chapman";
+        $_POST["email"] = "tester1@simb.com.au";
+        $_POST["password"] = "mango77z";
+        $_POST["password_repeat"] = "mango77z";
+        $_POST["roles"] = "1,2";    // Test adding multiple roles
+
+        $controller = new \Myndie\Controller\User($app);
+        $controller->save($id);
+    })->conditions(array("id" => '\d+'));          
     
     /***
     * Handles a user login request.
     * Both email and password should be passed via HTTP Post
-    * ID #4
     */    
     $app->post('/api/user/login', function () use ($app) {       
         $controller = new \Myndie\Controller\User($app);
@@ -50,21 +63,12 @@
     }); 
     
     /***
-    * Saves a new template template
-    * ID #5
+    * Handles user registration requests
     */    
-    $app->get('/api/emailtemplate/save/:id', function ($id) use ($app) {       
-        // Inject test data
-        $_POST["code"] = "new_user_registered";
-        $_POST["name"] = "New User Registered";
-        $_POST["subject"] = "Thanks for registering with Myndie Corp";
-        $_POST["from"] = "webmaster@myndie.com";
-        $_POST["is_html"] = 1;
-        $_POST["message"] = "<p>Hi {first_name} {last_name}, thanks for registering with Myndie Corp.</p>";   
-
-        $controller = new \Myndie\Controller\Emailtemplate($app);
-        $controller->save($id);
-    })->conditions(array("id" => '\d+')); 
+    $app->post('/api/user/register', function () use ($app) {       
+        $controller = new \Myndie\Controller\User($app);
+        $controller->register();
+    }); 
     
     /***
     * Gets the details of a single email template
@@ -89,5 +93,11 @@
         // Inject test data 
         $controller = new \Myndie\Controller\Emailtemplate($app);
         $controller->delete();
-    });    
+    }); 
+    
+    $app->post('/api/emailtemplate/sendtest', function () use ($app) {       
+        // Inject test data 
+        $controller = new \Myndie\Controller\Emailtemplate($app);
+        $controller->sendtest();
+    });        
    

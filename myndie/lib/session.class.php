@@ -11,7 +11,7 @@ class Session
     private static $objSession = false;     // Will be set to a Session Model object
     private static $sessionBean = false;    // Set to the actual session bean object once the session has been validated.
     
-    /***
+    /**
     * Updates the users session
     * 
     * @param mixed $key
@@ -37,7 +37,7 @@ class Session
         R::store(self::$sessionBean);
     }
     
-    /***
+    /**
     * Gets a value from the users session
     * 
     * @param string $key The key of the value to retrieve.
@@ -58,7 +58,7 @@ class Session
         return $dataArray[$key];
     }
     
-    /***
+    /**
     * Creates a new session in the database and stores the ID 
     * for that session for later use.  The session cookie is also 
     * written to the client
@@ -101,7 +101,7 @@ class Session
         return true;
     }
     
-    /***
+    /**
     * Tests if the users session is valid.  The session ID to check may be passed
     * explicitly, but if not, it is retrieved from the browser cookies.
     * 
