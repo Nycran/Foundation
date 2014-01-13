@@ -95,7 +95,7 @@
         $controller->delete();
     }); 
     
-    $app->post('/api/emailtemplate/sendtest', function () use ($app) {       
+    $app->get('/api/emailtemplate/sendtest', function () use ($app) {       
         // Inject test data 
         $controller = new \Myndie\Controller\Emailtemplate($app);
         $controller->sendtest();

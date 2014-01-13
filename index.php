@@ -2,8 +2,7 @@
     /**
     * Myndie Foundation Framework
     * @version 1.0
-    * @copyright 2014 SIMB Pty Ltd www.simb.com.au
-    * @author Andrew Chapman
+    * @author SIMB Pty Ltd http://www.simb.com.au
     * @license http://opensource.org/licenses/MIT MIT
     * Please use the PSR-2 Coding Standard
     * https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md

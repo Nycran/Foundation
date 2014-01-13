@@ -24,12 +24,25 @@ class Emailtemplate extends Model
         }
     }
     
-    public function sendEmail($templateID, $emailData, $recipients, $cc = false, $bcc = false)
+    /**
+    * Sends an email using the specified database template, merging values from the 
+    * emailData array into the template, adding any attachments.
+    * 
+    * @param int $templateID The ID of the template stored in the database templates table
+    * @param array $emailData An array of key/value pairs to merge into the template
+    * @param array $recipients An array of the recipients to send the email to
+    * @param array $cc An array of the recipients to CC the email to - use false if CC is not required.
+    * @param array $bcc An array of the recipients to BCC the email to - use false if BCC is not required.
+    * @param array $attachments An array of the attachments to attach to the email.  Use false if no attachments.
+    */
+    public function sendEmailFromTemplate($templateID, $emailData, $recipients, $cc = false, $bcc = false, $attachments = false)
     {
+        // Template ID must be a valid number
         if(!is_numeric($templateID)) {
             $this->app->error(new \Exception("Emailtemplate::send - Invalid template ID"));
         }
         
+        // Recipients MUST be defined.
         if((!is_array($recipients)) || (count($recipients) == 0)) {
             $this->app->error(new \Exception("Emailtemplate::send - No recipients defined"));
         }
@@ -57,6 +70,15 @@ class Emailtemplate extends Model
         $swiftMessage->setFrom($template->from, $template->from_name);
         $swiftMessage->setTo($recipients);
         $swiftMessage->setContentType("text/html");
+        
+        // Add attachments
+        if(is_array($attachments)) {
+            foreach($attachments as $attachment) {
+                if(file_exists($attachment)) {
+                    $swiftMessage->attach(\Swift_Attachment::fromPath($attachment));
+                }
+            }
+        }
         
         // If carbon copy recipients are defined, send this email to them also.
         if(is_array($cc)) {

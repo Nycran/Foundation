@@ -117,7 +117,10 @@ class Emailtemplate extends Controller
         $cc = array("tester1@simb.com.au");
         $bcc = array("tester2@simb.com.au");
         
-        if(!$this->model->sendEmail($templateID, $emailData, $recipients, $cc, $bcc)) {
+        // Test attachment
+        $attachments = array(MYNDIE_ABSOLUTE_PATH . "uploads/Test.pdf");
+        
+        if(!$this->model->sendEmailFromTemplate($templateID, $emailData, $recipients, $cc, $bcc, $attachments)) {
             $this->error("Email sending failed");
         }
         
