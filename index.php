@@ -1,9 +1,11 @@
 <?php
-    /***
+    /**
     * Myndie Foundation Framework
-    * Version 0.0.2
-    * Copyright SIMB.com.au 2014
-    * Authors: Andrew Chapman, Others will go here
+    * @version 1.0
+    * @author SIMB Pty Ltd http://www.simb.com.au
+    * @license http://opensource.org/licenses/MIT MIT
+    * Please use the PSR-2 Coding Standard
+    * https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md
     */
     
     // Define Myndie autoloader

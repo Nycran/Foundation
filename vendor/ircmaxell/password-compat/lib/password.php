@@ -7,6 +7,8 @@
  * @copyright 2012 The Authors
  */
 
+namespace {
+
 if (!defined('PASSWORD_DEFAULT')) {
 
     define('PASSWORD_BCRYPT', 1);
@@ -34,6 +36,7 @@ if (!defined('PASSWORD_DEFAULT')) {
             trigger_error("password_hash() expects parameter 2 to be long, " . gettype($algo) . " given", E_USER_WARNING);
             return null;
         }
+        $resultLength = 0;
         switch ($algo) {
             case PASSWORD_BCRYPT:
                 // Note that this is a C constant, but not exposed to PHP, so we don't define it here.
@@ -50,11 +53,14 @@ if (!defined('PASSWORD_DEFAULT')) {
                 // The length required in the final serialization
                 $required_salt_len = 22;
                 $hash_format = sprintf("$2y$%02d$", $cost);
+                // The expected length of the final crypt() output
+                $resultLength = 60;
                 break;
             default:
                 trigger_error(sprintf("password_hash(): Unknown password hashing algorithm: %s", $algo), E_USER_WARNING);
                 return null;
         }
+        $salt_requires_encoding = false;
         if (isset($options['salt'])) {
             switch (gettype($options['salt'])) {
                 case 'NULL':
@@ -75,11 +81,11 @@ if (!defined('PASSWORD_DEFAULT')) {
                     trigger_error('password_hash(): Non-string salt parameter supplied', E_USER_WARNING);
                     return null;
             }
-            if (strlen($salt) < $required_salt_len) {
-                trigger_error(sprintf("password_hash(): Provided salt is too short: %d expecting %d", strlen($salt), $required_salt_len), E_USER_WARNING);
+            if (PasswordCompat\binary\_strlen($salt) < $required_salt_len) {
+                trigger_error(sprintf("password_hash(): Provided salt is too short: %d expecting %d", PasswordCompat\binary\_strlen($salt), $required_salt_len), E_USER_WARNING);
                 return null;
             } elseif (0 == preg_match('#^[a-zA-Z0-9./]+$#D', $salt)) {
-                $salt = str_replace('+', '.', base64_encode($salt));
+                $salt_requires_encoding = true;
             }
         } else {
             $buffer = '';
@@ -96,20 +102,20 @@ if (!defined('PASSWORD_DEFAULT')) {
                     $buffer_valid = true;
                 }
             }
-            if (!$buffer_valid && is_readable('/dev/urandom')) {
+            if (!$buffer_valid && @is_readable('/dev/urandom')) {
                 $f = fopen('/dev/urandom', 'r');
-                $read = strlen($buffer);
+                $read = PasswordCompat\binary\_strlen($buffer);
                 while ($read < $raw_salt_len) {
                     $buffer .= fread($f, $raw_salt_len - $read);
-                    $read = strlen($buffer);
+                    $read = PasswordCompat\binary\_strlen($buffer);
                 }
                 fclose($f);
                 if ($read >= $raw_salt_len) {
                     $buffer_valid = true;
                 }
             }
-            if (!$buffer_valid || strlen($buffer) < $raw_salt_len) {
-                $bl = strlen($buffer);
+            if (!$buffer_valid || PasswordCompat\binary\_strlen($buffer) < $raw_salt_len) {
+                $bl = PasswordCompat\binary\_strlen($buffer);
                 for ($i = 0; $i < $raw_salt_len; $i++) {
                     if ($i < $bl) {
                         $buffer[$i] = $buffer[$i] ^ chr(mt_rand(0, 255));
@@ -118,15 +124,26 @@ if (!defined('PASSWORD_DEFAULT')) {
                     }
                 }
             }
-            $salt = str_replace('+', '.', base64_encode($buffer));
+            $salt = $buffer;
+            $salt_requires_encoding = true;
         }
-        $salt = substr($salt, 0, $required_salt_len);
+        if ($salt_requires_encoding) {
+            // encode string with the Base64 variant used by crypt
+            $base64_digits =
+                'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+            $bcrypt64_digits =
+                './ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+            $base64_string = base64_encode($salt);
+            $salt = strtr(rtrim($base64_string, '='), $base64_digits, $bcrypt64_digits);
+        }
+        $salt = PasswordCompat\binary\_substr($salt, 0, $required_salt_len);
 
         $hash = $hash_format . $salt;
 
         $ret = crypt($password, $hash);
 
-        if (!is_string($ret) || strlen($ret) <= 13) {
+        if (!is_string($ret) || PasswordCompat\binary\_strlen($ret) != $resultLength) {
             return false;
         }
 
@@ -155,7 +172,7 @@ if (!defined('PASSWORD_DEFAULT')) {
             'algoName' => 'unknown',
             'options' => array(),
         );
-        if (substr($hash, 0, 4) == '$2y$' && strlen($hash) == 60) {
+        if (PasswordCompat\binary\_substr($hash, 0, 4) == '$2y$' && PasswordCompat\binary\_strlen($hash) == 60) {
             $return['algo'] = PASSWORD_BCRYPT;
             $return['algoName'] = 'bcrypt';
             list($cost) = sscanf($hash, "$2y$%d$");
@@ -205,12 +222,12 @@ if (!defined('PASSWORD_DEFAULT')) {
             return false;
         }
         $ret = crypt($password, $hash);
-        if (!is_string($ret) || strlen($ret) != strlen($hash) || strlen($ret) <= 13) {
+        if (!is_string($ret) || PasswordCompat\binary\_strlen($ret) != PasswordCompat\binary\_strlen($hash) || PasswordCompat\binary\_strlen($ret) <= 13) {
             return false;
         }
 
         $status = 0;
-        for ($i = 0; $i < strlen($ret); $i++) {
+        for ($i = 0; $i < PasswordCompat\binary\_strlen($ret); $i++) {
             $status |= (ord($ret[$i]) ^ ord($hash[$i]));
         }
 
@@ -218,5 +235,45 @@ if (!defined('PASSWORD_DEFAULT')) {
     }
 }
 
+}
 
+namespace PasswordCompat\binary {
+    /**
+     * Count the number of bytes in a string
+     *
+     * We cannot simply use strlen() for this, because it might be overwritten by the mbstring extension.
+     * In this case, strlen() will count the number of *characters* based on the internal encoding. A
+     * sequence of bytes might be regarded as a single multibyte character.
+     *
+     * @param string $binary_string The input string
+     *
+     * @internal
+     * @return int The number of bytes
+     */
+    function _strlen($binary_string) {
+           if (function_exists('mb_strlen')) {
+               return mb_strlen($binary_string, '8bit');
+           }
+           return strlen($binary_string);
+    }
 
+    /**
+     * Get a substring based on byte limits
+     *
+     * @see _strlen()
+     *
+     * @param string $binary_string The input string
+     * @param int    $start
+     * @param int    $length
+     *
+     * @internal
+     * @return string The substring
+     */
+    function _substr($binary_string, $start, $length) {
+       if (function_exists('mb_substr')) {
+           return mb_substr($binary_string, $start, $length, '8bit');
+       }
+       return substr($binary_string, $start, $length);
+   }
+
+}

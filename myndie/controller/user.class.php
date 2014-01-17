@@ -24,6 +24,7 @@ class User extends Controller
         parent::save($id);
         
         $addNewMode = ($id == 0);     // Will be true if we're adding a new user (i.e. id == 0)
+        $createDefaultRole = true;
         
         /************ VALIDATION **************/
         $profile = new \DataFilter\Profile();
@@ -62,13 +63,29 @@ class User extends Controller
             $this->model->hashPassword($data["password"], $hashed_password, $salt);
             $data["password"] = $hashed_password;
             $data["salt"] = $salt;
+  
         } else {
             // If we're updating an existing user, the password and salt values may NOT be changed by using this method.
             Utils::removeArrayKey($data, "password");            
             Utils::removeArrayKey($data, "password_repeat");
             Utils::removeArrayKey($data, "salt");
-        }
+        }  
         
+        // Before saving, check role assignment permissions
+        // Is the save request trying to specify the roles to assign to this user?
+        $roles = Input::post("roles");
+        if(!empty($roles)) {
+            // The request is trying to specify the user role.
+            
+            // Is there a logged in user, and if so, do they have admin privileges?
+            if(Session::checkRole(MYNDIE_ROLE_ADMIN)) {   
+                $createDefaultRole = false;
+            } else {
+                $this->app->error(new \Exception("Sorry you do not have permission to specify user roles"));
+            }        
+        }             
+                    
+
         // Save the client record (if id = 0 then a new record will be created)
         $id = $this->model->save($id, $data);
         
@@ -76,6 +93,8 @@ class User extends Controller
         // For now the role is set as the DEFAULT user role which is member, as we can't allow
         // unsecure sources to add ADMIN user roles.  However we will need to allow requests (logged in as Administrator)
         // to set any role they want.
+        $user = false;
+        
         if($addNewMode) {
             // Load the user bean
             $user = $this->model->get($id);
@@ -84,21 +103,128 @@ class User extends Controller
                 $this->send();                
             }
             
-            $objRole = new \Myndie\Model\Role($this->app);
-            $roleBean = $objRole->get(MYNDIE_DEFAULT_USER_ROLE_ID);
-            if(!$roleBean) {
-                $this->result["message"] = "Default role is invalid";
-                $this->send();                 
+            if(($createDefaultRole) || (empty($roles))) {
+                $objRole = new \Myndie\Model\Role($this->app);
+                $roleBean = $objRole->get(MYNDIE_DEFAULT_USER_ROLE);
+                if(!$roleBean) {
+                    $this->result["message"] = "Default role is invalid";
+                    $this->send();                 
+                }
+                
+                $user->sharedRole[] = $roleBean;    // Users to Roles is a many to many relationship so we use a shared list.
+                R::store($user);
+            } 
+        }
+        
+        if((!$createDefaultRole) && (!empty($roles))) {
+            // If we get to this point we have verified that the user is an Admin user and
+            // we know they are trying to specify the user roles.
+            
+            // Ensure we have loaded the user object
+            if(!$user) {
+                $user = $this->model->get($id);
             }
             
-            $user->sharedRole[] = $roleBean;    // Users to Roles is a many to many relationship so we use a shared list.
-            R::store($user);
-        }
+            // Clear the existing user roles
+            $user->sharedRole = array();
+            
+            // Create a role record for each specified role
+            $roleArray = explode(",", $roles);
+            foreach($roleArray as $role_id) {
+                if(is_numeric($role_id)) {
+                    $objRole = new \Myndie\Model\Role($this->app);
+                    $roleBean = $objRole->get($role_id);
+                    if(!$roleBean) {
+                        $this->result["message"] = "Role $role_id is invalid";
+                        $this->send();                 
+                    }
+                    
+                    $user->sharedRole[] = $roleBean;                        
+                }
+            }
+            
+            // Store the roles
+            R::store($user);  
+        }      
 
         $this->result["status"] = true;
         $this->result["message"] = $id;
         $this->send();     
     }
+    
+    /***
+    * Handles new user registrations
+    */
+    public function register()
+    {
+        // Invoke the base class save method to do any preparation work
+        parent::save("");
+        
+        /************ VALIDATION **************/
+        $profile = new \DataFilter\Profile();
+        
+        // Set global validation checks
+        $profile->addPreFilters(['Trim', 'StripHtml']);
+        $profile->setAttribs($this->getValidationAttribs(true));
+          
+        // Perform validation checks
+        if (!$profile->check($_POST)) {
+            // The form is NOT valid.
+            $message = "Validation Error:\n";
+            $res = $profile->getLastResult();
+            foreach ($res->getAllErrors() as $error) {
+                $message .= "Err: $error\n";
+            }            
+            
+            // Send the validation errors back to the browser
+            $this->result["message"] = $message;
+            $this->send();
+        }
+        
+        // The form was valid.  Get the validated and transformed data from the profile.
+        $data = $profile->getLastResult()->getValidData();
+        
+        // If we're adding a new user, ensure this email address does NOT already exist
+        $email = INPUT::post("email");
+        $users = $this->model->getList(array("email" => $email));
+        if(count($users) > 0) {
+            $this->result["message"] = "Sorry, an account with this email address already exists";
+            $this->send();                
+        }
+        
+        // Hash the password
+        $this->model->hashPassword($data["password"], $hashed_password, $salt);
+        $data["password"] = $hashed_password;
+        $data["salt"] = $salt;
+  
+        // Save the client record (if id = 0 then a new record will be created)
+        $id = $this->model->save(0, $data);
+        
+        // If we're adding a new user, we also need to add the user role.
+        // Tthe role is set as the DEFAULT user role which is MYNDIE_ROLE_MEMBER (id 2) as we can't allow
+        // unsecure sources to add ADMIN user roles.  
+
+        // Load the user bean
+        $user = $this->model->get($id);
+        if(!$user) {
+            $this->result["message"] = "Your account could not be created";
+            $this->send();                
+        }
+        
+        // Create the default role.
+        $objRole = new \Myndie\Model\Role($this->app);
+        $roleBean = $objRole->get(MYNDIE_DEFAULT_USER_ROLE);
+        if(!$roleBean) {
+            $this->result["message"] = "Default role is invalid";
+            $this->send();                 
+        }
+        
+        $user->sharedRole[] = $roleBean;    // Users to Roles is a many to many relationship so we use a shared list.
+        R::store($user);
+
+        // Send the OK result back, along with the ID of the new user.
+        $this->OK($id);    
+    }  
     
     public function login()
     {
@@ -106,6 +232,14 @@ class User extends Controller
         
         $email = Input::post("email");
         $password = Input::post("password");
+        
+        if(empty($email)) {
+            $this->error("Please provide a valid email address");
+        }
+        
+        if(empty($password)) {
+            $this->error("Please provide a valid password");
+        }        
         
         if(!$this->model->login($email, $password)) {
             $this->result["message"] = "Sorry, your login failed.  Please try again.";
@@ -119,6 +253,7 @@ class User extends Controller
         $this->result["user_first_name"] = Session::get("user_first_name");
         $this->result["user_last_name"] = Session::get("user_last_name");
         $this->result["user_email"] = Session::get("user_email");
+        $this->result["user_roles"] = Session::get("user_roles");
         
         $this->send();
     }
@@ -169,7 +304,7 @@ class User extends Controller
                         'sufficient' => false
                     ]                                  
                 ]
-            ],            
+            ],         
         ];
         
         return $attribs;
