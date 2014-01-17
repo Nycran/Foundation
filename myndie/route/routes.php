@@ -52,3 +52,41 @@
         $controller->login();
     });             
    
+    /***
+    * 
+    */    
+    $app->get('/api/encrypt/encryption', function () use ($app) {       
+        // Inject test data
+        $_POST["param"] = "ion mere";
+		$_POST["usekey"] = true;
+        $controller = new \Myndie\Controller\Encrypt($app);
+        $controller->encryption();
+     });
+     
+     $app->get('/api/encrypt/decryption', function () use ($app) {       
+        // Inject test data
+        $_POST["param"] = "VTkAZQI+VHQGOwAxBSFVZA==";
+		$_POST["usekey"] = false;
+        $controller = new \Myndie\Controller\Encrypt($app);
+        $controller->decryption();
+     });
+     
+     
+      $app->get('/api/image/resize', function () use ($app) {       
+        // Inject test data
+        $_FILES["image"] = 'test.jpg';
+		$_POST["width"] = "100";
+		$_POST["height"] = "150";
+		$_POST["resizeType"] = "maxheight";
+        $controller = new \Myndie\Controller\Image($app);
+        $controller->resizeImage();
+     });
+     
+     $app->get('/api/image/crop', function () use ($app) {       
+        // Inject test data
+        $_FILES["image"] = "test.jpg";
+		$_POST["width"] = 100;
+		$_POST["height"] = 150;
+        $controller = new \Myndie\Controller\Image($app);
+        $controller->cropImage();
+     });

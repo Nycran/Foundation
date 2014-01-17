@@ -70,6 +70,6 @@ class Firewall
 
         $roles = Session::get("user_roles");
                                            
-        die("OK $roles");      
+       // die("OK $roles");      
     }
 }

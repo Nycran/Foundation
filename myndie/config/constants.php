@@ -1,6 +1,6 @@
 <?php
     define("MYNDIE_MODE", "development");
-    define("MYNDIE_BASE_URL", "http://192.168.1.52/foundation/");  // The Base URL for the website.
+    define("MYNDIE_BASE_URL", "http://localhost/Foundation/");  // The Base URL for the website.
     //define("MYNDIE_BASE_URL", "http://qa.simb.com.au/foundation/");
     define("MYNDIE_HASH_MODE", "BCRYPT");                      // The algorithm to use for password hasing.  Can be either BRCRYPT or SHA256
     define("MYNDIE_ITEMS_PER_PAGE", 10);                       // Default number of items to show on each page when pagination is being used.
@@ -14,6 +14,8 @@
     define("MYNDIE_SESSION_CHECK_AGENT", "true");              // If set to true, the session ID will be validated against the browsers user agent string.
     
     define("MYNDIE_DEFAULT_USER_ROLE_ID", 2);                  // The ID of the default user role when a new user registers
+    
+    define("MYNDIE_ENCRYPTION_KEY", ""); 
     
     if(MYNDIE_MODE == "development") {
         ini_set("display_errors", "On");
