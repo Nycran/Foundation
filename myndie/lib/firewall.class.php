@@ -18,7 +18,7 @@ use \Myndie\Lib\Strings;
 class Firewall
 {
     // Add any controllers where the ENTIRE controller and all its methods are open to the public here.
-    private static $publicController = array("country", "state");  
+    private static $publicController = array("country", "state", "test");  
     
     // Add any method uris where the specific controller method is open to the public here
     // Note, if the method takes additional parameters, e.g. /api/states/list/1, leave out the parameter
@@ -121,10 +121,7 @@ class Firewall
             return true;
         }
                                            
-<<<<<<< HEAD
        // die("OK $roles");      
-=======
         $app->error(new \Exception("Myndie/Lib/Firewall::run - Access Denied"));
->>>>>>> 56d648395bb583d3529ccc85d643cee56b6569c4
     }
 }

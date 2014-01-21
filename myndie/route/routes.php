@@ -1,5 +1,5 @@
 <?php
-    /***
+    /**
     * Get list of countries
     */
     $app->get('/api/country/list', function () use ($app) {       
@@ -8,7 +8,7 @@
         $controller->getList();
     }); 
     
-    /***
+    /**
     * Get list of states for a specific country
     */    
     $app->get('/api/state/list/:id', function ($country_id) use ($app) {       
@@ -19,7 +19,7 @@
     })->conditions(array("id" => '\d+')); 
     
     
-    /***
+    /**
     * Saves a user to the database
     * If an ID of 0 is passed, a new user will be created
     */    
@@ -36,7 +36,7 @@
         $controller->save($id);
     })->conditions(array("id" => '\d+'));
     
-    /***
+    /**
     * Saves a user to the database
     * If an ID of 0 is passed, a new user will be created
     */    
@@ -53,7 +53,7 @@
         $controller->save($id);
     })->conditions(array("id" => '\d+'));          
     
-    /***
+    /**
     * Handles a user login request.
     * Both email and password should be passed via HTTP Post
     */    
@@ -62,7 +62,7 @@
         $controller->login();
     }); 
     
-    /***
+    /**
     * Handles user registration requests
     */    
     $app->post('/api/user/register', function () use ($app) {       
@@ -70,7 +70,7 @@
         $controller->register();
     }); 
     
-    /***
+    /**
     * Gets the details of a single email template
     */    
     $app->get('/api/emailtemplate/get/:id', function ($id) use ($app) {       
@@ -78,7 +78,7 @@
         $controller->get($id);
     })->conditions(array("id" => '\d+'));   
     
-    /***
+    /**
     * Gets a list of email templates
     */    
     $app->get('/api/emailtemplate/list', function () use ($app) {       
@@ -86,7 +86,7 @@
         $controller->getList();
     });
     
-    /***
+    /**
     * Deletes either an individual emailtemplate or the list of specified templates
     */     
     $app->post('/api/emailtemplate/delete', function () use ($app) {       
@@ -101,18 +101,18 @@
         $controller->sendtest();
     });        
    
-    /***
+    /**
     * 
     */    
-    $app->get('/api/encrypt/encryption', function () use ($app) {       
+    $app->get('/api/test/encrypt', function () use ($app) {       
         // Inject test data
         $_POST["param"] = "ion mere";
 		$_POST["usekey"] = true;
-        $controller = new \Myndie\Controller\Encrypt($app);
+        $controller = new \Myndie\Controller\Test($app);
         $controller->encryption();
      });
      
-     $app->get('/api/encrypt/decryption', function () use ($app) {       
+     $app->get('/api/test/decrypt', function () use ($app) {       
         // Inject test data
         $_POST["param"] = "VTkAZQI+VHQGOwAxBSFVZA==";
 		$_POST["usekey"] = false;
@@ -120,8 +120,7 @@
         $controller->decryption();
      });
      
-     
-      $app->get('/api/image/resize', function () use ($app) {       
+     $app->get('/api/image/resize', function () use ($app) {       
         // Inject test data
         $_FILES["image"] = 'test.jpg';
 		$_POST["width"] = "100";
