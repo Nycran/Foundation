@@ -1,5 +1,5 @@
 <?php
-    define("MYNDIE_ITEMS_PER_PAGE", 10);                       // Default number of items to show on each page when pagination is being used.
+    define("MYNDIE_ITEMS_PER_PAGE", 20);                       // Default number of items to show on each page when pagination is being used.
     define("MYNDIE_OUTPUT_MODE", "JSON");                      // Output mode is used to determine the appropriate way to output errors, 404s etc
     define("MYNDIE_LIVE_URL", "http://www.myndie.com/");        // Define the site LIVE URL.  Used to set the app automatically into debug mode.
     define("MYNDIE_HASH_MODE", "BCRYPT");                       // The algorithm to use for password hasing.  Can be either BRCRYPT or SHA256
@@ -9,8 +9,8 @@
     define("MYNDIE_SESSION_COOKIE_NAME", "MyndieSession");      // Default session cookie name
     define("MYNDIE_SESSION_COOKIE_EXPIRY", "86400");            // Session cookie expiry (in seconds)
     define("MYNDIE_SESSION_COOKIE_PATH", "/");                  // Session cookie path
-    define("MYNDIE_SESSION_CHECK_IP", "true");                  // If set to true, the session ID will be validated against the users IP address.
-    define("MYNDIE_SESSION_CHECK_AGENT", "true");               // If set to true, the session ID will be validated against the browsers user agent string.
+    define("MYNDIE_SESSION_CHECK_IP", "false");                  // If set to true, the session ID will be validated against the users IP address.
+    define("MYNDIE_SESSION_CHECK_AGENT", "false");               // If set to true, the session ID will be validated against the browsers user agent string.
     
     // Define user roles here for convenience and code readability
     define("MYNDIE_ROLE_ADMIN", 1);

@@ -183,6 +183,17 @@ class Session
         
         return true;    
     }
+    
+    /***
+    * Destroys the session cookie
+    */
+    public static function destroy()
+    {
+        // Remove the session cookie
+        setcookie(MYNDIE_SESSION_COOKIE_NAME, "", 0, MYNDIE_SESSION_COOKIE_PATH);
+        
+        return true;
+    }
 
     
     public static function getSessionID()

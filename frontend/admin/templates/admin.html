@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html ng-app="myndieApp">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration Area</title>
+
+    <link rel="stylesheet" type="text/css" href="{{ BASE_URL }}frontend/admin/css/admin/bootstrap.flatly.min.css" />
+    <link rel="stylesheet" type="text/css" href="{{ BASE_URL }}frontend/admin/css/admin/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="{{ BASE_URL }}frontend/admin/css/admin/style.css" />  
+    
+    <!-- Core Script Dependencies -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" ></script>
+    <script src="//code.angularjs.org/1.2.6/angular.min.js"></script>
+    <script src="//code.angularjs.org/1.2.6/angular-route.min.js"></script>
+    <!-- End Core Script Dependencies -->     
+    
+    <script type="text/javascript">
+    var myndie = {
+        apiURL: '{{ BASE_URL }}api/',
+        version: '2.0',
+        baseURL: '{{ BASE_URL }}',
+        templateURL: '{{ TEMPLATE_PATH }}'
+    };
+    </script>
+                
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <div class="navbar navbar-fixed-top navbar-default" role="navigation" id="header">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a id="navHome" class="navbar-brand" href="#dashboard"><i class="fa fa-home"></i></a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li id="navDashboard" class="dropdown">
+                        <a href="#!dashboard">Dashboard</a>
+                    </li>
+                    <li id="navLocations" class="dropdown">
+                        <a href="#!locations">Locations</a>
+                    </li>
+                    <li id="navCategories" class="dropdown">
+                        <a href="#!categories">Categories</a>
+                    </li>
+                    <li id="navUsers" class="dropdown">
+                        <a href="#!users">Users</a>
+                    </li>  
+                    <li id="navSponsors" class="dropdown">
+                        <a href="#!sponsors">Sponsors</a>
+                    </li>  
+                    <li id="navSettings" class="dropdown">
+                        <a href="#!settings">Settings</a>
+                    </li>                                                                                                
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a id="navLogout" href="#!logout"><i class="fa fa-power-off"></i> Logout</a></li>
+                </ul>
+            </div><!--/.nav-collapse -->
+        </div>
+    </div><!-- #header -->
+
+    <div id="main">
+        <div class="container">
+            <div ng-view></div>  
+        </div><!-- .container -->
+        
+        <div id="loading">
+            <img src="{{ BASE_URL }}frontend/admin/images/loading.gif" border="0" width="64" height="64" alt="Loading, please wait." />
+        </div>        
+        
+    </div><!-- #main -->
+
+    <div id="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-3 col-sm-push-9">
+                    <select id="jumpTo" class="form-control input-sm" ng-controller="GlobalCtrl">
+                        <option value="">Jump to &hellip;</option>
+                        <option value="#!/dashboard">Dashboard</option>
+                        <option value="#!/locations">Locations</option>
+                        <option value="#!/categories">Categories</option>
+                        <option value="#!/users">Users</option>
+                        <option value="#!/sponsors">Sponsors</option>
+                    </select>
+                </div>
+                <div class="col-sm-9 col-sm-pull-3">
+                    <!--<p class="copyright">&copy; 2014 by SIMB.</p>-->
+                </div>
+            </div>
+        </div>
+    </div><!-- #footer --> 
+
+    <!-- App Script Dependencies -->             
+    <script type="text/javascript" src="{{ BASE_URL }}frontend/admin/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="{{ BASE_URL }}frontend/admin/js/app.js"></script>
+    <script type="text/javascript" src="{{ BASE_URL }}frontend/admin/js/services.js"></script>
+    <script type="text/javascript" src="{{ BASE_URL }}frontend/admin/js/controllers/global.js"></script>
+    <script type="text/javascript" src="{{ BASE_URL }}frontend/admin/js/controllers/dashboard.js"></script>
+    <script type="text/javascript" src="{{ BASE_URL }}frontend/admin/js/controllers/locations.js"></script>
+    <script type="text/javascript" src="{{ BASE_URL }}frontend/admin/js/controllers/logout.js"></script>
+    <script type="text/javascript" src="{{ BASE_URL }}frontend/admin/js/controllers/userList.js"></script>
+    <script type="text/javascript" src="{{ BASE_URL }}frontend/admin/js/controllers/user.js"></script>
+    <script type="text/javascript" src="{{ BASE_URL }}frontend/admin/js/controllers/locationList.js"></script>
+    <script type="text/javascript" src="{{ BASE_URL }}frontend/admin/js/controllers/location.js"></script>
+    <script type="text/javascript" src="{{ BASE_URL }}frontend/admin/js/controllers/categoryList.js"></script>
+    <script type="text/javascript" src="{{ BASE_URL }}frontend/admin/js/controllers/category.js"></script>  
+    <script type="text/javascript" src="{{ BASE_URL }}frontend/admin/js/controllers/sponsorList.js"></script>
+    <script type="text/javascript" src="{{ BASE_URL }}frontend/admin/js/controllers/sponsor.js"></script>      
+    <script type="text/javascript" src="{{ BASE_URL }}frontend/admin/js/epiceditor.min.js"></script>
+    <script type="text/javascript" src="{{ BASE_URL }}frontend/admin/js/main.js"></script>
+    <!-- End App Script Dependencies -->      
+    
+</body>
+</html>

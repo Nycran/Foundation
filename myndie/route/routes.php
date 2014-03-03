@@ -2,57 +2,15 @@
     /**
     * Get list of countries
     */
-    $app->get('/api/country/list', function () use ($app) {       
-        //require_once("myndie/controllers/countries.class.php");
-        $controller = new \Myndie\Controller\Country($app);
-        $controller->getList();
+    $app->get('/admin/', function () use ($app) {     
+        $admin = new \Myndie\Controller\Admin($app);
+        $admin->render("admin.html");
     }); 
     
-    /**
-    * Get list of states for a specific country
-    */    
-    $app->get('/api/state/list/:id', function ($country_id) use ($app) {       
-        // Inject country ID filter
-        $_POST["country_id"] = $country_id;
-        $controller = new \Myndie\Controller\State($app);
-        $controller->getList();
-    })->conditions(array("id" => '\d+')); 
-    
-    
-    /**
-    * Saves a user to the database
-    * If an ID of 0 is passed, a new user will be created
-    */    
-    $app->get('/api/user/save/:id', function ($id) use ($app) {       
-        // Inject test data
-        $_POST["first_name"] = "Andrew";
-        $_POST["last_name"] = "Chapman";
-        $_POST["email"] = "tester1@simb.com.au";
-        $_POST["password"] = "mango77z";
-        $_POST["password_repeat"] = "mango77z";
-        $_POST["roles"] = "1,2";    // Test adding multiple roles
+    /**************************************** USERS *********************************************
+    * User Routes
+    ********************************************************************************************/    
 
-        $controller = new \Myndie\Controller\User($app);
-        $controller->save($id);
-    })->conditions(array("id" => '\d+'));
-    
-    /**
-    * Saves a user to the database
-    * If an ID of 0 is passed, a new user will be created
-    */    
-    $app->get('/api/user/save/:id', function ($id) use ($app) {       
-        // Inject test data
-        $_POST["first_name"] = "Andrew";
-        $_POST["last_name"] = "Chapman";
-        $_POST["email"] = "tester1@simb.com.au";
-        $_POST["password"] = "mango77z";
-        $_POST["password_repeat"] = "mango77z";
-        $_POST["roles"] = "1,2";    // Test adding multiple roles
-
-        $controller = new \Myndie\Controller\User($app);
-        $controller->save($id);
-    })->conditions(array("id" => '\d+'));          
-    
     /**
     * Handles a user login request.
     * Both email and password should be passed via HTTP Post
@@ -61,80 +19,187 @@
         $controller = new \Myndie\Controller\User($app);
         $controller->login();
     }); 
-    
+
     /**
-    * Handles user registration requests
+    * Handles a user logout request.
     */    
-    $app->post('/api/user/register', function () use ($app) {       
+    $app->post('/api/user/logout', function () use ($app) {       
         $controller = new \Myndie\Controller\User($app);
-        $controller->register();
-    }); 
+        $controller->logout();
+    });  
     
     /**
-    * Gets the details of a single email template
+    * Get a list of users
     */    
-    $app->get('/api/emailtemplate/get/:id', function ($id) use ($app) {       
-        $controller = new \Myndie\Controller\Emailtemplate($app);
+    $app->post('/api/user/list', function () use ($app) {       
+        $controller = new \Myndie\Controller\User($app);
+        $controller->getList();
+    });     
+    
+    /**
+    * Get a single user by ID
+    */    
+    $app->get('/api/user/get/:id', function ($id) use ($app) {       
+        $controller = new \Myndie\Controller\User($app);
         $controller->get($id);
+    })->conditions(array("id" => '\d+')); 
+    
+    /**
+    * Saves a user to the database
+    * If an ID of 0 is passed, a new user will be created
+    */    
+    $app->post('/api/user/save/:id', function ($id) use ($app) {       
+        $controller = new \Myndie\Controller\User($app);
+        $controller->save($id);
     })->conditions(array("id" => '\d+'));   
     
     /**
-    * Gets a list of email templates
+    * Handle password reset request
     */    
-    $app->get('/api/emailtemplate/list', function () use ($app) {       
-        $controller = new \Myndie\Controller\Emailtemplate($app);
-        $controller->getList();
-    });
+    $app->post('/api/user/password_reset/:id', function ($id) use ($app) {       
+        $controller = new \Myndie\Controller\User($app);
+        $controller->passwordReset($id);
+    })->conditions(array("id" => '\d+')); 
     
     /**
-    * Deletes either an individual emailtemplate or the list of specified templates
-    */     
-    $app->post('/api/emailtemplate/delete', function () use ($app) {       
-        // Inject test data 
-        $controller = new \Myndie\Controller\Emailtemplate($app);
+    * Delete users
+    */    
+    $app->post('/api/user/delete', function () use ($app) {       
+        $controller = new \Myndie\Controller\User($app);
         $controller->delete();
     }); 
     
-    $app->get('/api/emailtemplate/sendtest', function () use ($app) {       
-        // Inject test data 
-        $controller = new \Myndie\Controller\Emailtemplate($app);
-        $controller->sendtest();
-    });        
-   
     /**
-    * 
+    * Handle save locations request
     */    
-    $app->get('/api/test/encrypt', function () use ($app) {       
-        // Inject test data
-        $_POST["param"] = "ion mere";
-		$_POST["usekey"] = true;
-        $controller = new \Myndie\Controller\Test($app);
-        $controller->encryption();
-     });
-     
-     $app->get('/api/test/decrypt', function () use ($app) {       
-        // Inject test data
-        $_POST["param"] = "VTkAZQI+VHQGOwAxBSFVZA==";
-		$_POST["usekey"] = false;
-        $controller = new \Myndie\Controller\Encrypt($app);
-        $controller->decryption();
-     });
-     
-     $app->get('/api/image/resize', function () use ($app) {       
-        // Inject test data
-        $_FILES["image"] = 'test.jpg';
-		$_POST["width"] = "100";
-		$_POST["height"] = "150";
-		$_POST["resizeType"] = "maxheight";
-        $controller = new \Myndie\Controller\Image($app);
-        $controller->resizeImage();
-     });
-     
-     $app->get('/api/image/crop', function () use ($app) {       
-        // Inject test data
-        $_FILES["image"] = "test.jpg";
-		$_POST["width"] = 100;
-		$_POST["height"] = 150;
-        $controller = new \Myndie\Controller\Image($app);
-        $controller->cropImage();
-     });
+    $app->post('/api/user/save_locations/:id', function ($id) use ($app) {       
+        $controller = new \Myndie\Controller\User($app);
+        $controller->saveLocations($id);
+    })->conditions(array("id" => '\d+'));     
+    
+    /**************************************** LOCATIONS*****************************************
+    * Location Routes
+    ********************************************************************************************/                  
+    
+    /**
+    * Get a list of locations
+    */    
+    $app->post('/api/location/list', function () use ($app) {       
+        $controller = new \Myndie\Controller\Location($app);
+        $controller->getList();
+    });     
+    
+    /**
+    * Get a single user by ID
+    */    
+    $app->get('/api/location/get/:id', function ($id) use ($app) {       
+        $controller = new \Myndie\Controller\Location($app);
+        $controller->get($id);
+    })->conditions(array("id" => '\d+')); 
+    
+    /**
+    * Saves a locations to the database
+    * If an ID of 0 is passed, a new location will be created
+    */    
+    $app->post('/api/location/save/:id', function ($id) use ($app) {       
+        $controller = new \Myndie\Controller\Location($app);
+        $controller->save($id);
+    })->conditions(array("id" => '\d+'));   
+    
+    /**
+    * Delete locations
+    */    
+    $app->post('/api/location/delete', function () use ($app) {       
+        $controller = new \Myndie\Controller\Location($app);
+        $controller->delete();
+    });     
+    
+    /**************************************** CATEGORIES****************************************
+    * Category Routes
+    ********************************************************************************************/                  
+    
+    /**
+    * Get a list of categories
+    */    
+    $app->post('/api/category/list', function () use ($app) {       
+        $controller = new \Myndie\Controller\Category($app);
+        $controller->getList();
+    });     
+    
+    /**
+    * Get a single user by ID
+    */    
+    $app->get('/api/category/get/:id', function ($id) use ($app) {       
+        $controller = new \Myndie\Controller\Category($app);
+        $controller->get($id);
+    })->conditions(array("id" => '\d+')); 
+    
+    /**
+    * Saves a category to the database
+    * If an ID of 0 is passed, a new category will be created
+    */    
+    $app->post('/api/category/save/:id', function ($id) use ($app) {       
+        $controller = new \Myndie\Controller\Category($app);
+        $controller->save($id);
+    })->conditions(array("id" => '\d+'));       
+    
+    
+    /**
+    * Delete categories
+    */    
+    $app->post('/api/category/delete', function () use ($app) {       
+        $controller = new \Myndie\Controller\Category($app);
+        $controller->delete();
+    });  
+    
+       
+    /**************************************** SPONSORS ****************************************
+    * Sponsor Routes
+    ********************************************************************************************/                  
+    
+    /**
+    * Get a list of Sponsors
+    */    
+    $app->post('/api/sponsor/list', function () use ($app) {       
+        $controller = new \Myndie\Controller\Sponsor($app);
+        $controller->getList();
+    });     
+    
+    /**
+    * Get a single Sponsor by ID
+    */    
+    $app->get('/api/sponsor/get/:id', function ($id) use ($app) {       
+        $controller = new \Myndie\Controller\Sponsor($app);
+        $controller->get($id);
+    })->conditions(array("id" => '\d+')); 
+    
+    /**
+    * Saves a Sponsor to the database
+    * If an ID of 0 is passed, a new category will be created
+    */    
+    $app->post('/api/sponsor/save/:id', function ($id) use ($app) {       
+        $controller = new \Myndie\Controller\Sponsor($app);
+        $controller->save($id);
+    })->conditions(array("id" => '\d+'));       
+    
+    
+    /**
+    * Delete Sponsors
+    */    
+    $app->post('/api/sponsor/delete', function () use ($app) {       
+        $controller = new \Myndie\Controller\Sponsor($app);
+        $controller->delete();
+    }); 
+           
+    
+    /**************************************** ROLES *********************************************
+    * Role Routes
+    ********************************************************************************************/                      
+    
+    /**
+    * Get a list of roles
+    */    
+    $app->get('/api/role/list', function () use ($app) {       
+        $controller = new \Myndie\Controller\Role($app);
+        $controller->getListSQL();
+    });      

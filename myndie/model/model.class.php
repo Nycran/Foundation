@@ -1,5 +1,7 @@
 <?php
-namespace Myndie\Model;    
+namespace Myndie\Model;
+
+use \Myndie\Lib\Input;    
 
 use RedBean_Facade as R;
 
@@ -32,6 +34,11 @@ class Model
     public function get($id)
     {
         $bean = R::load($this->table, $id);
+        
+        if(!$bean->id) {
+            return false;   
+        }
+
         return $bean;
     }  
     
@@ -48,7 +55,7 @@ class Model
     {        
         $values = array();
         $this->applyFilters($filters, $where, $values);
-        
+
         if($page > 0) {
             // Count all the beans                      
             $beans = R::findAll($this->table, $where, $values);
@@ -68,7 +75,37 @@ class Model
         $beans = R::findAll($this->table, $where . $suffix, $values);
         
         return $beans;        
-    }      
+    }   
+    
+    /***
+    * Loads a list of records from the database table, taking into account any filters specified in the database.
+    * 
+    * @param array $filters An associative array of any filters to apply
+    * @param string $orderBy An order by statement.  If not provided, the models default order by will be used.
+    * @param int $page If you want to load a limited set of the data for pagination, specify the current page number.  Pass 0 for no pagination.
+    * @param int $totalRows An output param, if you're using pagination this will populate with the total number of rows.
+    * @return array
+    */
+    public function getListSQL($filters, $orderBy="", $page = 0, &$totalRows = 0) {
+        
+        $this->applyFilters($filters, $where, $values);
+        
+        $sql = "SELECT * " .
+            "FROM " . $this->table . " ";
+            
+        if(!empty($where)) {
+            
+        }
+        
+        if((is_array($values)) && (!empty($where))) {
+            $sql .= $where;    
+            $rows = R::getAll($sql, $values);
+        } else {
+            $rows = R::getAll($sql);
+        }
+              
+        return $rows;
+    }       
     
     /***
     * Saves a record/bean to the database.  If the id value is blank or 0, a new bean will be created.
@@ -152,8 +189,8 @@ class Model
     * @returns a RedBean bean
     */
     public function getSingleBean($filters)
-    {
-        $beans = $this->getList($filters);
+    {                         
+        $beans = $this->getList($filters);   
         if(count($beans) < 1) {
             return false;             
         }

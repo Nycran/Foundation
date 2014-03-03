@@ -1,0 +1,40 @@
+    <ol class="breadcrumb">
+        <li><a href="#!dashboard">Home</a></li>
+        <li><a href="#!locations">Locations</a></li>
+        <li>Edit Location</li>
+    </ol><!-- .breadcrumb -->    
+    
+    <div id="sucessMessage" class="alert alert-success alert-dismissable hidden">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <span>Saved successfully.</span>
+    </div>
+
+    <div id="errorMessage" class="alert alert-danger alert-dismissable hidden">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <span>Sorry an error occured.</span>
+    </div>
+
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#tab_details" data-toggle="tab"><strong>Location Details</strong></a></li>
+    </ul>
+                                                              
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="tab_details">
+            <form id="frmDetails" role="form" method="post" action="location/save">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="control-label">Location Name</label>
+                            <input type="text" ng-model="location.name" class="form-control" placeholder="Location Name" id="name" name="name" required />
+                        </div>                                         
+                    </div>
+                    <div class="col-sm-4"></div>
+                    <div class="col-sm-4"></div>
+                </div>
+                
+                <p>
+                    <button class="submit btn btn-primary"><i class="fa fa-save"></i> <strong>Save Changes</strong></button>
+                </p>
+            </form>            
+        </div> <!-- End Location Details Tab -->
+    </div>    

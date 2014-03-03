@@ -1,0 +1,46 @@
+html, body {height: 100%;}
+body {padding-top:75px}
+a:link,a:visited,a:focus,a:hover,a:active {outline:none;}
+.page-header {margin-top:0;}
+.red {color:#F00}
+.nav-tabs {margin-bottom:1.5em;}
+.tab-content {margin-bottom:1.5em;}
+
+.gotopage {margin:21px 0;}
+#footer {background:#2C3E50;}
+#footer .row {padding-top:10px;}
+#footer .copyright {color:#FFF;font-style:italic;font-size:.9em;padding-top:5px;}
+
+@media (min-width:768px)
+{
+    #main {min-height:100%;height:auto;margin:0 auto -53px;padding:0 0 53px;}
+    #footer {height:53px;}
+}
+@media (min-width:992px)
+{
+
+}
+@media (min-width:1200px)
+{
+}
+
+/* Ajax Loader */
+#loading {  
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    z-index:1000;
+    background-color:grey;
+    opacity: .8;
+ }
+
+#loading img {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -32px; /* -1 * image width / 2 */
+    margin-top: -32px;  /* -1 * image height / 2 */
+    display: block;     
+}

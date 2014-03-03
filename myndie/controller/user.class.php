@@ -18,6 +18,11 @@ class User extends Controller
         $this->model = new \Myndie\Model\User($this->app);
     }    
     
+    /**
+    * Handle a user details save request
+    * 
+    * @param integer $id  The id of the user being updated.
+    */
     public function save($id)
     {
         // Invoke the base class save method to do any preparation work
@@ -30,7 +35,7 @@ class User extends Controller
         $profile = new \DataFilter\Profile();
         
         // Set global validation checks
-        $profile->addPreFilters(['Trim', 'StripHtml']);
+        //$profile->addPreFilters(['Trim', 'StripHtml']);
         $profile->setAttribs($this->getValidationAttribs($addNewMode)); // Set the password required if id == 0 (i.e. we're adding a new user)
           
         // Perform validation checks
@@ -152,6 +157,48 @@ class User extends Controller
         $this->send();     
     }
     
+    /**
+    * Assigns locations to a user
+    * The locations are passed via HTTP as an array in "locations" variable.
+    * 
+    * @param integer $id The id of the user the locations are being assigned to.
+    */
+    public function saveLocations($id)
+    {
+        $this->handleJSONContentType();
+        
+        // Load the user
+        $user = $this->model->get($id);
+        if(!$user) {
+            $this->result["message"] = "Invalid user id";
+            $this->send();
+        }
+        
+        // Clear the existing user location assignments
+        $user->sharedLocation = array();
+        
+        $locations = Input::post("locations");
+        $locationArray = explode(",", $locations);
+
+        foreach($locationArray as $locationID) {
+            if(is_numeric($locationID)) {
+                $objLocation = new \Myndie\Model\Location($this->app);
+                $locationBean = $objLocation->get($locationID);
+                if(!$locationBean) {
+                    $this->result["message"] = "Location $locationID is invalid";
+                    $this->send();                 
+                }
+                
+                $user->sharedLocation[] = $locationBean;                        
+            }
+        }
+        
+        // Store the locations
+        R::store($user);         
+        
+        $this->ok();
+    }
+    
     /***
     * Handles new user registrations
     */
@@ -258,6 +305,63 @@ class User extends Controller
         $this->send();
     }
     
+    public function logout()
+    {
+        // Destroy the users session
+        Session::destroy();
+        $this->ok();
+    } 
+    
+    /**
+    * Handle a user password reset request
+    * 
+    * @param integer $id  The id of the user that is having its password reset.
+    */
+    public function passwordReset($id)
+    {
+        // Invoke the base class save method to do any preparation work
+        parent::save($id);
+        
+        $addNewMode = ($id == 0);     // Will be true if we're adding a new user (i.e. id == 0)
+        $createDefaultRole = true;
+        
+        /************ VALIDATION **************/
+        $profile = new \DataFilter\Profile();
+        
+        // Set global validation checks
+        //$profile->addPreFilters(['Trim', 'StripHtml']);
+        $profile->setAttribs($this->getPasswordResetValidationAttribs()); 
+          
+        // Perform validation checks
+        if (!$profile->check($_POST)) {
+            // The form is NOT valid.
+            $message = "Validation Error:\n";
+            $res = $profile->getLastResult();
+            foreach ($res->getAllErrors() as $error) {
+                $message .= "Err: $error\n";
+            }            
+            
+            // Send the validation errors back to the browser
+            $this->result["message"] = $message;
+            $this->send();
+        }
+        
+        // The form was valid.  Get the validated and transformed data from the profile.
+        $data = $profile->getLastResult()->getValidData();
+        
+        // Hash the password
+        $this->model->hashPassword($data["password"], $hashed_password, $salt);
+        $data["password"] = $hashed_password;
+        $data["salt"] = $salt;                 
+
+        // Save the user record
+        $id = $this->model->save($id, $data);
+
+        $this->result["status"] = true;
+        $this->result["message"] = $id;
+        $this->send();     
+    }       
+    
     /***
     * Returns the form validation rules for adding a new user.
     * @param boolean $addNewMode Set to true if we're adding a new user
@@ -299,7 +403,7 @@ class User extends Controller
                         'constraint' => function($in) {
                         return ($in == INPUT::post("password_repeat"));
                         },
-                        'error' => 'Your passwords do not match.  Please reenter your passwords and try again.',
+                        'error' => 'Your passwords do not match.  Please re-enter your passwords and try again.',
                         'skipEmpty' => false,
                         'sufficient' => false
                     ]                                  
@@ -309,4 +413,38 @@ class User extends Controller
         
         return $attribs;
     }
+    
+    /***
+    * Returns the form validation rules for resettings users password
+    */
+    private function getPasswordResetValidationAttribs()
+    {
+        $attribs = [
+            'password' => [
+                'required' => true, 
+                'matchAny' => false, 
+                'default' => null, 
+                'missing' => 'This password field is missing', 
+                'noFilter' => false,
+                'rules' => [
+                    'Minimum Length' => [
+                        'constraint' => "LenMin:7",
+                        'error' => 'Your password must be at last 7 characters long',
+                        'skipEmpty' => false,
+                        'sufficient' => false
+                    ],
+                    'Password Match' => [
+                        'constraint' => function($in) {
+                        return ($in == INPUT::post("password_repeat"));
+                        },
+                        'error' => 'Your passwords do not match.  Please reenter your passwords and try again.',
+                        'skipEmpty' => false,
+                        'sufficient' => false
+                    ]                                  
+                ]
+            ],         
+        ];
+        
+        return $attribs;
+    }    
 }

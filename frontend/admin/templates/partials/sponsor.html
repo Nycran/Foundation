@@ -1,0 +1,51 @@
+    <ol class="breadcrumb">
+        <li><a href="#!dashboard">Home</a></li>
+        <li><a href="#!sponsors">Sponsors</a></li>
+        <li>Edit Sponsor</li>
+    </ol><!-- .breadcrumb -->    
+    
+    <div id="sucessMessage" class="alert alert-success alert-dismissable hidden">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <span>Saved successfully.</span>
+    </div>
+
+    <div id="errorMessage" class="alert alert-danger alert-dismissable hidden">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <span>Sorry an error occured.</span>
+    </div>
+
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#tab_details" data-toggle="tab"><strong>Sponsor Details</strong></a></li>
+    </ul>
+                                                              
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="tab_details">
+            <form id="frmDetails" role="form" method="post" action="category/save">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="control-label">Sponsor Name</label>
+                            <input type="text" ng-model="sponsor.name" class="form-control" placeholder="Sponsor Name" id="name" name="name" required />
+                        </div>  
+                        
+                        <div class="form-group hideOnNew">
+                            <label class="control-label">Notes</label>
+                            <textarea class="form-control" placeholder="General Notes" rows="4" ng-model="sponsor.notes" id="notes" name="notes"></textarea>
+                        </div>                                                               
+                    </div>
+                    <div class="col-sm-4 hideOnNew">
+                        <div class="form-group">
+                            <label class="control-label">Default Advertising Text</label>
+                            <div id="epiceditor"></div>
+                            <textarea class="form-control hidden" placeholder="The default advertising text for this Sponsor" rows="4" ng-model="sponsor.default_text" id="default_text" name="default_text"></textarea>
+                        </div>                    
+                    </div>
+                    <div class="col-sm-4"></div>
+                </div>
+                
+                <p>
+                    <button class="submit btn btn-primary"><i class="fa fa-save"></i> <strong>Save Changes</strong></button>
+                </p>
+            </form>            
+        </div> <!-- End Details Tab -->
+    </div>    

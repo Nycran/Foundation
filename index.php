@@ -14,7 +14,7 @@
         if(!strstr($class, "Myndie")) {
             return;
         }
-        
+
         // Convert "\" namespace charters to "/" for paths, and convert to lower case
         $path = str_replace('\\', '/', strtolower($class)) . '.class.php';
         require $path;

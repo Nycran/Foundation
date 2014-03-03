@@ -1,7 +1,7 @@
 <?php
 namespace Myndie\Lib;
 
-class ImageModify
+class Image
 {
 	private $extension;
 	private $image;
@@ -10,9 +10,7 @@ class ImageModify
 	private $originalHeight;
 	private $newWidth;
 	private $newHeight;
-	
-	
-	
+
 	public function __construct( $imagename )
 	{
 		if(file_exists($imagename))
@@ -181,4 +179,3 @@ class ImageModify
 		
 	}
 }
-?>

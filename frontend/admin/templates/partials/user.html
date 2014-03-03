@@ -1,0 +1,121 @@
+    <ol class="breadcrumb">
+        <li><a href="#!dashboard">Home</a></li>
+        <li><a href="#!users">Users</a></li>
+        <li>Edit User</li>
+    </ol><!-- .breadcrumb -->    
+    
+    <div id="sucessMessage" class="alert alert-success alert-dismissable hidden">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <span>Saved successfully.</span>
+    </div>
+
+    <div id="errorMessage" class="alert alert-danger alert-dismissable hidden">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <span>Sorry an error occured.</span>
+    </div>
+    
+    <div id="infoMessage" class="alert alert-info alert-dismissable hideOnNew">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <span>You are editing the user {{user.first_name}} {{user.last_name}}.</span>
+    </div>    
+
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#tab_details" data-toggle="tab"><strong>User Details</strong></a></li>
+        <li class="hideOnNew"><a href="#tab_resetpassword" data-toggle="tab"><strong>Reset Password</strong></a></li>
+        <li class="hideOnNew locations"><a href="#tab_locations" data-toggle="tab"><strong>Assigned Locations</strong></a></li>
+    </ul>
+                                                              
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="tab_details">
+            <form id="frmUserDetails" role="form" method="post" action="user/save">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="control-label">First Name</label>
+                            <input type="text" ng-model="user.first_name" class="form-control" placeholder="First Name" id="first_name" name="first_name" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Last Name</label>
+                            <input type="text" ng-model="user.last_name" class="form-control" placeholder="Last Name" id="last_name" name="last_name" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Email</label>
+                            <input type="email" ng-model="user.email" class="form-control" placeholder="Email address" id="email" name="email" required />
+                        </div>                        
+                        <div class="form-group">
+                            <label class="control-label">User Role</label>
+                            <select class="form-control" ng-model="selectedRoleOption" ng-options="r.role for r in roles" required>
+                                <option value="">- Please select</option>
+                            </select>
+                        </div>                                         
+                    </div>
+                    <div class="col-sm-4">
+                        <div id="newUserPasswordWrapper" class="hidden">
+                            <div class="form-group">
+                                <label class="control-label">Password</label>
+                                <input type="password" ng-model="user.password" class="form-control" placeholder="Set the users password" id="password" name="password" />
+                            </div>    
+                            <div class="form-group">
+                                <label class="control-label">Repeat Password</label>
+                                <input type="password" ng-model="user.password_repeat" class="form-control" placeholder="Repeat the users password" id="password_repeat" name="password_repeat" />
+                            </div>   
+                        </div> 
+                    </div>
+                    <div class="col-sm-4">
+
+                    </div>
+                </div>
+                
+                <p>
+                    <button class="submit btn btn-primary"><i class="fa fa-save"></i> <strong>Save Changes</strong></button>
+                </p>
+            </form>            
+        </div><!-- End Details Tab -->
+       
+        <!-- Start Password Reset Tab -->
+        <div class="tab-pane fade hideOnNew" id="tab_resetpassword">
+            <h2>Reset Password</h2>
+            
+            <form id="frmResetPassword" role="form" method="post" action="user/reset_password/">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label class="control-label">Password</label>
+                            <input type="password" ng-model="user.password" class="form-control" placeholder="Set the users password" id="reset_password" name="password" required />
+                        </div>    
+                        <div class="form-group">
+                            <label class="control-label">Repeat Password</label>
+                            <input type="password" ng-model="user.password_repeat" class="form-control" placeholder="Repeat the users password" id="reset_password_repeat" name="password_repeat" required />
+                        </div>
+                    </div>
+                    <div class="col-sm-4"></div>                
+                    <div class="col-sm-4"></div>
+                </div>               
+                
+                <p>
+                    <button class="submit btn btn-primary"><i class="fa fa-save"></i> <strong>Submit</strong></button>
+                </p>                             
+            </form>
+        </div><!-- End Password Reset Tab -->
+        
+        <!-- Start Location Assignment Tab -->
+        <div class="tab-pane fade hideOnNew" id="tab_locations">
+            <h2>Assigned Locations</h2>
+            
+            <form id="frmLocations" role="form" method="post" action="user/assign_locations/">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="checkbox" ng-repeat="location in locations">
+                            <label><input type="checkbox" name="locations[]" value="{{location.id}}" ng-checked="location.checked" /> {{location.name}}</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-4"></div>                
+                    <div class="col-sm-4"></div>
+                </div>               
+                
+                <p>
+                    <button class="submit btn btn-primary"><i class="fa fa-save"></i> <strong>Submit</strong></button>
+                </p>                             
+            </form>
+        </div><!-- End Location Assignment Tab -->        
+    </div>    

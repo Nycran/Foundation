@@ -13,10 +13,12 @@ abstract class Controller
     protected $app;                 // An instance of the Slim Framework
     protected $model;               // An instance of the primary model for this handler.
     protected $result;              // An return array with STATUS and MESSAGE nodes
+    private $numBeans;              // Stores the total number of beans for calls such as getList.
 
     public function __construct()
     {
         $this->result = array("status" => false, "message" => "An unspecified error occured");
+        $this->numBeans = 0;
     }
     
     /**
@@ -33,23 +35,41 @@ abstract class Controller
         
         $bean = $this->model->get($id);
         
-        if(!$bean->id) {
+        if(!$bean) {
             $this->result["message"] = "Invalid ID";
             $this->send();  
         }
         
-        $this->outputBeansAsJson($bean);       
+        $this->outputBeanAsJson($bean);       
     }    
 
     /**
-    * Gets a list of the items from the controller's model.
+    * Gets a list of the beans from the controller's model and then outputs as json.
     * The $_POST array will be used by the model to achieve any filtering necessary.
     */
     public function getList()
     {
-        $beans = $this->model->getList($_POST);
+        $filters = $_POST;
+        $orderBy = "";
+        
+        $page = Input::post("page");
+        if(!is_numeric($page)) {
+            $page = 0;
+        }
+                    
+        $beans = $this->model->getList($filters, $orderBy, $page, $this->numBeans);
         $this->outputBeansAsJson($beans);       
     }  
+    
+    /**
+    * Gets a list of the rows from the controller's model and then outputs as json.
+    * The $_POST array will be used by the model to achieve any filtering necessary.
+    */
+    public function getListSQL()
+    {
+        $beans = $this->model->getListSQL($_POST);
+        $this->ok($beans);       
+    }    
     
     /**
     * The base save method does not handle any of the save operation,
@@ -70,6 +90,8 @@ abstract class Controller
     */
     public function delete()
     {
+        $this->handleJSONContentType();
+        
         $ids = Input::post("ids");
         
         if(empty($ids)) {
@@ -96,21 +118,39 @@ abstract class Controller
 
     
     /**
-    * Outputs a collection of beans as a json encoded response.  Very useful for loading
-    * data via AJAX.
+    * Outputs a collection of beans as a json encoded response.  
+    * The result will be a JSON encoded ARRAY of beans.
+    * Very useful for loading data via AJAX.
     * 
     * @param RedBeanResult $beans
     * @param boolean $exit Set to true (default) to exit PHP processing after sending result.
     */
     protected function outputBeansAsJson($beans, $exit = true)
     {
-        $this->app->response->headers->set('Content-Type', 'application/json');
-        echo json_encode(R::exportAll($beans));
-        
-        if($exit) {
-            exit();
-        }
+        // Convert all beans to an array
+        $beanArray = R::exportAll($beans);        
+        $this->ok($beanArray);
     }
+    
+    /**
+    * Outputs a single bean as a json encoded response. 
+    * The result will be a JSON encoded single bean (NOT an array)
+    * 
+    * @param RedBeanResult $beans
+    * @param boolean $exit Set to true (default) to exit PHP processing after sending result.
+    */
+    protected function outputBeanAsJson($bean, $exit = true)
+    {
+        // Convert all beans to an array
+        $beanArray = R::exportAll($bean);
+        
+        // If there are no beans, just output a blank message.
+        if(count($beanArray) == 0) {
+            $this->ok("");
+        }
+        
+        $this->ok($beanArray[0]);
+    }    
     
     /**
     * Outputs the class result array as a json message
@@ -120,6 +160,8 @@ abstract class Controller
     */
     protected function send($exit = true)
     {
+        $this->app->response->headers->set('Content-Type', 'application/json');
+        
         echo json_encode($this->result);
         
         if($exit) {
@@ -134,6 +176,14 @@ abstract class Controller
     {
         $this->result["status"] = true;
         $this->result["message"] = $message;
+        
+        if($this->numBeans > 0) {
+            $this->result["pages"] = floor($this->numBeans / MYNDIE_ITEMS_PER_PAGE);
+            if(($this->numBeans % MYNDIE_ITEMS_PER_PAGE) != 0) {
+                $this->result["pages"]++;    
+            }
+        }        
+        
         $this->send();
     }
     
