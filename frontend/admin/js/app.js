@@ -9,73 +9,73 @@
         
             // route for the dashboard page
             .when('/dashboard', {
-                templateUrl : '/frontend/admin/templates/partials/dashboard.html',
+                templateUrl : myndie.baseURL + 'frontend/admin/templates/partials/dashboard.html',
                 controller  : 'DashboardCtrl'
             })   
             
             // route for the locations page
             .when('/locations', {
-                templateUrl : '/frontend/admin/templates/partials/locations.html',
+                templateUrl : myndie.baseURL + 'frontend/admin/templates/partials/locations.html',
                 controller  : 'LocationListCtrl'
             })  
             
             // route for the location details page
             .when('/locations/detail/:id', {
-                templateUrl : '/frontend/admin/templates/partials/location.html',
+                templateUrl : myndie.baseURL + 'frontend/admin/templates/partials/location.html',
                 controller  : 'LocationCtrl'
             })   
             
             // route for the categories page
             .when('/categories', {
-                templateUrl : '/frontend/admin/templates/partials/categories.html',
+                templateUrl : myndie.baseURL + 'frontend/admin/templates/partials/categories.html',
                 controller  : 'CategoryListCtrl'
             })  
             
             // route for the category details page
             .when('/categories/detail/:id', {
-                templateUrl : '/frontend/admin/templates/partials/category.html',
+                templateUrl : myndie.baseURL + 'frontend/admin/templates/partials/category.html',
                 controller  : 'CategoryCtrl'
             })                           
             
             // route for the users page
             .when('/users', {
-                templateUrl : '/frontend/admin/templates/partials/users.html',
+                templateUrl : myndie.baseURL + 'frontend/admin/templates/partials/users.html',
                 controller  : 'UserListCtrl'
             })  
             
             // route for the user details page
             .when('/users/detail/:id', {
-                templateUrl : '/frontend/admin/templates/partials/user.html',
+                templateUrl : myndie.baseURL + 'frontend/admin/templates/partials/user.html',
                 controller  : 'UserCtrl'
             }) 
             
             // route for the sponsors listing page
             .when('/sponsors', {
-                templateUrl : '/frontend/admin/templates/partials/sponsors.html',
+                templateUrl : myndie.baseURL + 'frontend/admin/templates/partials/sponsors.html',
                 controller  : 'SponsorListCtrl'
             })  
             
             // route for the sponsor details page
             .when('/sponsors/detail/:id', {
-                templateUrl : '/frontend/admin/templates/partials/sponsor.html',
+                templateUrl : myndie.baseURL + 'frontend/admin/templates/partials/sponsor.html',
                 controller  : 'SponsorCtrl'
             })            
                                                             
 
             // route for the home page
             .when('/', {
-                templateUrl : '/frontend/admin/templates/partials/dashboard.html',
+                templateUrl : myndie.baseURL + '/frontend/admin/templates/partials/dashboard.html',
                 controller  : 'DashboardCtrl'
             })
             
             // route for the logout function
             .when('/logout', {
-                templateUrl : '/frontend/admin/templates/partials/logout.html',
+                templateUrl : myndie.baseURL + 'frontend/admin/templates/partials/logout.html',
                 controller  : 'LogoutCtrl'
             })             
             
             .otherwise('/', {
-                templateUrl : '/frontend/admin/templates/partials/dashboard.html',
+                templateUrl : myndie.baseURL + '/frontend/admin/templates/partials/dashboard.html',
                 controller  : 'DashboardCtrl'
             })
             
