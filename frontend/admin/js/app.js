@@ -35,7 +35,19 @@
             .when('/categories/detail/:id', {
                 templateUrl : '/frontend/admin/templates/partials/category.html',
                 controller  : 'CategoryCtrl'
-            })                           
+            })  
+			
+			// route for the articles page
+            .when('/articles', {
+                templateUrl : '/frontend/admin/templates/partials/articles.html',
+                controller  : 'ArticleListCtrl'
+            })  
+
+			// route for the article details page
+            .when('/articles/detail/:id', {
+                templateUrl : '/frontend/admin/templates/partials/article.html',
+                controller  : 'ArticleCtrl'
+            })  
             
             // route for the users page
             .when('/users', {
