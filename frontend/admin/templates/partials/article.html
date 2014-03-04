@@ -1,7 +1,7 @@
     <ol class="breadcrumb">
         <li><a href="#!dashboard">Home</a></li>
-        <li><a href="#!categories">Categories</a></li>
-        <li>Edit Category</li>
+        <li><a href="#!articles">Articles</a></li>
+        <li>Edit Article</li>
     </ol><!-- .breadcrumb -->    
     
     <div id="sucessMessage" class="alert alert-success alert-dismissable hidden">
@@ -15,17 +15,17 @@
     </div>
 
     <ul class="nav nav-tabs">
-        <li class="active"><a href="#tab_details" data-toggle="tab"><strong>Category Details</strong></a></li>
+        <li class="active"><a href="#tab_details" data-toggle="tab"><strong>Article Details</strong></a></li>
     </ul>
                                                               
     <div class="tab-content">
         <div class="tab-pane fade in active" id="tab_details">
-            <form id="frmDetails" role="form" method="post" action="category/save">
+            <form id="frmDetails" role="form" method="post" action="Article/save">
                 <div class="row">
                     <div class="col-sm-4">
                         <div class="form-group">
-                            <label class="control-label">Category Name</label>
-                            <input type="text" ng-model="category.name" class="form-control" placeholder="Category Name" id="name" name="name" required />
+                            <label class="control-label">Article Name</label>
+                            <input type="text" ng-model="Article.name" class="form-control" placeholder="Article Name" id="name" name="name" required />
                         </div>                                         
                     </div>
                     <div class="col-sm-4"></div>

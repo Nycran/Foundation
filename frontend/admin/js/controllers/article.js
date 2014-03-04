@@ -2,7 +2,7 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
     $scope.id = 0;  // Default the ID to 0.
     $scope.article = false;
     
-    $("#navCategories a").focus();
+    $("#navArticles a").focus();
  
     
     // If the article ID was passed in the URL, grab it.
@@ -57,7 +57,7 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
             
             // If we just added a new article, return to the main listing screen
             if($scope.id == 0) {
-                $window.location.href = "#!/categories";
+                $window.location.href = "#!/articles";
                 return;
             }
             

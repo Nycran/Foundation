@@ -54,7 +54,7 @@ app.controller('ArticleListCtrl', function ($scope, $http, $window) {
                 break;
                 
             case "delete":
-                if(confirm("Are you sure you wish to delete this category?")) {
+                if(confirm("Are you sure you wish to delete this article?")) {
                     $scope.doDelete(id);  
                 }
                 break;                
@@ -71,7 +71,7 @@ app.controller('ArticleListCtrl', function ($scope, $http, $window) {
 
         $http({
             method: 'POST',
-            url: myndie.apiURL + "category/delete",
+            url: myndie.apiURL + "article/delete",
             data: params,
             headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
         }).success(function (data) {

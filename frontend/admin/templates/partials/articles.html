@@ -5,12 +5,12 @@
     </ol><!-- .breadcrumb -->
     
     <div class="page-header">
-        <a href="#!/categories/detail/0" class="pull-right btn btn-sm btn-primary"><i class="fa fa-plus"></i> Add New Article</a>
+        <a href="#!/articles/detail/0" class="pull-right btn btn-sm btn-primary"><i class="fa fa-plus"></i> Add New Article</a>
         <h3><strong>Article Listing</strong></h3>
     </div>
     
     <div class="well well-sm">
-        Below is a list of the categories that currently exist on the system.<br/>
+        Below is a list of the articles that currently exist on the system.<br/>
         Each article is assigned to a article.
     </div>
     
@@ -29,8 +29,8 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="article in categories">
-                    <td><a href="#!categories/detail/{{article.id}}"><strong>{{article.name}}</strong></a></td>
+                <tr ng-repeat="article in articles">
+                    <td><a href="#!articles/detail/{{article.id}}"><strong>{{article.name}}</strong></a></td>
                     <td myn-edit-remove callback-fn="handleAction(arg1, arg2)" data-id="{{article.id}}" item="article"></td>
                     <td myn-iso-to-uk-date-time-converter>{{article.created_dtm}}</td>
                 </tr>
