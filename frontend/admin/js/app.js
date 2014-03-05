@@ -39,13 +39,13 @@
 			
 			// route for the articles page
             .when('/articles', {
-                templateUrl : '/frontend/admin/templates/partials/articles.html',
+                templateUrl : myndie.baseURL + 'frontend/admin/templates/partials/articles.html',
                 controller  : 'ArticleListCtrl'
             })  
 
 			// route for the article details page
             .when('/articles/detail/:id', {
-                templateUrl : '/frontend/admin/templates/partials/article.html',
+                templateUrl : myndie.baseURL + 'frontend/admin/templates/partials/article.html',
                 controller  : 'ArticleCtrl'
             })  
             

@@ -3,7 +3,7 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
     $scope.article = false;
     
     $("#navArticles a").focus();
- 
+
     
     // If the article ID was passed in the URL, grab it.
     if($routeParams.id != undefined) {
