@@ -1,4 +1,4 @@
-app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $window, globals, utils) {
+app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $window, $timeout, globals, utils) {
     $scope.id = 0;  // Default the ID to 0.
     $scope.sponsor = false;
     
@@ -23,19 +23,23 @@ app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $wi
             // Get the sponsor from the data
             $scope.sponsor = data.message; 
             
-            $scope.doMarkdown();
+            $timeout(function() {
+                $scope.doMarkdown();    
+            }, 300);
+            
         });      
     }
     
     $scope.doMarkdown = function() {
         
         var default_text = $("#default_text").val();
+        //$("#default_text_markdown").val(default_text);
 
         var opts = {
             container: 'epiceditor',
             textarea: "default_text",
             basePath: 'epiceditor',
-            clientSideStorage: true,
+            clientSideStorage: false,
             localStorageName: 'epiceditor',
             useNativeFullscreen: true,
             parser: marked,
@@ -68,7 +72,7 @@ app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $wi
             autogrow: false
         }
             
-        var editor = new EpicEditor(opts).load();     
+        var editor = new EpicEditor(opts).load();   
     }
     
     $scope.bindEvents = function() {
@@ -91,6 +95,12 @@ app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $wi
     $scope.save = function() {
         
         utils.hideMessages();   // Hide all message divs
+
+        // Because the default text textarea is written to automagically by epiceditor,
+        // Angular is NOT aware of the changes to the value.
+        // Explicity set the default text of the sponsor object in angular.
+        var default_text = $("#default_text").val();        
+        $scope.sponsor.default_text = default_text;     
         
         // Save the sponsor
         var url =  myndie.apiURL + "sponsor/save/" + $scope.id;
