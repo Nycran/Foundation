@@ -152,7 +152,44 @@
         $controller->delete();
     });  
     
-       
+	/**************************************** ARTICLES****************************************
+    * Articles Routes
+    ********************************************************************************************/                  
+    
+    /**
+    * Get a list of categories
+    */    
+    $app->post('/api/article/list', function () use ($app) {       
+        $controller = new \Myndie\Controller\Article($app);
+        $controller->getList();
+    });     
+    
+    /**
+    * Get a single user by ID
+    */    
+    $app->get('/api/article/get/:id', function ($id) use ($app) {       
+        $controller = new \Myndie\Controller\Article($app);
+        $controller->get($id);
+    })->conditions(array("id" => '\d+')); 
+    
+    /**
+    * Saves a article to the database
+    * If an ID of 0 is passed, a new article will be created
+    */    
+    $app->post('/api/article/save/:id', function ($id) use ($app) {       
+        $controller = new \Myndie\Controller\Article($app);
+        $controller->save($id);
+    })->conditions(array("id" => '\d+'));       
+    
+    
+    /**
+    * Delete categories
+    */    
+    $app->post('/api/article/delete', function () use ($app) {       
+        $controller = new \Myndie\Controller\Article($app);
+        $controller->delete();
+    });  
+    
     /**************************************** SPONSORS ****************************************
     * Sponsor Routes
     ********************************************************************************************/                  

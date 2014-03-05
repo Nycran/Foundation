@@ -15,25 +15,56 @@
     </div>
 
     <ul class="nav nav-tabs">
-        <li class="active"><a href="#tab_details" data-toggle="tab"><strong>Article Details</strong></a></li>
+        <li class="active"><a href="#tab_details" data-toggle="tab"><strong>Edit an article</strong></a></li>
     </ul>
                                                               
     <div class="tab-content">
         <div class="tab-pane fade in active" id="tab_details">
             <form id="frmDetails" role="form" method="post" action="Article/save">
                 <div class="row">
-                    <div class="col-sm-4">
+                    <div class="col-sm-8">
                         <div class="form-group">
-                            <label class="control-label">Article Name</label>
-                            <input type="text" ng-model="Article.name" class="form-control" placeholder="Article Name" id="name" name="name" required />
+                            <input type="text" ng-model="article.title" class="form-control" placeholder="Enter title here" id="title" name="title" required />
+                            <input type="text" ng-model="article.author" class="form-control" placeholder="Author's Name" id="author" name="author" required />	
                         </div>                                         
                     </div>
-                    <div class="col-sm-4"></div>
-                    <div class="col-sm-4"></div>
+                    <div class="col-sm-4">
+						<div class="form-group">
+                            <input type="text" ng-model="article.published_date" class="form-control" id="published_date" name="published_date" required />
+							<input type="radio" ng-model="article.page_no" name="page_no" value="1">1
+							<input type="radio" ng-model="article.page_no" name="page_no" value="2">2
+							<input type="radio" ng-model="article.page_no" name="page_no" value="3">3
+							<input type="radio" ng-model="article.page_no" name="page_no" value="4">4
+							<input type="radio" ng-model="article.page_no" name="page_no" value="5">5
+							
+							<div class="clear"></div>
+							<input type="checkbox" ng-model="article.is_allocated" name="page_no" value="0">Not Allocated Yet
+                        </div>  
+					</div>
                 </div>
                 
+				<div class="row">
+					<div class="col-sm-12">
+						<label class="control-label">Content</label>
+						<textarea class="form-control" rows="4" ng-model="article.content" id="content" name="content"></textarea>
+						
+						<label class="control-label">Source URL</label>
+						<input type="text" ng-model="article.source_url" class="form-control" placeholder="http://" id="source_url" name="source_url" required />	
+					</div>  
+                </div>
+				
+				<hr />
+				
+				<div class="row">
+					<div class="col-sm-12">
+						<label class="control-label">Notes</label>
+						<textarea class="form-control" rows="4" ng-model="article.notes" id="notes" name="notes"></textarea>
+					</div>  
+                </div>
+				
                 <p>
                     <button class="submit btn btn-primary"><i class="fa fa-save"></i> <strong>Save Changes</strong></button>
+                    <button class="submit btn btn-primary"><i class="fa fa-delete"></i> <strong>Delete</strong></button>
                 </p>
             </form>            
         </div> <!-- End Details Tab -->
