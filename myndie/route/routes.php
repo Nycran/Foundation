@@ -183,7 +183,7 @@
     
     
     /**
-    * Delete categories
+    * Delete articles
     */    
     $app->post('/api/article/delete', function () use ($app) {       
         $controller = new \Myndie\Controller\Article($app);

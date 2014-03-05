@@ -30,11 +30,19 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
         /**
         * Handle the event when the user submits the article details form.
         */
+		$(".btn.btn-primary").click(function(e) {
+			if($(this).find(">:first-child").hasClass("fa-save"))
+			{
+				$scope.save();
+			}
+			else
+			{
+				$scope.delete();
+			}
+		});
+		
         $("#frmDetails").submit(function(e) {
             e.preventDefault();
-
-            $scope.save();
-            
         });        
     }
     
@@ -63,6 +71,31 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
             
             utils.showSuccess("The article was updated successfully");
         });            
+                    
+    }
+	
+	
+	/**
+    * Delete the article
+    */
+    $scope.delete = function() {
+        
+        utils.hideMessages();   // Hide all message divs
+
+        $http({
+            method: 'POST',
+            url: myndie.apiURL + "article/delete",
+            data: 'ids=' + $scope.id,
+            headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+        }).success(function (data) {
+            if(!data.status) {
+                alert(data.message);
+                return;
+            }   
+            
+            // return to the main listing screen
+            $window.location.href = "#!/articles";
+        });     
                     
     }
 
