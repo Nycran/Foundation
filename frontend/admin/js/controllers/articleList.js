@@ -10,7 +10,7 @@ app.controller('ArticleListCtrl', function ($scope, $http, $window) {
     $scope.load = function() {
         var form = $("#frmFilters");
         var params = $(form).serialize();
-
+		params += "&is_allocated=0"
         // Clear the clients array
         $scope.articles = [];
 
@@ -98,8 +98,9 @@ app.controller('ArticleListCtrl', function ($scope, $http, $window) {
 	
 	$scope.bindEvents = function() {
         
-        $('.datepicker').datepicker({
-		});
+        $('.datepicker').datepicker().on('changeDate', function(e){
+			$scope.load();
+		});;
     }
 	
 	$scope.bindEvents();  

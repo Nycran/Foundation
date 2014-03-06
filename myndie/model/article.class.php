@@ -20,6 +20,9 @@ class Article extends Model
     
     protected function applyFilters($filters, &$where = "", &$values = array()) 
     {
-
+		if(array_key_exists("is_allocated", $filters)) {
+            $where .= " is_allocated = ? "; 
+            $values[] = $filters["is_allocated"];  
+        }
     }           
 }

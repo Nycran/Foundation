@@ -71,8 +71,8 @@ class Article extends Controller
         $attribs = [
             'title' => true,    
             'author' => true,   
-            'published_date' => true,   
-            'page_no' => true,   
+            'published_date' => false,   
+            'page_no' => false,   
             'is_allocated' => true,   
             'content' => true,
             'source_url' => true,
