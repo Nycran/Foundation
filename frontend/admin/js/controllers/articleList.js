@@ -5,7 +5,7 @@ app.controller('ArticleListCtrl', function ($scope, $http, $window) {
     
     var self = this;
     
-    $("#navarticles a").focus();
+    $("#navArticles a").focus();
 
     $scope.load = function() {
         var form = $("#frmFilters");
@@ -95,6 +95,14 @@ app.controller('ArticleListCtrl', function ($scope, $http, $window) {
         // Reload the listing
         $scope.load();        
     }   
+	
+	$scope.bindEvents = function() {
+        
+        $('.datepicker').datepicker({
+		});
+    }
+	
+	$scope.bindEvents();  
     
     $scope.load();
 }); 
