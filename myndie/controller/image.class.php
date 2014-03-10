@@ -77,7 +77,8 @@ class Image extends Controller
     
     private function handleSponsorLogo($imageBean, &$error = "")
     {
-        // Do any image resizing necessary for the sponsor logo   
+        // Do any image resizing necessary for the sponsor logo
+        die("HANDLE RESIZE");   
     } 
     
     public function resizeImage()
