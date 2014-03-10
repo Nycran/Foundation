@@ -1,6 +1,7 @@
 app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $window, globals, utils) {
     $scope.id = 0;  // Default the ID to 0.
     $scope.article = false;
+	$scope.selectedCategoryOption = false;  // Will be set to the selected category option
     $scope.categories = [];
 	
     $("#navArticles a").focus();
@@ -67,12 +68,28 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
 		
         $("#frmDetails").submit(function(e) {
             e.preventDefault();
-        });     
+        });  
 
-		$('.datepicker').datepicker({
+		$("#is_not_allocated").change(function(e) {
+            $scope.updateStatusAllocated();
+        });  
+
+		$('#published_date').datepicker({
 			autoclose: 'true'
 		});
     }
+	
+	$scope.updateStatusAllocated = function() {
+		if($("#is_not_allocated").is(":checked")) {
+			$('input[name="position_no"]').attr("disabled", "disabled");
+			$('#published_date').attr("disabled", "disabled");
+		}
+		else
+		{
+			$('input[name="position_no"]').removeAttr("disabled");
+			$('#published_date').removeAttr("disabled");
+		}
+	}
     
     /**
     * Save the article
@@ -85,6 +102,9 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
 		if(!$("#is_not_allocated").is(":checked")) {
 			$scope.article.is_not_allocated = 0;
 		}
+		
+		
+		$scope.article.category = $scope.selectedCategoryOption.id;
         // Save the article
         var url =  myndie.apiURL + "article/save/" + $scope.id;
 
@@ -137,6 +157,7 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
         // We're adding a new article. 
     }           
     
-    $scope.loadCategory();   
+    $scope.loadCategory();
+	$scope.updateStatusAllocated();
     $scope.bindEvents();   
 }); 

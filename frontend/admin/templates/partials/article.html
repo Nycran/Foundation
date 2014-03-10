@@ -32,10 +32,10 @@
 						<div class="form-group">
 							
 							<div class="input-append date">
-								<input class="datepicker" data-date-format="dd-mm-yyyy">
+								<input type="text" ng-model="article.published_date" class="form-control" id="published_date" name="published_date" data-date-format="dd-mm-yyyy" required />
 								<span class="add-on"><i class="icon-th"></i></span>
 							</div>
-                            <!-- <input type="text" ng-model="article.published_date" class="form-control" id="published_date" name="published_date" required /> -->
+
 							<input type="radio" ng-model="article.position_no" name="position_no" value="1">1
 							<input type="radio" ng-model="article.position_no" name="position_no" value="2">2
 							<input type="radio" ng-model="article.position_no" name="position_no" value="3">3
@@ -43,7 +43,7 @@
 							<input type="radio" ng-model="article.position_no" name="position_no" value="5">5
 							
 							<div class="clear"></div>
-							<input type="checkbox" ng-model="article.is_not_allocated" name="is_not_allocated" value="0">Not Allocated Yet
+							<input type="checkbox" ng-model="article.is_not_allocated" id="is_not_allocated" ng-checked="article.is_not_allocated == 1">Not Allocated Yet
                         </div>  
 					</div>
                 </div>
@@ -52,8 +52,12 @@
 					<div class="col-sm-12">
 						<label class="control-label">Category</label>
 						
-						<select name="category" id="category" ng-model="article.category" >
+						<!-- <select name="category" id="category" ng-model="article.category" >
 							<option ng-repeat="category in categories" value="{{category.id}}">{{category.name}}</option>
+						</select> -->
+						
+						<select class="form-control" ng-model="selectedCategoryOption" ng-options="c.name for c in categories" required>
+						<option value="">- Please select</option>
 						</select>
 						
 					</div>
