@@ -1,7 +1,8 @@
 app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $window, globals, utils) {
     $scope.id = 0;  // Default the ID to 0.
     $scope.article = false;
-    
+    $scope.categories = [];
+	
     $("#navArticles a").focus();
 
     
@@ -19,11 +20,34 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
                 alert(data.message);
                 return;
             }
-            
             // Get the article from the data
             $scope.article = data.message; 
+        });     
+
+        
+    }
+	
+	$scope.loadCategory = function() {
+        $scope.categories = [];
+
+        $http({
+            method: 'POST',
+            url: myndie.apiURL + "category/list",
+            headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+        }).success(function (data) {
+            if(!data.status) {
+                alert(data.message);
+                return;
+            }
+
+            $scope.categories = data.message;
+            
         });      
     }
+	
+	
+	
+	  
     
     $scope.bindEvents = function() {
         
@@ -106,5 +130,6 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
         // We're adding a new article. 
     }           
     
+    $scope.loadCategory();   
     $scope.bindEvents();   
 }); 

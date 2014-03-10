@@ -42,6 +42,17 @@
                         </div>  
 					</div>
                 </div>
+				
+				<div class="row">
+					<div class="col-sm-12">
+						<label class="control-label">Category</label>
+						
+						<select name="category" id="category" ng-model="article.category" >
+							<option ng-repeat="category in categories" value="{{category.id}}">{{category.name}}</option>
+						</select>
+						
+					</div>
+				</div>
                 
 				<div class="row">
 					<div class="col-sm-12">

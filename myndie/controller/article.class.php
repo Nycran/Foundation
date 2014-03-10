@@ -76,7 +76,8 @@ class Article extends Controller
             'is_not_allocated' => true,   
             'content' => true,
             'source_url' => true,
-            'notes' => true
+            'notes' => true,
+            'category' => true
         ];
         
         return $attribs;
