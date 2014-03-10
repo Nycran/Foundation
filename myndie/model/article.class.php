@@ -20,9 +20,14 @@ class Article extends Model
     
     protected function applyFilters($filters, &$where = "", &$values = array()) 
     {
-		if(array_key_exists("is_allocated", $filters)) {
-            $where .= " is_allocated = ? "; 
-            $values[] = $filters["is_allocated"];  
+		if(array_key_exists("is_not_allocated", $filters)) {
+            $where .= " is_not_allocated = ? "; 
+            $values[] = $filters["is_not_allocated"];  
+        }
+		
+		if(array_key_exists("published_date", $filters)) {
+            $where .= "AND published_date = ? "; 
+            $values[] = $filters["published_date"];  
         }
     }           
 }

@@ -72,8 +72,8 @@ class Article extends Controller
             'title' => true,    
             'author' => true,   
             'published_date' => false,   
-            'page_no' => false,   
-            'is_allocated' => true,   
+            'position_no' => false,   
+            'is_not_allocated' => true,   
             'content' => true,
             'source_url' => true,
             'notes' => true
@@ -81,4 +81,23 @@ class Article extends Controller
         
         return $attribs;
     }   
+	
+	
+	/**
+    * Gets a list of the beans from the controller's model and then outputs as json.
+    * The $_POST array will be used by the model to achieve any filtering necessary.
+    */
+    public function getListAsignment()
+    {
+        $filters = $_POST;
+        $orderBy = "position_no";
+        
+        $page = Input::post("page");
+        if(!is_numeric($page)) {
+            $page = 0;
+        }
+                    
+        $beans = $this->model->getList($filters, $orderBy, $page, $this->numBeans);
+        $this->outputBeansAsJson($beans);       
+    }  
 }
