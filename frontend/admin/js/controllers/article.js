@@ -67,7 +67,11 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
 		
         $("#frmDetails").submit(function(e) {
             e.preventDefault();
-        });        
+        });     
+
+		$('.datepicker').datepicker({
+			autoclose: 'true'
+		});
     }
     
     /**
@@ -78,6 +82,9 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
         
         utils.hideMessages();   // Hide all message divs
         
+		if(!$("#is_not_allocated").is(":checked")) {
+			$scope.article.is_not_allocated = 0;
+		}
         // Save the article
         var url =  myndie.apiURL + "article/save/" + $scope.id;
 

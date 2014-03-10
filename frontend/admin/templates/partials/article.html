@@ -30,7 +30,12 @@
                     </div>
                     <div class="col-sm-4">
 						<div class="form-group">
-                            <input type="text" ng-model="article.published_date" class="form-control" id="published_date" name="published_date" required />
+							
+							<div class="input-append date">
+								<input class="datepicker" data-date-format="dd-mm-yyyy">
+								<span class="add-on"><i class="icon-th"></i></span>
+							</div>
+                            <!-- <input type="text" ng-model="article.published_date" class="form-control" id="published_date" name="published_date" required /> -->
 							<input type="radio" ng-model="article.position_no" name="position_no" value="1">1
 							<input type="radio" ng-model="article.position_no" name="position_no" value="2">2
 							<input type="radio" ng-model="article.position_no" name="position_no" value="3">3
