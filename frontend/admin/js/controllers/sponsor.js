@@ -27,6 +27,27 @@ app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $wi
                 $scope.doMarkdown();    
             }, 300);
             
+            // Setup QQ uploader
+            // Setup hero image uploader
+            var gUploader = new qq.FileUploader(
+            {
+                // pass the dom node (ex. $(selector)[0] for jQuery users)
+                element: document.getElementById('upload_logo'),
+                // path to server-side upload script
+                action: myndie.apiURL + 'images/upload/sponsor_logo',
+                params: {"id" : $scope.id},    
+                allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+                sizeLimit: 2100000, // max size 
+                onComplete: function(id, fileName, responseJSON)
+                {
+                    if(responseJSON.success)
+                    {
+                        // The upload completed successfully.
+                        alert("UPLOAD OK");
+                    }
+                }
+            });            
+            
         });      
     }
     

@@ -227,6 +227,11 @@
         $controller = new \Myndie\Controller\Sponsor($app);
         $controller->delete();
     }); 
+    
+    $app->post('/api/images/upload/:imageFor/:id/:fileName', function ($imageFor, $id, $fileName) use ($app) {       
+        $controller = new \Myndie\Controller\Image($app);
+        $controller->uploadImage($imageFor, $id, $fileName, true);
+    })->conditions(array("id" => '\d+')); 
            
     
     /**************************************** ROLES *********************************************
