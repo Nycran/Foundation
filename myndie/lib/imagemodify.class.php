@@ -22,7 +22,6 @@ class Image
 		}
 	}
 	
-	
 	/**
 	 * Get the image variables
 	 */
