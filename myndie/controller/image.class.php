@@ -4,6 +4,7 @@ namespace Myndie\Controller;
 use RedBean_Facade as R;
 use Myndie\Lib\Input;
 use Myndie\Lib\Utils; 
+use Myndie\Lib\ImageModify;
 
 class Image extends Controller
 {
@@ -72,40 +73,37 @@ class Image extends Controller
             $this->$postUploadMethod($imageBean, $error);
         }
         
+        $this->result["image_path"] = $imageBean->path; 
+        $this->result["image_height"] = $imageBean->height;
+        $this->result["image_width"] = $imageBean->image_width;
+        
         $this->ok("The image was uploaded successfully");
     }
     
     private function handleSponsorLogo($imageBean, &$error = "")
     {
-        // Do any image resizing necessary for the sponsor logo
-        die("HANDLE RESIZE");   
+        // If the image path doesn't exist, do nothing
+        $imagePath = MYNDIE_ABSOLUTE_PATH . $imageBean->path;
+        if(!file_exists($imagePath)) {
+            return false;
+        }
+        
+        // Create a thumbnail image
+        ImageModify::resizeToMaxWidthAndSave($imagePath, $imagePath . "_thumb.jpg", 150);
+        
+        // Load the sponsor object
+        $sponsorModel = new \Myndie\Model\Sponsor($this->app);
+        $sponsor = $sponsorModel->get($imageBean->foreign_id);
+        
+        if(!$sponsor) {
+            $this->error("Unable to load sponsor");     
+        }
+        
+        // Associate the image with the sponsor
+        $sponsor->sharedImage[] = $imageBean;
+        R::store($sponsor);         
     } 
-    
-    public function resizeImage()
-    {
-    	
-        $this->handleJSONContentType();
-        
-        $param = $_SERVER['DOCUMENT_ROOT'].'/Foundation/test.jpg';
-        print_r($param);
-        $resizeType = Input::post("resizeType");
-        $width = Input::post("width");
-        $height =  Input::post("height");
-        
-        $this->result["image"] = $param;
-        $this->result["resizeType"] = $resizeType;      
-       // if(!$this->model->resizeTo($param,$width,$height, $resizeType)) {
-        //  $this->result["message"] = "Sorry, your image resize failed.  Please try again.";
-        //  $this->send();            
-     // }
-        $this->result["status"]="OK";
-        $this->result["message"] = "";
-        $this->result["new_image"] = $this->model->resizeTo( $param,$width,$height, $resizeType);
-        
-        
-        $this->send();
-    }
-    
+
     public function cropImage()
     {
     	
