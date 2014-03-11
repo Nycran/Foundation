@@ -28,11 +28,6 @@
                             <input type="text" ng-model="sponsor.name" class="form-control" placeholder="Sponsor Name" id="name" name="name" required />
                         </div> 
                         
-                        <div class="form-group">
-                            <label class="control-label">Sponsor Logo</label>
-                            <div id="upload_logo"></div> 
-                        </div>
-                        
                         <div class="form-group hideOnNew">
                             <label class="control-label">Notes</label>
                             <textarea class="form-control" placeholder="General Notes" rows="4" ng-model="sponsor.notes" id="notes" name="notes"></textarea>
@@ -45,7 +40,16 @@
                             <textarea class="form-control hidden" rows="4" ng-model="sponsor.default_text" id="default_text" name="default_text"></textarea>
                         </div>                    
                     </div>
-                    <div class="col-sm-4"></div>
+                    <div class="col-sm-4 hideOnNew">
+                        <div class="form-group">
+                            <label class="control-label">Sponsor Logo</label>
+                            <div id="logoImageWrapper"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div id="upload_logo"></div> 
+                        </div>                    
+                    </div>
                 </div>
                 
                 <p>

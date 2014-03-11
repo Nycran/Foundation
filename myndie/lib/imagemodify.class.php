@@ -1,180 +1,264 @@
 <?php
 namespace Myndie\Lib;
 
-class Image
-{
-	private $extension;
-	private $image;
-	private $newImage;
-	private $originalWidth;
-	private $originalHeight;
-	private $newWidth;
-	private $newHeight;
+define("MYNDIE_IMAGE_RESIZE_EXACT", 1);
+define("MYNDIE_IMAGE_RESIZE_MAX_WIDTH", 2);
+define("MYNDIE_IMAGE_RESIZE_MAX_HEIGHT", 3);
 
-	public function __construct( $imagename )
+class ImageModify
+{
+	private static $extension;
+	private static $image;
+	private static $newImage;
+	private static $originalWidth;
+	private static $originalHeight;
+	private static $newWidth;
+	private static $newHeight;
+    
+    /**
+    * Resizes an image to an exact height and width and creates the specified output image.
+    * Optionally, the image can also be downloaded.
+    * 
+    * @param string $sourceImage  The path to the source image
+    * @param string $destPath The path to the destination image
+    * @param integer $width The width to resize the image to
+    * @param integer $height The height to resize the image to
+    * @param mixed $imageQuality The desired output quality (0-100)
+    * @param boolean $download Set to true to trigger a download
+    */
+    public static function resizeToExactHeightAndWidthAndSave($sourceImage, $destPath, $width, $height, $imageQuality = 100, $download = false)
+    {
+        // Load the source image
+        self::getImage($sourceImage);
+        
+        // Resize it
+        self::resizeTo($width, $height, MYNDIE_IMAGE_RESIZE_EXACT);
+        
+        // Save it.
+        self::saveImage($destPath, $imageQuality, $download);
+    }
+    
+    /**
+    * Resizes an image to a maximum height, maintaining the aspect ratio for the width, and creates the specified output image.
+    * Optionally, the image can also be downloaded.
+    * 
+    * @param string $sourceImage  The path to the source image
+    * @param string $destPath The path to the destination image
+    * @param integer $height The maximum height to resize the image to
+    * @param mixed $imageQuality The desired output quality (0-100)
+    * @param boolean $download Set to true to trigger a download
+    */
+    public static function resizeToMaxHeightAndSave($sourceImage, $destPath, $height, $imageQuality = 100, $download = false)
+    {
+        // Load the source image
+        self::getImage($sourceImage);
+        
+        // Resize it
+        self::resizeTo(0, $height, MYNDIE_IMAGE_RESIZE_MAX_HEIGHT);
+        
+        // Save it.
+        self::saveImage($destPath, $imageQuality, $download);
+    } 
+    
+    /**
+    * Resizes an image to a maximum width, maintaining the aspect ratio for the height, and creates the specified output image.
+    * Optionally, the image can also be downloaded.
+    * 
+    * @param string $sourceImage  The path to the source image
+    * @param string $destPath The path to the destination image
+    * @param integer $height The maximum height to resize the image to
+    * @param mixed $imageQuality The desired output quality (0-100)
+    * @param boolean $download Set to true to trigger a download
+    */
+    public static function resizeToMaxWidthAndSave($sourceImage, $destPath, $width, $imageQuality = 100, $download = false)
+    {
+        // Load the source image
+        self::getImage($sourceImage);
+        
+        // Resize it
+        self::resizeTo($width, 0, MYNDIE_IMAGE_RESIZE_MAX_WIDTH);
+        
+        // Save it.
+        self::saveImage($destPath, $imageQuality, $download);
+    }       
+
+    /**
+    * Saves the new modified image back to disk
+    *
+    * $savePath - The path to save the image to.
+    * $imageQuality - The quality of image to create
+    *
+    */
+	public static function saveImage($savePath, $imageQuality = 100, $download = false)
 	{
-		if(file_exists($imagename))
-		{
-			
-			$this->getImage( $imagename );
-		} else {
-			throw new Exception('Image ' . $imagename . ' can not be found, try another image.');
-		}
-	}
-	
-	/**
-	 * Get the image variables
-	 */
-	 
-	private function getImage( $imagename )
-	{
-		$size = getimagesize($imagename);
-		$this->extension = $size['mime'];
-		switch($this->extension)
+	    if(self::$newImage == false) {
+            throw new Exception("Image::saveImage - New image is not yet created.  You probably need to perform an operation first.", 1);    
+        }
+        
+        switch(self::$extension)
 	    {
-	    	// Image is a JPG
 	        case 'image/jpg':
+                imagejpeg(self::$newImage, $savePath, $imageQuality);
+                break;
+                
 	        case 'image/jpeg':
-	        	// create a jpeg extension
-	            $this->image = imagecreatefromjpeg($imagename);
-	            
-	            break;
-	        // Image is a GIF
-	        case 'image/gif':
-	            $this->image = @imagecreatefromgif($imagename);
-	            break;
-	        // Image is a PNG
-	        case 'image/png':
-	            $this->image = @imagecreatefrompng($imagename);
-	            break;
-	        // Mime type not found
-	        default:
-	            throw new Exception("File is not an image, please use another file type.", 1);
-	    }
-	    $this->originalWidth = imagesx($this->image);
-	    $this->originalHeight = imagesy($this->image);
-	}
-	
-	/**
-	 * Save the image as the original image type
-	 *
-	 * $savePath     - The path to  the new image
-	 * $imageQuality 	  - The quality of image to create
-	 *
-	 */
-	 
-	public function saveImage($savePath, $imageQuality="100", $download = false)
-	{
-	    switch($this->extension)
-	    {
-	        case 'image/jpg':
-	        case 'image/jpeg':
-	        	// Check PHP supports this file type
-	            if (imagetypes() & IMG_JPG) {
-	                imagejpeg($this->newImage, $savePath, $imageQuality);
-	            }
-	            break;
+                imagejpeg(self::$newImage, $savePath, $imageQuality);
+                break;
+                
 	        case 'image/gif':
 	        	// Check PHP supports this file type
-	            if (imagetypes() & IMG_GIF) {
-	                imagegif($this->newImage, $savePath);
-	            }
+                imagegif(self::$newImage, $savePath);
 	            break;
+                
 	        case 'image/png':
-	            $invertScaleQuality = 9 - round(($imageQuality/100) * 9);
-	            // Check PHP supports this file type
-	            if (imagetypes() & IMG_PNG) {
-	                imagepng($this->newImage, $savePath, $invertScaleQuality);
-	            }
+	            $invertScaleQuality = 9 - round(($imageQuality / 100) * 9);
+	            imagepng(self::$newImage, $savePath, $invertScaleQuality);
 	            break;
+                
+            default:
+                throw new Exception("Image::saveImage - Invalid image type.", 1);    
+                break;
 	    }
-	    if($download)
-	    {
+        
+	    if($download) {
 	    	header('Content-Description: File Transfer');
 			header("Content-type: application/octet-stream");
-			header("Content-disposition: attachment; filename= ".$savePath."");
+			header("Content-disposition: attachment; filename= ". $savePath . "");
 			readfile($savePath);
 	    }
-	    imagedestroy($this->newImage);
+        
+	    imagedestroy(self::$newImage);
 	}
-	/**
-	 * Resize the image to these set dimensions
-	 *
-	 * $width        	- Max width of the image
-	 * $height       	- Max height of the image
-	 * $resizeOption - Scale option for the image
-	 * 
-	 */
-	 
-	public function resizeTo( $width, $height, $resizeOption = 'default' )
+    
+    /**
+    * Resize the image to these set dimensions
+    *
+    * $width        	- Max width of the image
+    * $height       	- Max height of the image
+    * $resizeOption - Scale option for the image
+    * 
+    */
+	public static function resizeTo( $width, $height, $resizeOption = '' )
 	{
-		
 		switch(strtolower($resizeOption))
 		{
-			case 'exact':
-				$this->newWidth = $width;
-				$this->newHeight = $height;
+			case MYNDIE_IMAGE_RESIZE_EXACT:
+				self::$newWidth = $width;
+				self::$newHeight = $height;
 			break;
-			case 'maxwidth':
-				$this->newWidth  = $width;
-				$this->newHeight = $this->resizeHeightByWidth($width);
+            
+			case MYNDIE_IMAGE_RESIZE_MAX_WIDTH:
+				self::$newWidth  = $width;
+				self::$newHeight = self::resizeHeightByWidth($width);
 			break;
-			case 'maxheight':
-				$this->newWidth  = $this->resizeWidthByHeight($height);
-				$this->newHeight = $height;
+            
+			case MYNDIE_IMAGE_RESIZE_MAX_HEIGHT:
+				self::$newWidth  = self::resizeWidthByHeight($height);
+				self::$newHeight = $height;
 			break;
+            
 			default:
-				if($this->originalWidth > $width || $this->originalHeight > $height)
-				{
-					if ( $this->originalWidth > $this->originalHeight ) {
-				    	 $this->newHeight = $this->resizeHeightByWidth($width);
-			  			 $this->newWidth  = $width;
-					} else if( $this->originalWidth < $this->originalHeight ) {
-						$this->newWidth  = $this->resizeWidthByHeight($height);
-						$this->newHeight = $height;
+				if(self::$originalWidth > $width || self::$originalHeight > $height) {
+					if ( self::$originalWidth > self::$originalHeight ) {
+				    	 self::$newHeight = self::resizeHeightByWidth($width);
+			  			 self::$newWidth  = $width;
+					} else if( self::$originalWidth < self::$originalHeight ) {
+						self::$newWidth  = self::resizeWidthByHeight($height);
+						self::$newHeight = $height;
 					}
 				} else {
-		            $this->newWidth = $width;
-		            $this->newHeight = $height;
+		            self::$newWidth = $width;
+		            self::$newHeight = $height;
 		        }
 			break;
 		}
-		$this->newImage = imagecreatetruecolor($this->newWidth, $this->newHeight);
-    	imagecopyresampled($this->newImage, $this->image, 0, 0, 0, 0, $this->newWidth, $this->newHeight, $this->originalWidth, $this->originalHeight);
-    	
+        
+		self::$newImage = imagecreatetruecolor(self::$newWidth, self::$newHeight);
+    	imagecopyresampled(self::$newImage, self::$image, 0, 0, 0, 0, self::$newWidth, self::$newHeight, self::$originalWidth, self::$originalHeight);
 	}
 	
-	/**
-	 * Get the resized height from the width keeping the aspect ratio
-	 * $width - Max image width
-	 * Height keeping aspect ratio
-	 */
-	 
-	private function resizeHeightByWidth($width)
+    /**
+    * Get the resized height from the width keeping the aspect ratio
+    * $width - Max image width
+    * Height keeping aspect ratio
+    */
+	private static function resizeHeightByWidth($width)
 	{
-		return floor(($this->originalHeight/$this->originalWidth)*$width);
+		return floor((self::$originalHeight / self::$originalWidth) * $width);
 	}
 	
-	/**
-	 * Get the resized width from the height keeping the aspect ratio
-	 * $height - Max image height
-	 * Width keeping aspect ratio
-	 */
-	 
-	 
-	private function resizeWidthByHeight($height)
+    /**
+    * Get the resized width from the height keeping the aspect ratio
+    * $height - Max image height
+    * Width keeping aspect ratio
+    */
+	private static function resizeWidthByHeight($height)
 	{
-		return floor(($this->originalWidth/$this->originalHeight)*$height);
+		return floor((self::$originalWidth / self::$originalHeight) * $height);
 	}
 	
-	public function cropimage($width, $height)
+	public static function cropImage($width, $height)
 	{
-		$this->newWidth = $width;
-		$this->newHeight = $height;
-		$leftcenter	=	($this->originalWidth / 2) - ($this->newWidth / 2);
-		$topcenter 	=	($this->originalHeight / 2) - ($this->newHeight / 2);
-		$this->newImage = imagecreatetruecolor($this->newWidth, $this->newHeight);
-		imagecopy($this->newImage, $this->image, 0, 0, $leftcenter, $topcenter, $this->originalWidth, $this->originalHeight);
-		
+		self::$newWidth = $width;
+		self::$newHeight = $height;
+        
+		$leftcenter	= (self::$originalWidth / 2) - (self::$newWidth / 2);
+		$topcenter 	=	(self::$originalHeight / 2) - (self::$newHeight / 2);
+		self::$newImage = imagecreatetruecolor(self::$newWidth, self::$newHeight);
+		imagecopy(self::$newImage, self::$image, 0, 0, $leftcenter, $topcenter, self::$originalWidth, self::$originalHeight);
 	}
+    
+    /**
+    * Loads an image into memory given the image path
+    * and gets the image metadata
+    * 
+    * @param string $imagePath The path to the image to load
+    */
+    private static function getImage($imagePath)
+    {
+        self::$image = false;
+        self::$newImage = false;
+        self::$originalWidth = 0;
+        self::$originalHeight = 0;
+        self::$newWidth = 0;
+        self::$newHeight = 0;
+        
+        if(!file_exists($imagePath)) {
+            throw new Exception("Image file not at this path.", 1);
+        }
+        
+        $size = getimagesize($imagePath);
+        if(!is_array($size)) {
+            throw new Exception("Unable to load image info.", 1);
+        }
+        
+        self::$originalWidth = $size[0];
+        self::$originalHeight = $size[1];
+        
+        self::$extension = $size['mime'];
+        
+        switch(self::$extension)
+        {
+            case 'image/jpg':
+                self::$image = imagecreatefromjpeg($imagePath);
+                break;
+                            
+            case 'image/jpeg':
+                self::$image = imagecreatefromjpeg($imagePath);                
+                break;
+                
+            case 'image/gif':
+                self::$image = @imagecreatefromgif($imagename);
+                break;
+                
+            case 'image/png':
+                self::$image = @imagecreatefrompng($imagePath);
+                break;
+                
+            // Mime type not found
+            default:
+                throw new Exception("File is not an image, please use another file type.", 1);
+                break;
+        }
+    }    
 }

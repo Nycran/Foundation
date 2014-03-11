@@ -23,6 +23,13 @@ app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $wi
             // Get the sponsor from the data
             $scope.sponsor = data.message; 
             
+            if($scope.sponsor.sharedImage) {
+                var image = $scope.sponsor.sharedImage[0];
+                var image_path = myndie.baseURL + image.path;
+                
+                $("#logoImageWrapper").html('<img src="' + image_path + '_thumb.jpg?=' + Math.floor(Math.random() * 99999) + '" width="150" />');
+            }
+            
             $timeout(function() {
                 $scope.doMarkdown();    
             }, 300);
@@ -38,12 +45,12 @@ app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $wi
                 params: {"id" : $scope.id},    
                 allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
                 sizeLimit: 2100000, // max size 
-                onComplete: function(id, fileName, responseJSON)
+                onComplete: function(id, fileName, data)
                 {
-                    if(responseJSON.success)
+                    if(data.status)
                     {
                         // The upload completed successfully.
-                        alert("UPLOAD OK");
+                        $("#logoImageWrapper").html('<img src="' + myndie.baseURL + data.image_path + '_thumb.jpg?=' + Math.floor(Math.random() * 99999) + '" width="150" />');
                     }
                 }
             });            
