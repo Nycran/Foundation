@@ -163,7 +163,7 @@ app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $wi
             if(attemptNo < 10) {
                 setTimeout(function() {
                     $scope.waitModalOpen(selector, callback, attemptNo);                
-                }, "200");
+                }, "500");
             } else {
                 alert("waitModelOpen - Timeout error");
             }
