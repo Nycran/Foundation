@@ -1,6 +1,7 @@
 app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $window, $timeout, globals, utils) {
     $scope.id = 0;  // Default the ID to 0.
     $scope.sponsor = false;
+    $scope.schedule = false;
     
     $("#navSponsors a").focus();
     $("#deleteLogoWrapper").hide();
@@ -198,4 +199,10 @@ app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $wi
     }           
     
     $scope.bindEvents();   
-}); 
+
+    // Setup the datepickers
+    $('.datepicker').datepicker({
+        format : "dd/mm/yyyy",
+        autoclose : true
+    });
+ }); 

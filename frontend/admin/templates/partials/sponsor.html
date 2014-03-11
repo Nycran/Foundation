@@ -13,6 +13,11 @@
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
         <span>Sorry an error occured.</span>
     </div>
+    
+    <div id="infoMessage" class="alert alert-info alert-dismissable hideOnNew">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <span>You are editing the sponsor {{sponsor.name}}.</span>
+    </div>    
 
     <ul class="nav nav-tabs">
         <li class="active"><a href="#tab_details" data-toggle="tab"><strong>Sponsor Details</strong></a></li>
@@ -61,5 +66,55 @@
                     <button class="submit btn btn-primary"><i class="fa fa-save"></i> <strong>Save Changes</strong></button>
                 </p>
             </form>            
-        </div> <!-- End Details Tab -->
-    </div>    
+        </div><!-- End Details Tab --> 
+        
+        <!-- Start Schedule Tab -->
+        <div class="tab-pane fade in" id="tab_schedule">
+            <div class="page-header">
+                <a data-toggle="modal" href="#scheduleModal" class="pull-right btn btn-sm btn-primary"><i class="fa fa-plus"></i> Add To Schedule</a>
+                <h3><strong>Current Schedule</strong></h3>
+            </div>
+            
+            <form id="frmDetails" role="form" method="post" action="schedule/list">    
+            
+            </form>
+        </div><!-- End Schedule Tab -->       
+    </div>
+    
+    
+    <!-- Schedule modal -->
+    <div class="modal fade" id="scheduleModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Schedule Details</h4>
+                </div>
+                
+                <div class="modal-body">
+                    <form id="frmScheduleDetails" role="form" method="post">    
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="control-label">Date From</label>
+                                    <input type="text" ng-model="schedule.date_from" class="form-control datepicker" placeholder="Date From" id="schedule_date_from" name="date_from" required />
+                                </div> 
+                                
+                                <div class="form-group hideOnNew">
+                                    <label class="control-label">Date To</label>
+                                    <input type="text" ng-model="schedule.date_to" class="form-control datepicker" placeholder="Date To" id="schedule_date_to" name="date_to" required />
+                                </div>                                                               
+                            </div>
+                         </div>                    
+                    </form>                    
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->    
+    
+        
