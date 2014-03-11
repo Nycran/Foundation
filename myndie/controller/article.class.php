@@ -55,7 +55,19 @@ class Article extends Controller
         $data = $profile->getLastResult()->getValidData();         
 
         // Save the article record (if id = 0 then a new record will be created)
-        $id = $this->model->save($id, $data);   
+        $id = $this->model->save($id, $data);  
+
+		$articleBean = $this->model->get($id);
+		
+		// Create an instance of the category model
+		$categoryModel = new \Myndie\Model\Category($this->app);
+
+		// Load the category
+		$categoryBean = $categoryModel->get($articleBean->category_id);
+		
+		$articleBean->sharedCategory[] = $categoryBean;
+
+		R::store($articleBean);
 
         $this->result["status"] = true;
         $this->result["message"] = $id;
@@ -82,23 +94,4 @@ class Article extends Controller
         
         return $attribs;
     }   
-	
-	
-	/**
-    * Gets a list of the beans from the controller's model and then outputs as json.
-    * The $_POST array will be used by the model to achieve any filtering necessary.
-    */
-    public function getListAsignment()
-    {
-        $filters = $_POST;
-        $orderBy = "position_no";
-        
-        $page = Input::post("page");
-        if(!is_numeric($page)) {
-            $page = 0;
-        }
-                    
-        $beans = $this->model->getList($filters, $orderBy, $page, $this->numBeans);
-        $this->outputBeansAsJson($beans);       
-    }  
 }
