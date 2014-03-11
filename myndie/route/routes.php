@@ -228,7 +228,42 @@
     $app->post('/api/sponsor/delete_logo/:id', function ($id) use ($app) {       
         $controller = new \Myndie\Controller\Sponsor($app);
         $controller->deleteLogo($id);
+    })->conditions(array("id" => '\d+'));   
+    
+    
+    /**************************************** SCHEDULE ****************************************
+    * Schedule Routes
+    ******************************************************************************************/     
+    /**
+    * Get a list of Schedules
+    */    
+    $app->post('/api/schedule/list', function () use ($app) {       
+        $controller = new \Myndie\Controller\Schedule($app);
+        $controller->getList();
+    });     
+    
+    /**
+    * Get a single Schedule by ID
+    */    
+    $app->get('/api/schedule/get/:id', function ($id) use ($app) {       
+        $controller = new \Myndie\Controller\Schedule($app);
+        $controller->get($id);
+    })->conditions(array("id" => '\d+')); 
+    
+    /**
+    * Saves a Schedule to the database
+    * If an ID of 0 is passed, a new category will be created
+    */    
+    $app->post('/api/schedule/save/:id', function ($id) use ($app) {       
+        $controller = new \Myndie\Controller\Schedule($app);
+        $controller->save($id);
     })->conditions(array("id" => '\d+'));       
+    
+   
+    $app->post('/api/schedule/delete', function () use ($app) {       
+        $controller = new \Myndie\Controller\Schedule($app);
+        $controller->delete();
+    });            
     
     /**************************************** Images ****************************************
     * Image Routes

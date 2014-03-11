@@ -4,7 +4,7 @@ namespace Myndie\Controller;
 use RedBean_Facade as R;
 use Myndie\Lib\Input;
 use Myndie\Lib\Utils;  
-use Myndie\Lib\Session; 
+use Myndie\Lib\Session;    
 
 class Sponsor extends Controller
 {
@@ -19,9 +19,9 @@ class Sponsor extends Controller
     }    
     
     /**
-    * Handle a category details save request
+    * Handle sponsor save request
     * 
-    * @param integer $id  The id of the category being updated.
+    * @param integer $id  The id of the sponsor being updated.
     */
     public function save($id)
     {
@@ -52,7 +52,7 @@ class Sponsor extends Controller
         }
         
         // The form was valid.  Get the validated and transformed data from the profile.
-        $data = $profile->getLastResult()->getValidData();         
+        $data = $profile->getLastResult()->getValidData();  
 
         // Save the category record (if id = 0 then a new record will be created)
         $id = $this->model->save($id, $data);   
@@ -105,18 +105,66 @@ class Sponsor extends Controller
     }
  
     /***
-    * Returns the form validation rules for adding a new category.
+    * Returns the form validation rules for adding a new schedule.
     * @param boolean $addNewMode Set to true if we're adding a new category
     */
-    private function getValidationAttribs($addNewMode)
+    private function getScheduleValidationAttribs($addNewMode)
     {
         $attribs = [
-            'name' => true,         
-            'logo' => false,
-            'default_text' => false,
+            'date_from' => true,         
+            'date_to' => true,
+            'location_id' => true,
+            'text' => false,
             'notes' => false
         ];
         
         return $attribs;
-    }   
+    }
+    
+    /**
+    * Handle schedule save request
+    * 
+    * @param integer $sponsor_id  The id of the sponsor the schedule belongs to.
+    * @param integer $id  The id of the schedule being updated.
+    */
+    public function saveSchedule($sponsor_id, $id)
+    {
+        // Invoke the base class save method to do any preparation work
+        parent::save($id);
+        
+        $addNewMode = ($id == 0);     // Will be true if we're adding a new category (i.e. id == 0)
+        
+        /************ VALIDATION **************/
+        $profile = new \DataFilter\Profile();
+        
+        // Set global validation checks
+        //$profile->addPreFilters(['Trim', 'StripHtml']);
+        $profile->setAttribs($this->getScheduleValidationAttribs($addNewMode)); 
+          
+        // Perform validation checks
+        if (!$profile->check($_POST)) {
+            // The form is NOT valid.
+            $message = "Validation Error:\n";
+            $res = $profile->getLastResult();
+            foreach ($res->getAllErrors() as $error) {
+                $message .= "Err: $error\n";
+            }            
+            
+            // Send the validation errors back to the browser
+            $this->result["message"] = $message;
+            $this->send();
+        }
+        
+        // The form was valid.  Get the validated and transformed data from the profile.
+        $data = $profile->getLastResult()->getValidData(); 
+        
+        $scheduleModel = new \Myndie\Model\Schedule($this->app);        
+
+        // Save the schedule record (if id = 0 then a new record will be created)
+        $id = $scheduleModel->save($id, $data);   
+
+        $this->result["status"] = true;
+        $this->result["message"] = $id;
+        $this->send();     
+    }       
 }

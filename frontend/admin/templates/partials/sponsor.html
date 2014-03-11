@@ -20,8 +20,8 @@
     </div>    
 
     <ul class="nav nav-tabs">
-        <li class="active"><a href="#tab_details" data-toggle="tab"><strong>Sponsor Details</strong></a></li>
-        <li class="hideOnNew"><a href="#tab_schedule" data-toggle="tab"><strong>Ad Schedule</strong></a></li>
+        <li class="active"><a data-target="#tab_details" data-toggle="tab"><strong>Sponsor Details</strong></a></li>
+        <li class="hideOnNew"><a ng-click="loadSchedules()" data-target="#tab_schedule" data-toggle="tab"><strong>Ad Schedule</strong></a></li>
     </ul>
                                                               
     <div class="tab-content">
@@ -71,13 +71,45 @@
         <!-- Start Schedule Tab -->
         <div class="tab-pane fade in" id="tab_schedule">
             <div class="page-header">
-                <a data-toggle="modal" href="#scheduleModal" class="pull-right btn btn-sm btn-primary"><i class="fa fa-plus"></i> Add To Schedule</a>
+                <a data-toggle="modal" data-target="#scheduleModal" class="pull-right btn btn-sm btn-primary" ng-click="showScheduleWindow()"><i class="fa fa-plus"></i> Add To Schedule</a>
                 <h3><strong>Current Schedule</strong></h3>
             </div>
             
-            <form id="frmDetails" role="form" method="post" action="schedule/list">    
-            
+            <form id="frmScheduleList" role="form" method="post" action="schedule/list">    
+                <input type="hidden" name="sponsor_id" value="{{ id }}" />
             </form>
+            
+            <form id="frmDelete" name="frmDelete" action="user/delete" method="post">   
+                <input type="hidden" id="delete_ids" name="ids" value="" />
+            </form>            
+            
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>From</a></th>
+                            <th>To</th>
+                            <th>Location</th>
+                            <th>Actions</th>
+                            <th width="10%">Added On</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="schedule in schedules">
+                            <td>{{schedule.date_from}}</td>
+                            <td>{{schedule.date_to}}</td>
+                            <td>{{schedule.location_name}}</td>
+                            <td myn-edit-remove callback-fn="handleAction(arg1, arg2)" data-id="{{schedule.id}}" item="schedule"></td>
+                            <td myn-iso-to-uk-date-time-converter>{{schedule.created_dtm}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>      
+            
+            <div id="paginationWrapper" class="row">
+                <div class="col-sm-9 col-md-10 hidden-xs" myn-pager pages="pages" callback-fn="handlePageClick(arg1)"></div>
+            </div>            
+            
         </div><!-- End Schedule Tab -->       
     </div>
     
@@ -86,13 +118,14 @@
     <div class="modal fade" id="scheduleModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
+                <form id="frmScheduleDetails" role="form" method="post" ng-submit="saveSchedule();">    
+                
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h4 class="modal-title">Schedule Details</h4>
                 </div>
                 
                 <div class="modal-body">
-                    <form id="frmScheduleDetails" role="form" method="post">    
                         <div class="row">
                             <div class="col-sm-4">
                                 <div class="form-group">
@@ -100,19 +133,44 @@
                                     <input type="text" ng-model="schedule.date_from" class="form-control datepicker" placeholder="Date From" id="schedule_date_from" name="date_from" required />
                                 </div> 
                                 
-                                <div class="form-group hideOnNew">
+                                <div class="form-group">
                                     <label class="control-label">Date To</label>
                                     <input type="text" ng-model="schedule.date_to" class="form-control datepicker" placeholder="Date To" id="schedule_date_to" name="date_to" required />
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="control-label">Location</label>
+                                    <select class="form-control" ng-model="selectedLocation" ng-options="l.name for l in locations" required>
+                                        <option value="">- Please select</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="checkbox">
+                                    <label><input type="checkbox" ng-model="use_default_text" id="schedule_use_default_text" value="1" ng-click="setDefaultText()" /> Use Default Text</label>
+                                </div>                                                                                                                            
+                            </div>
+                            
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                    <label class="control-label">Advertising Text</label>
+                                    <div id="epiceditor3"></div>
+                                    <textarea class="form-control hide" rows="4" ng-model="schedule.text" id="schedule_text" name="text"></textarea>
+                                </div> 
+                                
+                                <div class="form-group">
+                                    <label class="control-label">Notes</label>
+                                    <div id="epiceditor4"></div>
+                                    <textarea class="form-control hide" rows="4" ng-model="schedule.notes" id="schedule_notes" name="text"></textarea>
                                 </div>                                                               
                             </div>
-                         </div>                    
-                    </form>                    
-                </div>
-                
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
+                         </div>                                  
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button class="submit btn btn-primary"><i class="fa fa-save"></i> <strong>Save Changes</strong></button>
+                    </div>
+                </form> 
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->    

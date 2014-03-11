@@ -1,7 +1,12 @@
 app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $window, $timeout, globals, utils) {
     $scope.id = 0;  // Default the ID to 0.
     $scope.sponsor = false;
+    $scope.scheduleID = 0;
     $scope.schedule = false;
+    $scope.schedules = [];
+    $scope.locations = [];
+    $scope.pages = [];
+    $scope.selectedLocation = false;
     
     $("#navSponsors a").focus();
     $("#deleteLogoWrapper").hide();
@@ -34,10 +39,10 @@ app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $wi
                 $("#upload_logo").hide();
             }
             
-            $timeout(function() {
-                $scope.doMarkdown();    
-            }, 300);
-            
+            $scope.$apply();
+            var default_text = $("#default_text").val();
+            $scope.loadEpicEditor("epiceditor", "default_text", default_text);
+
             // Setup QQ uploader
             // Setup hero image uploader
             var gUploader = new qq.FileUploader(
@@ -67,51 +72,6 @@ app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $wi
             });            
             
         });      
-    }
-    
-    $scope.doMarkdown = function() {
-        
-        var default_text = $("#default_text").val();
-        //$("#default_text_markdown").val(default_text);
-
-        var opts = {
-            container: 'epiceditor',
-            textarea: "default_text",
-            basePath: 'epiceditor',
-            clientSideStorage: false,
-            localStorageName: 'epiceditor',
-            useNativeFullscreen: true,
-            parser: marked,
-            file: {
-                name: 'epiceditor',
-                defaultContent: default_text,
-                autoSave: 100
-            },
-            theme: {
-                base: myndie.baseURL + 'frontend/admin/css/epiceditor/themes/base/epiceditor.css',
-                preview: myndie.baseURL + 'frontend/admin/css/epiceditor/themes/preview/preview-dark.css',
-                editor: myndie.baseURL + 'frontend/admin/css/epiceditor/themes/editor/epic-dark.css'
-            },
-            button: {
-                preview: true,
-                fullscreen: true,
-                bar: "auto"
-            },
-            focusOnLoad: false,
-            shortcut: {
-                modifier: 18,
-                fullscreen: 70,
-                preview: 80
-            },
-            string: {
-                togglePreview: 'Toggle Preview Mode',
-                toggleEdit: 'Toggle Edit Mode',
-                toggleFullscreen: 'Enter Fullscreen'
-            },
-            autogrow: false
-        }
-            
-        var editor = new EpicEditor(opts).load();   
     }
     
     $scope.bindEvents = function() {
@@ -188,15 +148,269 @@ app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $wi
         });            
                     
     }
+    
+    /**
+    * The waitModalOpen function checks if a bootstrap modal window is open or not
+    * If it is NOT open, it waits for 200 millisecs and then tries again.   The loop
+    * will run at most for 10 times before timing out.
+    * 
+    */
+    $scope.waitModalOpen = function(selector, callback, attemptNo) {
 
-    // We're editing an existing sponsor, load the sponsor data
-    if($scope.id > 0) {
-        $scope.load();
-    } else {
-        // We're adding a new sponsor.
-        // Hide anyting that should be hidden for new users
-        $(".hideOnNew").addClass("hidden");         
-    }           
+        if(!$(selector).hasClass("in")) {
+            attemptNo++;
+            
+            if(attemptNo < 10) {
+                setTimeout(function() {
+                    $scope.waitModalOpen(selector, callback, attemptNo);                
+                }, "200");
+            } else {
+                alert("waitModelOpen - Timeout error");
+            }
+        } else {
+            callback();
+        }
+    }
+    
+    $scope.showScheduleWindow = function() {
+        
+        $scope.selectedLocation = false;    // Clear selected location
+        
+        // Initialise a blank schedule object
+        $scope.schedule = {
+            sponsor_id : $scope.id,
+            use_default_text : 0,
+            location_id : 0,
+            date_form : "",    
+            date_to : "",
+            text : "",
+            notes : ""
+        };
+        
+        // The modal window is opened by bootstap, and we have to wait for the modal
+        // to open fully before calling epic editor.
+        $scope.waitModalOpen("#scheduleModal", function() {
+
+            // Load the scheduleText epic editor
+            $scope.loadEpicEditor("epiceditor3", "schedule_text", "");
+            
+            // Invoke the second epic editor for the notes
+            $scope.loadEpicEditor("epiceditor4", "schedule_notes", "");
+            
+        }, 0);      
+    }
+    
+    $scope.loadSchedules = function() {
+        var params = {};
+        params["sponsor_id"] = $scope.id;
+        
+        var form = $("#frmScheduleList");
+        var params = $(form).serialize();
+
+        // Clear the schedules array
+        $scope.schedules = [];
+
+        $http({
+            method: 'POST',
+            url: myndie.apiURL + $(form).attr("action"),
+            data: params,
+            headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+        }).success(function (data) {
+            if(!data.status) {
+                alert(data.message);
+                return;
+            }
+            
+            $scope.schedules = data.message;
+            
+            // Loop through the schedule results and populate the location name.
+            // RedBean loads the related locations into the sharedLocation array.
+            for(var s in $scope.schedules) {
+                var thisSchedule = $scope.schedules[s];
+                thisSchedule.location_name = thisSchedule.sharedLocation[0].name;
+            }
+            
+            // Setup pagination.
+            // If there is only 1 page, hide the paging area
+            if((data.pages == undefined) || (data.pages <= 1)) {
+                $("#paginationWrapper").addClass("hidden");
+            } else {
+            
+                if(data.pages != $scope.pages.length) {
+                    // Reset the pagination array.
+                    $scope.pages = [];
+                    for(p = 0; p < data.pages; p++) {
+                        $scope.pages.push({pageNo: p+1});
+                    }
+                    
+                    $("#paginationWrapper").removeClass("hidden");
+                }
+            } 
+        });         
+    }
+    
+    /**
+    * Handles the event when the user wants to save a schedule
+    */
+    $scope.saveSchedule = function(e) {
+        
+        // Get the location ID from the selected lcoation.
+        $scope.schedule.location_id = $scope.selectedLocation.id;
+
+        if(!$("#schedule_use_default_text").is(":checked")) {
+            $scope.schedule.use_default_text = 0;
+        }
+        
+        // Because the text and notes textareas are written to automagically by epiceditor,
+        // Angular is NOT aware of the changes to the values.
+        // Explicity set the default text of the sponsor object in angular.
+        $scope.schedule.text = $("#schedule_text").val();                  
+        $scope.schedule.notes = $("#schedule_notes").val();
+        
+        var url =  myndie.apiURL + "schedule/save/" + $scope.scheduleID;
+
+        $http.post(url, $scope.schedule).success(function(data) {        
+            if(!data.status) {
+                utils.showError(data.message);
+                return;
+            }
+            
+            // Close the modal window
+            $('#scheduleModal').modal('hide');
+
+            // Reload the schedule listing.
+            $scope.loadSchedules();
+        });            
+    }
+    
+    $scope.doDelete = function(schedule_id) {
+
+        $("#frmDelete #delete_ids").val(schedule_id);
+        var params = $("#frmDelete").serialize();
+
+        $http({
+            method: 'POST',
+            url: myndie.apiURL + "schedule/delete",
+            data: params,
+            headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+        }).success(function (data) {
+            if(!data.status) {
+                alert(data.message);
+                return;
+            }   
+            
+            $scope.loadSchedules();
+        });     
+    }    
+    
+    $scope.handleAction = function(action, id) {
+        switch(action) {
+          
+            case "edit":
+                // Tell bootstrap to show the modal window
+                $("#scheduleModal").modal("show");
+                
+                // Initialise the modal
+                $scope.showScheduleWindow();
+                
+                // Find the selected schedule item
+                for(var s in $scope.schedules) {
+                    var thisSchedule = $scope.schedules[s];
+                    if(thisSchedule.id == id) {
+                        $scope.scheduleID = id;
+                        $scope.schedule = thisSchedule;
+                        $scope.selectedLocation = $scope.schedule.sharedLocation[0];
+                        
+                        $scope.$apply();
+                        break;
+                    }
+                }                
+                
+                break;
+                
+            case "delete":
+                if(confirm("Are you sure you wish to delete this scheduled item?")) {
+                    $scope.doDelete(id);  
+                }
+                break;                
+                
+            default:
+                alert("Unhandled action: " + action);
+                break;              
+        }
+    }    
+    
+    $scope.loadEpicEditor = function(container, textarea, defaultText) {
+
+        var opts = {
+            container: container,
+            textarea: textarea,
+            basePath: 'epiceditor',
+            clientSideStorage: false,
+            localStorageName: container,
+            useNativeFullscreen: true,
+            parser: marked,
+            file: {
+                name: 'epiceditor',
+                defaultContent: defaultText,
+                autoSave: 100
+            },
+            theme: {
+                base: myndie.baseURL + 'frontend/admin/css/epiceditor/themes/base/epiceditor.css',
+                preview: myndie.baseURL + 'frontend/admin/css/epiceditor/themes/preview/preview-dark.css',
+                editor: myndie.baseURL + 'frontend/admin/css/epiceditor/themes/editor/epic-dark.css'
+            },
+            button: {
+                preview: true,
+                fullscreen: true,
+                bar: "auto"
+            },
+            focusOnLoad: false,
+            shortcut: {
+                modifier: 18,
+                fullscreen: 70,
+                preview: 80
+            },
+            string: {
+                togglePreview: 'Toggle Preview Mode',
+                toggleEdit: 'Toggle Edit Mode',
+                toggleFullscreen: 'Enter Fullscreen'
+            },
+            autogrow: false
+        }
+            
+        // Invoke the first epic editor for the ad text
+        var editor = new EpicEditor(opts).load();        
+    }
+    
+    $scope.setDefaultText = function() {
+        /*
+        if($("#schedule_use_default_text").is(":checked")) {
+            if($scope.sponsor.default_text != "") {
+                $scope.loadEpicEditor("epiceditor3", "schedule_text", $scope.sponsor.default_text);
+            }
+        }
+        */
+    }
+    
+    // Load the list of locations
+    $http.post(myndie.apiURL + "location/list", {}).success(function(data) {        
+        if(!data.status) {
+            utils.showError(data.message);
+            return;
+        }
+        
+        $scope.locations = data.message;           
+        
+        // We're editing an existing sponsor, load the sponsor data
+        if($scope.id > 0) {
+            $scope.load();
+        } else {
+            // We're adding a new sponsor.
+            // Hide anyting that should be hidden for new users
+            $(".hideOnNew").addClass("hidden");         
+        }              
+    });        
     
     $scope.bindEvents();   
 
