@@ -1,4 +1,4 @@
-app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $window, globals, utils) {
+app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $window, $timeout, globals, utils) {
     $scope.id = 0;  // Default the ID to 0.
     $scope.article = false;
 	$scope.selectedCategoryOption = false;  // Will be set to the selected category option
@@ -23,7 +23,11 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
             }
             // Get the article from the data
             $scope.article = data.message; 
-			// $scope.selectedCategoryOption = $scope.article
+			
+			$timeout(function() {
+                $scope.doMarkdown();    
+            }, 300);
+			
 			$scope.$apply();
 			$scope.updateStatusAllocated();
         });     
@@ -78,6 +82,95 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
 		});
     }
 	
+	$scope.doMarkdown = function() {
+        
+        var notes = $("#notes").val();
+        //$("#default_text_markdown").val(default_text);
+
+        var opts = {
+            container: 'epiceditor',
+            textarea: "notes",
+            basePath: 'epiceditor',
+            clientSideStorage: false,
+            localStorageName: 'epiceditor',
+            useNativeFullscreen: true,
+            parser: marked,
+            file: {
+                name: 'epiceditor',
+                defaultContent: notes,
+                autoSave: 100
+            },
+            theme: {
+                base: myndie.baseURL + 'frontend/admin/css/epiceditor/themes/base/epiceditor.css',
+                preview: myndie.baseURL + 'frontend/admin/css/epiceditor/themes/preview/preview-dark.css',
+                editor: myndie.baseURL + 'frontend/admin/css/epiceditor/themes/editor/epic-dark.css'
+            },
+            button: {
+                preview: true,
+                fullscreen: true,
+                bar: "auto"
+            },
+            focusOnLoad: false,
+            shortcut: {
+                modifier: 18,
+                fullscreen: 70,
+                preview: 80
+            },
+            string: {
+                togglePreview: 'Toggle Preview Mode',
+                toggleEdit: 'Toggle Edit Mode',
+                toggleFullscreen: 'Enter Fullscreen'
+            },
+            autogrow: false
+        }
+            
+        var editor = new EpicEditor(opts).load();   
+		
+		
+		
+		var content = $("#content").val();
+        //$("#default_text_markdown").val(default_text);
+
+        var opts2 = {
+            container: 'epiceditor2',
+            textarea: "content",
+            basePath: 'epiceditor2',
+            clientSideStorage: false,
+            localStorageName: 'epiceditor2',
+            useNativeFullscreen: true,
+            parser: marked,
+            file: {
+                name: 'epiceditor2',
+                defaultContent: content,
+                autoSave: 100
+            },
+            theme: {
+                base: myndie.baseURL + 'frontend/admin/css/epiceditor/themes/base/epiceditor.css',
+                preview: myndie.baseURL + 'frontend/admin/css/epiceditor/themes/preview/preview-dark.css',
+                editor: myndie.baseURL + 'frontend/admin/css/epiceditor/themes/editor/epic-dark.css'
+            },
+            button: {
+                preview: true,
+                fullscreen: true,
+                bar: "auto"
+            },
+            focusOnLoad: false,
+            shortcut: {
+                modifier: 18,
+                fullscreen: 70,
+                preview: 80
+            },
+            string: {
+                togglePreview: 'Toggle Preview Mode',
+                toggleEdit: 'Toggle Edit Mode',
+                toggleFullscreen: 'Enter Fullscreen'
+            },
+            autogrow: false
+        }
+            
+        var editor2 = new EpicEditor(opts2).load();  
+    }
+	
 	$scope.updateStatusAllocated = function() {
 		if($("#is_not_allocated").is(":checked")) {
 			$('input[name="position_no"]').attr("disabled", "disabled");
@@ -104,6 +197,13 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
 		
 		
 		$scope.article.category = $scope.selectedCategoryOption.id;
+		// Because the default text textarea is written to automagically by epiceditor,
+        // Angular is NOT aware of the changes to the value.
+        var notes = $("#notes").val();        
+        $scope.article.notes = notes;  
+		var content = $("#content").val();       
+        $scope.article.content = content;  
+		
         // Save the article
         var url =  myndie.apiURL + "article/save/" + $scope.id;
 

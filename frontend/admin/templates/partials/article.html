@@ -62,7 +62,8 @@
 				<div class="row">
 					<div class="col-sm-12">
 						<label class="control-label">Content</label>
-						<textarea class="form-control" rows="4" ng-model="article.content" id="content" name="content"></textarea>
+						<div id="epiceditor2"></div>
+						<textarea class="form-control hidden" rows="4" ng-model="article.content" id="content" name="content"></textarea>
 						
 						<label class="control-label">Source URL</label>
 						<input type="text" ng-model="article.source_url" class="form-control" placeholder="http://" id="source_url" name="source_url" required />	
@@ -74,7 +75,8 @@
 				<div class="row">
 					<div class="col-sm-12">
 						<label class="control-label">Notes</label>
-						<textarea class="form-control" rows="4" ng-model="article.notes" id="notes" name="notes"></textarea>
+						<div id="epiceditor"></div>
+						<textarea class="form-control hidden" rows="4" ng-model="article.notes" id="notes" name="notes"></textarea>
 					</div>  
                 </div>
 				
