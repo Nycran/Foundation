@@ -16,8 +16,19 @@ class Image extends Controller
         parent::__construct();
         
         $this->model = new \Myndie\Model\Image($this->app);
-    }
+    }    
     
+    /**
+    * Handles when an image is uploaded.
+    * Will upload the image, create an image database  table entry for it
+    * and then call a custom method if defined.
+    * 
+    * @param string $imageFor What the image is for, e.g. "sponsor_logo"
+    * @param int $id The id of the thing the image is being uploaded for (e.g. the sponsor id)
+    * @param string $fileName The file name of the file being uploaded
+    * @param boolean $exclusive If set to true, it is enforced that only 1 image for the combination of id and imageFor can be uploaded.
+    * e.g. If a sponsor should only have 1 logo, set to true.
+    */
     public function uploadImage($imageFor, $id, $fileName, $exclusive = false)
     {
         $error = "";
@@ -78,7 +89,7 @@ class Image extends Controller
         $this->result["image_width"] = $imageBean->image_width;
         
         $this->ok("The image was uploaded successfully");
-    }
+    }  
     
     private function handleSponsorLogo($imageBean, &$error = "")
     {

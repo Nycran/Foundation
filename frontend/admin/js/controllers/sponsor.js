@@ -3,6 +3,7 @@ app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $wi
     $scope.sponsor = false;
     
     $("#navSponsors a").focus();
+    $("#deleteLogoWrapper").hide();
  
     
     // If the sponsor ID was passed in the URL, grab it.
@@ -28,6 +29,8 @@ app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $wi
                 var image_path = myndie.baseURL + image.path;
                 
                 $("#logoImageWrapper").html('<img src="' + image_path + '_thumb.jpg?=' + Math.floor(Math.random() * 99999) + '" width="150" />');
+                $("#deleteLogoWrapper").show();
+                $("#upload_logo").hide();
             }
             
             $timeout(function() {
@@ -50,7 +53,14 @@ app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $wi
                     if(data.status)
                     {
                         // The upload completed successfully.
+                        // Load the image into the wrapper
                         $("#logoImageWrapper").html('<img src="' + myndie.baseURL + data.image_path + '_thumb.jpg?=' + Math.floor(Math.random() * 99999) + '" width="150" />');
+                        
+                        // Show the remove button
+                        $("#deleteLogoWrapper").show();
+                        
+                        // Hide the upload button
+                        $("#upload_logo").hide();
                     }
                 }
             });            
@@ -104,7 +114,6 @@ app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $wi
     }
     
     $scope.bindEvents = function() {
-        
         /**
         * Handle the event when the user submits the sponsor details form.
         */
@@ -112,7 +121,36 @@ app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $wi
             e.preventDefault();
 
             $scope.save();
+        });        
+    }
+    
+    /**
+    * Handle the event when a user clicks on the Remove button
+    * to delete the sponsor logo
+    */
+    $scope.deleteImage = function() {
+        var params = {};
+        params["id"] = $scope.id;
+        
+        var url =  myndie.apiURL + "sponsor/delete_logo/" + $scope.id;
+
+        $http.post(url, params).success(function(data) {        
+            if(!data.status) {
+                utils.showError(data.message);
+                return;
+            }
             
+            // Clear the sponsor logo from the wrapper
+            $("#logoImageWrapper").html("");
+            
+            // Hide the remove button
+            $("#deleteLogoWrapper").hide();
+            
+            // Show the upload button
+            $("#upload_logo").show();
+            
+            
+            utils.showSuccess("The sponsor logo was removed successfully");
         });        
     }
     

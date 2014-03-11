@@ -192,7 +192,7 @@
     
     /**************************************** SPONSORS ****************************************
     * Sponsor Routes
-    ********************************************************************************************/                  
+    ******************************************************************************************/                  
     
     /**
     * Get a list of Sponsors
@@ -219,20 +219,24 @@
         $controller->save($id);
     })->conditions(array("id" => '\d+'));       
     
-    
-    /**
-    * Delete Sponsors
-    */    
+   
     $app->post('/api/sponsor/delete', function () use ($app) {       
         $controller = new \Myndie\Controller\Sponsor($app);
         $controller->delete();
     }); 
     
+    $app->post('/api/sponsor/delete_logo/:id', function ($id) use ($app) {       
+        $controller = new \Myndie\Controller\Sponsor($app);
+        $controller->deleteLogo($id);
+    })->conditions(array("id" => '\d+'));       
+    
+    /**************************************** Images ****************************************
+    * Image Routes
+    ******************************************************************************************/                  
     $app->post('/api/images/upload/:imageFor/:id/:fileName', function ($imageFor, $id, $fileName) use ($app) {       
         $controller = new \Myndie\Controller\Image($app);
         $controller->uploadImage($imageFor, $id, $fileName, true);
     })->conditions(array("id" => '\d+')); 
-           
     
     /**************************************** ROLES *********************************************
     * Role Routes

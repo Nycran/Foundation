@@ -16,6 +16,7 @@
 
     <ul class="nav nav-tabs">
         <li class="active"><a href="#tab_details" data-toggle="tab"><strong>Sponsor Details</strong></a></li>
+        <li class="hideOnNew"><a href="#tab_schedule" data-toggle="tab"><strong>Ad Schedule</strong></a></li>
     </ul>
                                                               
     <div class="tab-content">
@@ -44,6 +45,10 @@
                         <div class="form-group">
                             <label class="control-label">Sponsor Logo</label>
                             <div id="logoImageWrapper"></div>
+                        </div>
+                        
+                        <div id="deleteLogoWrapper" class="form-group">
+                            <a href="javascript:void(0);" class="btn btn-sm btn-danger" ng-click="deleteImage()"><i class="fa fa-trash-o"></i> Remove</a>
                         </div>
                         
                         <div class="form-group">

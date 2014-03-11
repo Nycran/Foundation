@@ -61,6 +61,48 @@ class Sponsor extends Controller
         $this->result["message"] = $id;
         $this->send();     
     }
+    
+    public function deleteLogo($id)
+    {   
+        // Load the sponsor bean
+        $sponsorBean = $this->model->get($id);
+        if(!$sponsorBean) {
+            $this->error("Could not load the sponsor");
+        }
+        
+        $imageBeans = $sponsorBean->sharedImage;
+        
+        foreach($imageBeans as $imageBean) {
+            // Remove the image from the file system
+            $path = MYNDIE_ABSOLUTE_PATH . $imageBean->path;
+            
+            // Delete the main image.
+            if(file_exists($path)) {
+                @unlink($path);
+                
+                if(file_exists($path)) { 
+                    $this->error("Couldn't delete image:  $path");    
+                }                 
+            } 
+            
+            // Delete the thumbnail
+            $path = $path . "_thumb.jpg";
+            
+            if(file_exists($path)) {
+                @unlink($path);
+                
+                if(file_exists($path)) { 
+                    $this->error("Couldn't delete image:  $path");    
+                }                 
+            }             
+        }
+        
+        // Remove the shareImages
+        $sponsorBean->sharedImage = array();
+        R::store($sponsorBean);
+        
+        $this->ok("Image removed");
+    }
  
     /***
     * Returns the form validation rules for adding a new category.
