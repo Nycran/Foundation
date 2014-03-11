@@ -52,10 +52,6 @@
 					<div class="col-sm-12">
 						<label class="control-label">Category</label>
 						
-						<!-- <select name="category" id="category" ng-model="article.category" >
-							<option ng-repeat="category in categories" value="{{category.id}}">{{category.name}}</option>
-						</select> -->
-						
 						<select class="form-control" ng-model="selectedCategoryOption" ng-options="c.name for c in categories" required>
 						<option value="">- Please select</option>
 						</select>
@@ -83,8 +79,8 @@
                 </div>
 				
                 <p>
-                    <button class="submit btn btn-primary"><i class="fa fa-save"></i> <strong>Save Changes</strong></button>
-                    <button class="submit btn btn-primary"><i class="fa fa-delete"></i> <strong>Delete</strong></button>
+                    <button class="submit btn btn-primary" ng-click="save()"><i class="fa fa-save"></i> <strong>Save Changes</strong></button>
+                    <button class="submit btn btn-primary" ng-click="delete()"><i class="fa fa-delete"></i> <strong>Delete</strong></button>
                 </p>
             </form>            
         </div> <!-- End Details Tab -->

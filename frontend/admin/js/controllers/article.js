@@ -23,6 +23,9 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
             }
             // Get the article from the data
             $scope.article = data.message; 
+			// $scope.selectedCategoryOption = $scope.article
+			$scope.$apply();
+			$scope.updateStatusAllocated();
         });     
 
         
@@ -42,7 +45,17 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
             }
 
             $scope.categories = data.message;
-            
+			if($scope.id > 0)
+			{
+				for (var i in $scope.categories)
+				{
+					if($scope.categories[i].id == $scope.article.category)
+					{
+						$scope.selectedCategoryOption = $scope.categories[i];
+						break;
+					}
+				}
+			}
         });      
     }
 	
@@ -51,20 +64,6 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
 	  
     
     $scope.bindEvents = function() {
-        
-        /**
-        * Handle the event when the user submits the article details form.
-        */
-		$(".btn.btn-primary").click(function(e) {
-			if($(this).find(">:first-child").hasClass("fa-save"))
-			{
-				$scope.save();
-			}
-			else
-			{
-				$scope.delete();
-			}
-		});
 		
         $("#frmDetails").submit(function(e) {
             e.preventDefault();
@@ -150,6 +149,7 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
                     
     }
 
+	
     // We're editing an existing article, load the article data
     if($scope.id > 0) {
         $scope.load();
@@ -157,7 +157,7 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
         // We're adding a new article. 
     }           
     
-    $scope.loadCategory();
+	$scope.loadCategory();
 	$scope.updateStatusAllocated();
     $scope.bindEvents();   
 }); 
