@@ -63,7 +63,7 @@ class Article extends Controller
 		$categoryModel = new \Myndie\Model\Category($this->app);
 
 		// Load the category
-		$categoryBean = $categoryModel->get($articleBean->category_id);
+		$categoryBean = $categoryModel->get($articleBean->category);
 		
 		$articleBean->sharedCategory[] = $categoryBean;
 

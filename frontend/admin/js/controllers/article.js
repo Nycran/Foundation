@@ -29,6 +29,13 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
             }, 300);
 			
 			$scope.$apply();
+			
+			var content = $("#content").val();
+            $scope.loadEpicEditor("epiceditor2", "content", content);
+			
+			var notes = $("#notes").val();
+            $scope.loadEpicEditor("epiceditor", "notes", notes);
+			
 			$scope.updateStatusAllocated();
         });     
 
@@ -82,22 +89,19 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
 		});
     }
 	
-	$scope.doMarkdown = function() {
-        
-        var notes = $("#notes").val();
-        //$("#default_text_markdown").val(default_text);
+	$scope.loadEpicEditor = function(container, textarea, defaultText) {
 
         var opts = {
-            container: 'epiceditor',
-            textarea: "notes",
+            container: container,
+            textarea: textarea,
             basePath: 'epiceditor',
             clientSideStorage: false,
-            localStorageName: 'epiceditor',
+            localStorageName: container,
             useNativeFullscreen: true,
             parser: marked,
             file: {
                 name: 'epiceditor',
-                defaultContent: notes,
+                defaultContent: defaultText,
                 autoSave: 100
             },
             theme: {
@@ -124,51 +128,8 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
             autogrow: false
         }
             
-        var editor = new EpicEditor(opts).load();   
-		
-		
-		
-		var content = $("#content").val();
-        //$("#default_text_markdown").val(default_text);
-
-        var opts2 = {
-            container: 'epiceditor2',
-            textarea: "content",
-            basePath: 'epiceditor2',
-            clientSideStorage: false,
-            localStorageName: 'epiceditor2',
-            useNativeFullscreen: true,
-            parser: marked,
-            file: {
-                name: 'epiceditor2',
-                defaultContent: content,
-                autoSave: 100
-            },
-            theme: {
-                base: myndie.baseURL + 'frontend/admin/css/epiceditor/themes/base/epiceditor.css',
-                preview: myndie.baseURL + 'frontend/admin/css/epiceditor/themes/preview/preview-dark.css',
-                editor: myndie.baseURL + 'frontend/admin/css/epiceditor/themes/editor/epic-dark.css'
-            },
-            button: {
-                preview: true,
-                fullscreen: true,
-                bar: "auto"
-            },
-            focusOnLoad: false,
-            shortcut: {
-                modifier: 18,
-                fullscreen: 70,
-                preview: 80
-            },
-            string: {
-                togglePreview: 'Toggle Preview Mode',
-                toggleEdit: 'Toggle Edit Mode',
-                toggleFullscreen: 'Enter Fullscreen'
-            },
-            autogrow: false
-        }
-            
-        var editor2 = new EpicEditor(opts2).load();  
+        // Invoke the first epic editor for the ad text
+        var editor = new EpicEditor(opts).load();        
     }
 	
 	$scope.updateStatusAllocated = function() {

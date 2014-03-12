@@ -61,7 +61,7 @@
                 <tr ng-repeat="article in articles">
                     <td><a href="#!articles/detail/{{article.id}}"><strong>{{article.title}}</strong></a></td>
                     <td>{{article.author}}</td>
-                    <td>{{article.category}}</td>
+                    <td>{{article.sharedCategory[0].name}}</td>
                     <td myn-iso-to-uk-date-time-converter>{{article.created_dtm}}</td>
                 </tr>
             </tbody>
