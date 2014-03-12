@@ -58,7 +58,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ui-draggable="true" drag="article" on-drop-success="dropSuccessHandler($event,$index,articles)" ng-repeat="article in articles">
+                <tr ng-repeat="article in articles" ui-draggable="true" drag="article" on-drop-success="dropSuccessHandler($event,$index,articles)">
                     <td><a href="#!articles/detail/{{article.id}}"><strong>{{article.title}}</strong></a></td>
                     <td>{{article.author}}</td>
                     <td>{{article.sharedCategory[0].name}}</td>
