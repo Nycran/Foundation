@@ -134,6 +134,15 @@ app.controller('ArticleListCtrl', function ($scope, $http, $window) {
         $scope.load();        
     }   
 	
+	$scope.dropSuccessHandler = function($event,index,array){
+			// array.splice(index,1);
+			alert('aaaa');
+		};
+		$scope.onDrop = function($event,$data,array){
+			// array.push($data);
+			alert('bbbb');
+		};
+	
 	$scope.bindEvents = function() {
         
         $('.datepicker').datepicker({
@@ -141,6 +150,8 @@ app.controller('ArticleListCtrl', function ($scope, $http, $window) {
 		}).on('changeDate', function(e){
 			$scope.loadAsignmentDay($('.datepicker').datepicker('getDate'));
 		});
+		
+		// $( "#list_unlocated tr" ).draggable();
     }
 	
 	$scope.bindEvents();  

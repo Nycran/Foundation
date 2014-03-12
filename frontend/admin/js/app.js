@@ -1,5 +1,5 @@
        
-    var app = angular.module('myndieApp', ['SharedServices', 'ngRoute']);        
+    var app = angular.module('myndieApp', ['SharedServices', 'ngRoute', 'ngDragDrop']);        
     
     /*******************
     * Angular App Routing
