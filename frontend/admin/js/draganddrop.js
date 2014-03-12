@@ -10,6 +10,17 @@ angular.module("ngDragDrop",[])
         '$parse',
         '$rootScope',
         function ($parse, $rootScope) {
+            $rootScope.safeApply = function(fn) {
+              var phase = this.$root.$$phase;
+              if(phase == '$apply' || phase == '$digest') {
+                if(fn && (typeof(fn) === 'function')) {
+                  fn();
+                }
+              } else {
+                this.$apply(fn);
+              }
+            };            
+            
             return function (scope, element, attrs) {
                 if (window.jQuery && !window.jQuery.event.props.dataTransfer) {
                     window.jQuery.event.props.push('dataTransfer');
@@ -57,11 +68,9 @@ angular.module("ngDragDrop",[])
                     if (e.dataTransfer.dropEffect !== "none") {
                         if (attrs.onDropSuccess) {
                             var fn = $parse(attrs.onDropSuccess);
-                            setTimeout(function() {
-                                scope.$apply(function () {
-                                    fn(scope, {$event: e});
-                                });
-                            }, "200");
+                            $rootScope.safeApply(function () {
+                                fn(scope, {$event: e});
+                            });
                         }
                     }
                 });
@@ -102,9 +111,10 @@ angular.module("ngDragDrop",[])
                     var data = e.dataTransfer.getData("Text");
                     data = angular.fromJson(data);
                     var fn = $parse(attr.uiOnDrop);
-                    scope.$apply(function () {
+                    $rootScope.safeApply(function () {
                         fn(scope, {$data: data, $event: e});
                     });
+                    
                     element.removeClass(dragEnterClass);
                 }
 
