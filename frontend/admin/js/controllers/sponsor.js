@@ -163,7 +163,7 @@ app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $wi
             if(attemptNo < 10) {
                 setTimeout(function() {
                     $scope.waitModalOpen(selector, callback, attemptNo);                
-                }, "200");
+                }, "500");
             } else {
                 alert("waitModelOpen - Timeout error");
             }
@@ -175,6 +175,7 @@ app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $wi
     $scope.showScheduleWindow = function() {
         
         $scope.selectedLocation = false;    // Clear selected location
+        $scope.scheduleID = 0;
         
         // Initialise a blank schedule object
         $scope.schedule = {
@@ -228,6 +229,11 @@ app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $wi
             for(var s in $scope.schedules) {
                 var thisSchedule = $scope.schedules[s];
                 thisSchedule.location_name = thisSchedule.sharedLocation[0].name;
+                thisSchedule.location_id = thisSchedule.sharedLocation[0].id;
+                
+                // Convert ISO dates to UK date.
+                thisSchedule.date_from = utils.convertISOToUKDate(thisSchedule.date_from);
+                thisSchedule.date_to = utils.convertISOToUKDate(thisSchedule.date_to);                
             }
             
             // Setup pagination.
@@ -313,13 +319,24 @@ app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $wi
                 // Initialise the modal
                 $scope.showScheduleWindow();
                 
-                // Find the selected schedule item
+                // Find the schedule item that the user selected in the list.
                 for(var s in $scope.schedules) {
                     var thisSchedule = $scope.schedules[s];
                     if(thisSchedule.id == id) {
+                        // Set the scheduleID and schedule in the scope.
                         $scope.scheduleID = id;
                         $scope.schedule = thisSchedule;
-                        $scope.selectedLocation = $scope.schedule.sharedLocation[0];
+                        
+                        // Inject the sponsor ID into the schedule item
+                        $scope.schedule.sponsor_id = $scope.id;
+                        
+                        // Loop through the locations and find the selected location
+                        for(var l in $scope.locations) {
+                            if($scope.locations[l].id = $scope.schedule.location_id) {
+                                $scope.selectedLocation = $scope.locations[l];
+                                break; 
+                            }    
+                        }
                         
                         $scope.$apply();
                         break;

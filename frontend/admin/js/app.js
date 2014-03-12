@@ -318,7 +318,21 @@
             hideMessages: function() {
                 $("#errorMessage").addClass("hidden");
                 $("#sucessMessage").addClass("hidden");
-            },            
+            },
+            
+            convertISOToUKDate : function(d) {
+                if((d == null) || (d == "")) {
+                    return d;
+                }
+                
+                var elements = d.split("-");
+                if(elements.length != 3) {
+                    return "";
+                }
+                
+                var result = elements[2] + "/" + elements[1] + "/" + elements[0];
+                return result;
+            }            
         };
     }); 
    
