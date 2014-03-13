@@ -5,6 +5,7 @@
     </ol><!-- .breadcrumb -->
     
     <div class="page-header">
+		<a href="#!/articles/detail/0" class="pull-right btn btn-sm btn-primary"><i class="fa fa-plus"></i> Add New Article</a>
         <h3><strong>5iles for a day</strong></h3>
     </div>
     
@@ -52,9 +53,10 @@
             <thead>
                 <tr>
                     <th>Title</th>
-                    <th width="25%">Editor</th>
-                    <th width="25%">Category</th>
-                    <th width="25%">Added</th>
+                    <th width="20%">Editor</th>
+                    <th width="20%">Category</th>
+					<th width="20%">Actions</th>
+                    <th width="20%">Added On</th>
                 </tr>
             </thead>
             <tbody>
@@ -62,6 +64,7 @@
                     <td><a href="#!articles/detail/{{article.id}}"><strong>{{article.title}}</strong></a></td>
                     <td>{{article.author}}</td>
                     <td>{{article.sharedCategory[0].name}}</td>
+					<td myn-edit-remove callback-fn="handleAction(arg1, arg2)" data-id="{{article.id}}" item="article"></td>
                     <td myn-iso-to-uk-date-time-converter>{{article.created_dtm}}</td>
                 </tr>
             </tbody>
@@ -70,10 +73,6 @@
     
     <div id="paginationWrapper" class="row">
 			<div class="col-sm-9 col-md-10 hidden-xs" myn-pager pages="pages" callback-fn="handlePageClick(arg1)"></div>
-    </div>
-	<div class="row">
-		<a href="#!/articles/detail/0" class="pull-right btn btn-sm btn-primary"><i class="fa fa-plus"></i> Add</a>
-		<a class="pull-right btn btn-sm btn-primary"><i class="fa"></i> Delete</a>
     </div>
 </div>
 
