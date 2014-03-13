@@ -35,19 +35,13 @@ angular.module("ngDragDrop",[])
                 });
 				
 				element.unbind("dragstart");
-
                 element.bind("dragstart", function (e) {
-					console.log('Enter dragstart ....'); 
                     if(dragData == undefined) {
                         return;
                     }
                     
                     var sendData = angular.toJson(dragData);
-					// if(!sendData)
-						// return;
                     var sendChannel = attrs.dragChannel || "defaultchannel";
-					console.log('sendChannel ' + sendChannel);
-					console.log('sendData ' + sendData);
                     e.dataTransfer.setData("Text", sendData);
                     $rootScope.$broadcast("ANGULAR_DRAG_START", sendChannel);
 
@@ -60,8 +54,6 @@ angular.module("ngDragDrop",[])
                 }, false);
 				element.unbind("dragend");
                 element.bind("dragend", function (e) {
-					console.log('Enter dragend ....');
-					console.log('attrs ' + attrs);
                     var sendChannel = attrs.dragChannel || "defaultchannel";
                     
                     //$rootScope.$broadcast("ANGULAR_DRAG_END", sendChannel);
@@ -114,7 +106,6 @@ angular.module("ngDragDrop",[])
                     $rootScope.safeApply(function () {
                         fn(scope, {$data: data, $event: e});
                     });
-                    
                     element.removeClass(dragEnterClass);
                 }
 

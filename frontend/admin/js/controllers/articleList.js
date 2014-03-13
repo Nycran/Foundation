@@ -1,4 +1,4 @@
-app.controller('ArticleListCtrl', function ($scope, $http, $window) {
+app.controller('ArticleListCtrl', function ($scope, $http, $window, utils) {
     $scope.articles = [];    // Start off with empty clients array
     $scope.asignment_days = [];    // Start off with empty clients array
     $scope.pages = [];
@@ -134,24 +134,61 @@ app.controller('ArticleListCtrl', function ($scope, $http, $window) {
         $scope.load();        
     }   
 	
-	$scope.dropSuccessHandler = function($event,index,array){
-			// array.splice(index,1);
-			alert('aaaa');
-		};
-		$scope.onDrop = function($event,$data,array){
-			// array.push($data);
-			alert('bbbb');
-		};
+	
+	/**
+    * Save the article
+    * If the article ID is 0, a new article will be created, otherwise we update the current article
+    */
+    $scope.save = function(article) {
+        
+        utils.hideMessages();   // Hide all message divs
+		
+        // Save the article
+        var url =  myndie.apiURL + "article/save/" + article.id;
+
+        $http.post(url, article).success(function(data) {        
+            if(!data.status) {
+                utils.showError(data.message);
+                return;
+            }
+            
+            utils.showSuccess("The article was updated successfully");
+        });            
+                    
+    }
+	
+	$scope.dropSuccessHandler = function($event,index){
+		// Remove article on client side
+		$( $event.currentTarget ).remove();
+	};
+	$scope.onDrop = function($event,$data){
+		//Save article (server side)
+		dateObj = $('#published_date').datepicker('getDate');
+			
+		var month = dateObj.getMonth() + 1;
+		if(month < 10) month = '0' + month;
+		var day = dateObj.getDate();
+		var year = dateObj.getFullYear();
+		$data.is_not_allocated = 0;
+		$data.published_date = day + "-" + month + "-" + year;
+		$data.position_no = $( $event.currentTarget ).children("td:first-child").text();
+		$scope.save($data);
+	
+		// Add article on client side
+		var element =  $( $event.currentTarget ).children("td:nth-child(2)");
+		element.empty();
+		element.append('<a href="#!articles/detail/' + $data.id +'">' + $data.title + '</a>');
+	};
 	
 	$scope.bindEvents = function() {
         
-        $('.datepicker').datepicker({
+        $('#published_date').datepicker({
 			todayHighlight: 'true',
 		}).on('changeDate', function(e){
-			$scope.loadAsignmentDay($('.datepicker').datepicker('getDate'));
+			$scope.loadAsignmentDay($('#published_date').datepicker('getDate'));
 		});
 		
-		// $( "#list_unlocated tr" ).draggable();
+		$('#published_date').datepicker('setDate', new Date());
     }
 	
 	$scope.bindEvents();  

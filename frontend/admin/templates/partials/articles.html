@@ -15,30 +15,30 @@
 	
 	<div class="row">
 		<div class="col-sm-4">     
-			<div class="datepicker"></div>
+			<div id="published_date"></div>
 		</div>
 		<div class="col-sm-8">    
 			<div class="table-responsive">
 			<table class="table table-striped table-hover" id="asignment_days">
-				<tr id="position_1">
+				<tr id="position_1" ui-on-Drop="onDrop($event,$data)" drag-enter-class="position_enter">
 					<td>1</td>
-					<td ui-on-Drop="onDrop($event,$data, articles)"><a href="#!articles/detail/0">Add</a></td>
+					<td><a href="#!articles/detail/0">Add</a></td>
 				</tr>
-				<tr id="position_2">
+				<tr id="position_2" ui-on-Drop="onDrop($event,$data)" drag-enter-class="position_enter">
 					<td>2</td>
-					<td ui-on-Drop="onDrop($event,$data, articles)"><a href="#!articles/detail/0">Add</a></td>
+					<td><a href="#!articles/detail/0">Add</a></td>
 				</tr>
-				<tr id="position_3">
+				<tr id="position_3" ui-on-Drop="onDrop($event,$data)" drag-enter-class="position_enter">
 					<td>3</td>
-					<td ui-on-Drop="onDrop($event,$data, articles)"><a href="#!articles/detail/0">Add</a></td>
+					<td><a href="#!articles/detail/0">Add</a></td>
 				</tr>
-				<tr id="position_4">
+				<tr id="position_4" ui-on-Drop="onDrop($event,$data)" drag-enter-class="position_enter">
 					<td>4</td>
-					<td ui-on-Drop="onDrop($event,$data, articles)"><a href="#!articles/detail/0">Add</a></td>
+					<td><a href="#!articles/detail/0">Add</a></td>
 				</tr>
-				<tr id="position_5">
+				<tr id="position_5" ui-on-Drop="onDrop($event,$data)" drag-enter-class="position_enter">
 					<td>5</td>
-					<td ui-on-Drop="onDrop($event,$data, articles)"><a href="#!articles/detail/0">Add</a></td>
+					<td><a href="#!articles/detail/0">Add</a></td>
 				</tr>
 			</table>
 			</div>
@@ -58,7 +58,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="article in articles" ui-draggable="true" drag="article" on-drop-success="dropSuccessHandler($event,$index,articles)">
+                <tr ng-repeat="article in articles" ui-draggable="true" drag="article" on-drop-success="dropSuccessHandler($event,$index)">
                     <td><a href="#!articles/detail/{{article.id}}"><strong>{{article.title}}</strong></a></td>
                     <td>{{article.author}}</td>
                     <td>{{article.sharedCategory[0].name}}</td>

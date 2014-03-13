@@ -24,10 +24,6 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
             // Get the article from the data
             $scope.article = data.message; 
 			
-			$timeout(function() {
-                $scope.doMarkdown();    
-            }, 300);
-			
 			$scope.$apply();
 			
 			var content = $("#content").val();
