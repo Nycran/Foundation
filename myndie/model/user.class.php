@@ -3,7 +3,6 @@ namespace Myndie\Model;
 
 use RedBean_Facade as R; 
 use Myndie\Lib\Strings;
-use Myndie\Lib\Session;
 
 class User extends Model
 {
@@ -154,7 +153,7 @@ class User extends Model
         }
         
         // Create a new session
-        if(!Session::createSession()) {
+        if(!\Myndie\Lib\Session::createSession()) {
             $this->app->error(new \Exception("Myndie/Model/User::login - Failed to create session"));
         }
         
@@ -177,11 +176,11 @@ class User extends Model
         }       
 
         // Setup session data
-        Session::set("user_id", $user->id);
-        Session::set("user_first_name", $user->first_name);
-        Session::set("user_last_name", $user->last_name);
-        Session::set("user_email", $user->email);
-        Session::set("user_roles", $roleCSV);
+        \Myndie\Lib\Session::set("user_id", $user->id);
+        \Myndie\Lib\Session::set("user_first_name", $user->first_name);
+        \Myndie\Lib\Session::set("user_last_name", $user->last_name);
+        \Myndie\Lib\Session::set("user_email", $user->email);
+        \Myndie\Lib\Session::set("user_roles", $roleCSV);
 
         return true;
     }    

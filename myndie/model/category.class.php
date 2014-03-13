@@ -3,7 +3,6 @@ namespace Myndie\Model;
 
 use RedBean_Facade as R; 
 use Myndie\Lib\Strings;
-use Myndie\Lib\Session;
 
 class Category extends Model
 {
