@@ -2,16 +2,28 @@ app.controller('ArticleListCtrl', function ($scope, $http, $window, utils) {
     $scope.articles = [];    // Start off with empty clients array
     $scope.asignment_days = [];    // Start off with empty clients array
     $scope.pages = [];
+	$scope.locations = [];
     $scope.selectedPageNo = false;
+    $scope.selectedLocationOption = false;
     
     var self = this;
     
     $("#navArticles a").focus();
+	
+	$scope.load = function() {
+		$scope.loadNotAsignmentArticle();
+		$scope.loadAsignmentArticle();
+	}
 
-    $scope.load = function() {
+    $scope.loadNotAsignmentArticle = function() {
+		
+		if(!$scope.selectedLocationOption)
+			return;
+	
         var form = $("#frmFilters");
         var params = $(form).serialize();
 		params += "&is_not_allocated=1";
+		params += "&location=" + $scope.selectedLocationOption.id;
         // Clear the clients array
         $scope.articles = [];
 
@@ -45,6 +57,23 @@ app.controller('ArticleListCtrl', function ($scope, $http, $window, utils) {
                 }
             } 
         });            
+    }
+	
+	$scope.loadLocations = function() {
+        $scope.locations = [];
+
+        $http({
+            method: 'POST',
+            url: myndie.apiURL + "location/list",
+            headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+        }).success(function (data) {
+            if(!data.status) {
+                alert(data.message);
+                return;
+            }
+
+            $scope.locations = data.message;
+        });      
     }
     
     $scope.handleAction = function(action, id) {
@@ -81,16 +110,22 @@ app.controller('ArticleListCtrl', function ($scope, $http, $window, utils) {
                 return;
             }   
             
-            $scope.load();
+            $scope.loadNotAsignmentArticle();
         });     
     }
 	
 	
-	$scope.loadAsignmentDay = function(dateObj) {
+	$scope.loadAsignmentArticle = function(dateObj) {
+		if(!$scope.selectedLocationOption)
+			return;
+			
         var form = $("#frmFilters");
         var params = $(form).serialize();
 		params += "&is_not_allocated=0";
+		params += "&location=" + $scope.selectedLocationOption.id;
 		
+		if(dateObj == undefined)
+			dateObj = new Date();
 		var month = dateObj.getMonth() + 1;
 		if(month < 10) month = '0' + month;
 		var day = dateObj.getDate();
@@ -131,7 +166,7 @@ app.controller('ArticleListCtrl', function ($scope, $http, $window, utils) {
         $("#page").val(pageNo);
         
         // Reload the listing
-        $scope.load();        
+        $scope.loadNotAsignmentArticle();        
     }   
 	
 	
@@ -185,7 +220,7 @@ app.controller('ArticleListCtrl', function ($scope, $http, $window, utils) {
         $('#published_date').datepicker({
 			todayHighlight: 'true',
 		}).on('changeDate', function(e){
-			$scope.loadAsignmentDay($('#published_date').datepicker('getDate'));
+			$scope.loadAsignmentArticle($('#published_date').datepicker('getDate'));
 		});
 		
 		$('#published_date').datepicker('setDate', new Date());
@@ -193,6 +228,6 @@ app.controller('ArticleListCtrl', function ($scope, $http, $window, utils) {
 	
 	$scope.bindEvents();  
     
-    $scope.load();
-	$scope.loadAsignmentDay(new Date());
+	$scope.loadLocations();
+	$scope.load();
 }); 

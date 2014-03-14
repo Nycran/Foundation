@@ -28,5 +28,10 @@ class Article extends Model
             $where .= "AND published_date = ? "; 
             $values[] = $filters["published_date"];  
         }
+		
+		if(array_key_exists("location", $filters)) {
+            $where .= "AND location = ? "; 
+            $values[] = $filters["location"];  
+        }
     }           
 }
