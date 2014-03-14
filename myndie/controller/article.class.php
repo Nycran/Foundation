@@ -61,11 +61,16 @@ class Article extends Controller
 		
 		// Create an instance of the category model
 		$categoryModel = new \Myndie\Model\Category($this->app);
+		// Create an instance of the location model
+		$locationModel = new \Myndie\Model\Location($this->app);
 
 		// Load the category
 		$categoryBean = $categoryModel->get($articleBean->category);
+		// Load the location
+		$locationBean = $locationModel->get($articleBean->location);
 		
 		$articleBean->sharedCategory[] = $categoryBean;
+		$articleBean->sharedLocation[] = $locationBean;
 
 		R::store($articleBean);
 
@@ -89,7 +94,8 @@ class Article extends Controller
             'content' => true,
             'source_url' => true,
             'notes' => true,
-            'category' => true
+            'category' => true,
+            'location' => true
         ];
         
         return $attribs;

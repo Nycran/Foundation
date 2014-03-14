@@ -2,7 +2,9 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
     $scope.id = 0;  // Default the ID to 0.
     $scope.article = false;
 	$scope.selectedCategoryOption = false;  // Will be set to the selected category option
+	$scope.selectedLocationOption = false;  // Will be set to the selected category option
     $scope.categories = [];
+    $scope.locations = [];
 	
     $("#navArticles a").focus();
 
@@ -24,21 +26,15 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
             // Get the article from the data
             $scope.article = data.message; 
 			
-			$scope.$apply();
+            $scope.loadEpicEditor("epiceditor2", "content", $scope.article.content);
+            $scope.loadEpicEditor("epiceditor", "notes", $scope.article.notes);
 			
-			var content = $("#content").val();
-            $scope.loadEpicEditor("epiceditor2", "content", content);
-			
-			var notes = $("#notes").val();
-            $scope.loadEpicEditor("epiceditor", "notes", notes);
-			
-			$scope.updateStatusAllocated();
         });     
 
         
     }
 	
-	$scope.loadCategory = function() {
+	$scope.loadCategories = function() {
         $scope.categories = [];
 
         $http({
@@ -67,6 +63,35 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
     }
 	
 	
+	$scope.loadLocations = function() {
+        $scope.locations = [];
+
+        $http({
+            method: 'POST',
+            url: myndie.apiURL + "location/list",
+            headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+        }).success(function (data) {
+            if(!data.status) {
+                alert(data.message);
+                return;
+            }
+
+            $scope.locations = data.message;
+			if($scope.id > 0)
+			{
+				for (var i in $scope.locations)
+				{
+					if($scope.locations[i].id == $scope.article.category)
+					{
+						$scope.selectedLocationOption = $scope.locations[i];
+						break;
+					}
+				}
+			}
+        });      
+    }
+	
+	
 	
 	  
     
@@ -74,10 +99,6 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
 		
         $("#frmDetails").submit(function(e) {
             e.preventDefault();
-        });  
-
-		$("#is_not_allocated").change(function(e) {
-            $scope.updateStatusAllocated();
         });  
 
 		$('#published_date').datepicker({
@@ -127,18 +148,6 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
         // Invoke the first epic editor for the ad text
         var editor = new EpicEditor(opts).load();        
     }
-	
-	$scope.updateStatusAllocated = function() {
-		if($("#is_not_allocated").is(":checked")) {
-			$('input[name="position_no"]').attr("disabled", "disabled");
-			$('#published_date').attr("disabled", "disabled");
-		}
-		else
-		{
-			$('input[name="position_no"]').removeAttr("disabled");
-			$('#published_date').removeAttr("disabled");
-		}
-	}
     
     /**
     * Save the article
@@ -154,6 +163,7 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
 		
 		
 		$scope.article.category = $scope.selectedCategoryOption.id;
+		$scope.article.location = $scope.selectedLocationOption.id;
 		// Because the default text textarea is written to automagically by epiceditor,
         // Angular is NOT aware of the changes to the value.
         var notes = $("#notes").val();        
@@ -214,7 +224,7 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
         // We're adding a new article. 
     }           
     
-	$scope.loadCategory();
-	$scope.updateStatusAllocated();
+	$scope.loadCategories();
+	$scope.loadLocations();
     $scope.bindEvents();   
 }); 
