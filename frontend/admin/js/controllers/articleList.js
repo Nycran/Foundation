@@ -124,13 +124,16 @@ app.controller('ArticleListCtrl', function ($scope, $http, $window, utils) {
 		params += "&is_not_allocated=0";
 		params += "&location=" + $scope.selectedLocationOption.id;
 		
-		if(dateObj == undefined)
+		
+		if(dateObj === undefined)
 			dateObj = new Date();
+
 		var month = dateObj.getMonth() + 1;
 		if(month < 10) month = '0' + month;
 		var day = dateObj.getDate();
 		var year = dateObj.getFullYear();
-		params += "&published_date=" + day + "-" + month + "-" + year;
+		params += "&published_date=" + day + "/" + month + "/" + year;
+		
         // Clear the clients array
         $scope.asignment_days = [];
 
@@ -205,7 +208,7 @@ app.controller('ArticleListCtrl', function ($scope, $http, $window, utils) {
 		var day = dateObj.getDate();
 		var year = dateObj.getFullYear();
 		$data.is_not_allocated = 0;
-		$data.published_date = day + "-" + month + "-" + year;
+		$data.published_date = day + "/" + month + "/" + year;
 		$data.position_no = $( $event.currentTarget ).children("td:first-child").text();
 		$scope.save($data);
 	

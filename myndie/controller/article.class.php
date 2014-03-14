@@ -53,7 +53,10 @@ class Article extends Controller
         
         // The form was valid.  Get the validated and transformed data from the profile.
         $data = $profile->getLastResult()->getValidData();         
-
+		
+		// Convert dates to ISO       
+        $data["published_date"] = Utils::convertUKDateToISODate($data["published_date"]);
+		
         // Save the article record (if id = 0 then a new record will be created)
         $id = $this->model->save($id, $data);  
 

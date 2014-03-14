@@ -26,6 +26,8 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
             // Get the article from the data
             $scope.article = data.message; 
 			
+			$scope.article.published_date = utils.convertISOToUKDate($scope.article.published_date);
+			
             $scope.loadEpicEditor("epiceditor2", "content", $scope.article.content);
             $scope.loadEpicEditor("epiceditor", "notes", $scope.article.notes);
 			
