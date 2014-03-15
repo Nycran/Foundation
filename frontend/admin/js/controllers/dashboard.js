@@ -70,27 +70,35 @@ app.controller('DashboardCtrl', function ($scope, $http, utils) {
 			var temp = data.message; 
 			
 			$scope.statistics_articles = [];
-			for (var i in temp)
+			console.log(temp);
+			
+			var i = 0;
+			for(var k in $scope.locations)
 			{
-				temp[i].published_date = utils.convertISOToUKDate(temp[i].published_date);
-				for(var k in $scope.locations)
+				var statistics_loc = [];
+				statistics_loc.location = $scope.locations[k].name;
+				statistics_loc.show_day = [];
+				for(var j in arr_show_day)
 				{
-					var statistics_loc = [];
-					statistics_loc.location = $scope.locations[k].name;
-					statistics_loc.show_day = [];
-					for(var j in arr_show_day)
+					if(temp[i] != undefined)
 					{
-						if(temp[i].published_date == arr_show_day[j] && temp[i].location == $scope.locations[k].id)
+						var published_date = utils.convertISOToUKDate(temp[i].published_date);
+						if(published_date == arr_show_day[j] && temp[i].location == $scope.locations[k].id)
 						{
 							statistics_loc.show_day.push(temp[i].total);
+							i++;
 						}
 						else
 						{
 							statistics_loc.show_day.push(0);
 						}
 					}
-					$scope.statistics_articles.push(statistics_loc);
+					else
+					{
+						statistics_loc.show_day.push(0);
+					}
 				}
+				$scope.statistics_articles.push(statistics_loc);
 			}
         });      
     }
