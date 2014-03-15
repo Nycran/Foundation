@@ -1,45 +1,34 @@
 <ol class="breadcrumb">
-    <li>Dashboard</li>
+	<li><a href="#!dashboard">Home</a></li>
+	<li>Dashboard</li>
 </ol><!-- .breadcrumb -->
 
 <div class="page-header">
-    <h3><strong>Welcome to your administration area!</strong></h3>
+    <h3><strong>5ives! Dashboard</strong></h3>
 </div>
 
-<div class="row">
-    <div class="col-sm-6">
-        <div class="panel panel-primary">
-            <div class="panel-heading"><strong>Quick Links</strong></div>
-            <div class="list-group">
-                <a href="#!locations" class="list-group-item">
-                    <h4 class="list-group-item-heading">Locations</h4>
-                    <p class="list-group-item-text">Edit the list of locations available on the system.</p>
-                </a>
-                <a href="#!categories" class="list-group-item">
-                    <h4 class="list-group-item-heading">Categories</h4>
-                    <p class="list-group-item-text">View and edit categories.</p>
-                </a>                
-                <a href="#!sponsors" class="list-group-item">
-                    <h4 class="list-group-item-heading">Sponsors</h4>
-                    <p class="list-group-item-text">View and edit all the sponsors.</p>
-                </a>                
-                <a href="#!users" class="list-group-item">
-                    <h4 class="list-group-item-heading">Users</h4>
-                    <p class="list-group-item-text">View and edit all of your website users.</p>
-                </a>
-                <a href="./listing.php" class="list-group-item">
-                    <h4 class="list-group-item-heading">Site Settings</h4>
-                    <p class="list-group-item-text">Update the settings and preferences for your website.</p>
-                </a>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-6">
-        <div class="panel panel-primary">
-            <div class="panel-heading"><strong>Site Reports</strong></div>
-            <div class="panel-body">
-                To be added...
-            </div>
-        </div>
-    </div>
-</div>
+<label for="">Articles</label>
+<div class="table-responsive" id="statistics_articles">
+	<table class="table table-striped table-hover" ui-draggable="{true}">
+		<thead>
+			<tr>
+				<th>Location</th>
+				<th>1</th>
+				<th>2</th>
+				<th>3</th>
+				<th>4</th>
+				<th>5</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="loc_statistics in statistics_articles">
+				<td>{{loc_statistics.location}}</td>
+				<td>{{loc_statistics.show_day[0]}}</td>
+				<td>{{loc_statistics.show_day[1]}}</td>
+				<td>{{loc_statistics.show_day[2]}}</td>
+				<td>{{loc_statistics.show_day[3]}}</td>
+				<td>{{loc_statistics.show_day[4]}}</td>
+			</tr>
+		</tbody>
+	</table>
+</div> 

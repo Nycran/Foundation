@@ -189,6 +189,14 @@
         $controller = new \Myndie\Controller\Article($app);
         $controller->delete();
     });  
+	
+	/**
+    * Get statistics articles (for dashboard)
+    */    
+    $app->post('/api/article/getstatisticsarticles', function () use ($app) {       
+        $controller = new \Myndie\Controller\Article($app);
+        $controller->getStatisticsArticles();
+    });  
     
     /**************************************** SPONSORS ****************************************
     * Sponsor Routes

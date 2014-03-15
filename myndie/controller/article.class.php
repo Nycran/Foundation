@@ -103,4 +103,14 @@ class Article extends Controller
         
         return $attribs;
     }   
+	
+	
+	/***
+    * @param boolean $addNewMode Set to true if we're adding a new article
+    */
+	public function getStatisticsArticles()
+    {
+        $beans = $this->model->getListSQL($_POST, "published_date, location, count(*) as total", "published_date, location", "location, published_date");
+        $this->ok($beans);       
+    }   
 }

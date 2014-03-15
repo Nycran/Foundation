@@ -33,6 +33,14 @@ class Article extends Model
             $values[] = $filters["published_date"];  
         }
 		
+		if(array_key_exists("published_date_ge", $filters)) {
+            $where .= "AND published_date >= ? "; 
+			
+			// Convert dates to ISO       
+			$filters["published_date_ge"] = Utils::convertUKDateToISODate($filters["published_date_ge"]);
+            $values[] = $filters["published_date_ge"];  
+        }
+		
 		if(array_key_exists("location", $filters)) {
             $where .= "AND location = ? "; 
             $values[] = $filters["location"];  

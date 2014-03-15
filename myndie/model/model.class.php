@@ -86,21 +86,43 @@ class Model
     * @param int $totalRows An output param, if you're using pagination this will populate with the total number of rows.
     * @return array
     */
-    public function getListSQL($filters, $orderBy="", $page = 0, &$totalRows = 0) {
+    public function getListSQL($filters, $select = "*", $group_by = "", $orderBy="", $page = 0, &$totalRows = 0) {
         
         $this->applyFilters($filters, $where, $values);
         
-        $sql = "SELECT * " .
+        $sql = "SELECT " . $select . " " .
             "FROM " . $this->table . " ";
-            
-        if(!empty($where)) {
-            
+		
+		// Ensure a sensible ordering statement has been set
+        if((empty($orderBy)) && (empty($this->defaultOrderBy))) {
+            $this->app->error(new \Exception("Myndie/Model/Model::getList - OrderBy not set and no default order set either"));
+        } else if((empty($orderBy)) && (!empty($this->defaultOrderBy))) {
+            $orderBy = $this->defaultOrderBy;    
         }
-        
+		
+
         if((is_array($values)) && (!empty($where))) {
-            $sql .= $where;    
+            $sql .= "WHERE " . $where;  
+			
+			$sql .= "GROUP BY " . $group_by . " ";
+		
+			$suffix = $this->applyOrderAndLimit($orderBy, $page);
+			
+			$sql .= $suffix . " ";
+			
+			// echo $sql;die;
+			
             $rows = R::getAll($sql, $values);
         } else {
+			
+			$sql .= "GROUP BY " . $group_by . " ";
+		
+			$suffix = $this->applyOrderAndLimit($orderBy, $page);
+			
+			$sql .= $suffix . " ";
+			
+			// echo $sql;die;
+		
             $rows = R::getAll($sql);
         }
               
