@@ -100,6 +100,33 @@ class Schedule extends Controller
         $this->result["message"] = $id;
         $this->send();     
     }
+	
+	
+	/**
+    * Handle a schedule item get request
+    * 
+    * @param integer $id  The id of the item being updated.
+    */
+    public function getListOfSponder()
+    {
+		if(!isset($_POST["sponsor_id"]))
+			$this->error("Unable to load sponder");
+	
+        $sponsor_id = $_POST["sponsor_id"];               
+		
+		// Load the sponsor bean
+        $sponsorModel = new \Myndie\Model\Sponsor($this->app);
+        $sponsorBean = $sponsorModel->get($sponsor_id);
+        if(!$sponsorBean) {
+            $this->error("Unable to load sponsor item");
+        }         
+		
+		$schedules = $sponsorBean
+				->with( ' ORDER BY date_from ASC, date_to ASC ' )
+				->sharedSchedule;
+       
+        $this->outputBeansAsJson($schedules);  
+    }
  
     /***
     * Returns the form validation rules for adding a new category.

@@ -203,7 +203,6 @@ app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $wi
     
     $scope.loadSchedules = function() {
         var params = {};
-        params["sponsor_id"] = $scope.id;
         
         var form = $("#frmScheduleList");
         var params = $(form).serialize();

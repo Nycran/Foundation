@@ -259,7 +259,7 @@
     */    
     $app->post('/api/schedule/list', function () use ($app) {       
         $controller = new \Myndie\Controller\Schedule($app);
-        $controller->getList();
+        $controller->getListOfSponder();
     });     
     
     /**
