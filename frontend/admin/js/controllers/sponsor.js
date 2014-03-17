@@ -265,6 +265,9 @@ app.controller('SponsorCtrl', function ($scope, $http, $route, $routeParams, $wi
         if(!$("#schedule_use_default_text").is(":checked")) {
             $scope.schedule.use_default_text = 0;
         }
+		if($scope.schedule.is_confirmed == undefined) {
+            $scope.schedule.is_confirmed = 0;
+        }
         
         // Because the text and notes textareas are written to automagically by epiceditor,
         // Angular is NOT aware of the changes to the values.

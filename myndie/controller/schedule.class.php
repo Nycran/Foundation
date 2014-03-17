@@ -140,7 +140,8 @@ class Schedule extends Controller
             'date_to' => true,
             'location_id' => true,
             'text' => false,
-            'notes' => false
+            'notes' => false,
+            'is_confirmed' => true
         ];
         
         return $attribs;

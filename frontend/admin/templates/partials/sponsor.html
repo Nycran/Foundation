@@ -147,7 +147,11 @@
                                 
                                 <div class="checkbox">
                                     <label><input type="checkbox" ng-model="use_default_text" id="schedule_use_default_text" value="1" ng-click="setDefaultText()" /> Use Default Text</label>
-                                </div>                                                                                                                            
+                                </div>      
+
+								<div class="checkbox">
+                                    <label><input type="checkbox" id="is_confirmed" ng-model="schedule.is_confirmed" ng-checked="schedule.is_confirmed == 1"/> Confirmed</label>
+                                </div>    
                             </div>
                             
                             <div class="col-sm-8">
