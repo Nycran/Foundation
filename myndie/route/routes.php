@@ -190,12 +190,24 @@
         $controller->delete();
     });  
 	
+	/**************************************** DASHBOARD ****************************************
+    * Dashboard Routes
+    ******************************************************************************************/                  
+	
+	/**
+    * Get statistics articles
+    */    
+    $app->post('/api/dashboard/getstatisticsarticles', function () use ($app) {       
+        $controller = new \Myndie\Controller\Article($app);
+        $controller->getStatisticsArticles();
+    });  
+	
 	/**
     * Get statistics articles (for dashboard)
     */    
-    $app->post('/api/article/getstatisticsarticles', function () use ($app) {       
-        $controller = new \Myndie\Controller\Article($app);
-        $controller->getStatisticsArticles();
+	$app->post('/api/dashboard/getstatisticsschedules', function () use ($app) {       
+        $controller = new \Myndie\Controller\Location($app);
+        $controller->getStatisticsSchedules();
     });  
     
     /**************************************** SPONSORS ****************************************

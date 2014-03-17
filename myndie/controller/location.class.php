@@ -74,4 +74,30 @@ class Location extends Controller
         
         return $attribs;
     }   
+	
+	/***
+    * This function for statistics in dashboard cms
+    */
+	public function getStatisticsSchedules()
+    {
+		$filters = $_POST;
+        $orderBy = "name";
+        
+        $page = Input::post("page");
+        if(!is_numeric($page)) {
+            $page = 0;
+        }
+                    
+        $locations = $this->model->getList($filters, $orderBy, $page, $this->numBeans);
+		$schedules = array();
+		foreach($locations as $loc)
+		{
+			$schedule = $loc
+				->with( ' ORDER BY date_from ASC, date_to ASC ' )
+				->sharedSchedule;
+			$schedules[] = R::exportAll($schedule);
+		}
+       
+        $this->ok($schedules);   
+    }  
 }

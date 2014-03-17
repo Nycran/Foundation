@@ -21,6 +21,7 @@ app.controller('DashboardCtrl', function ($scope, $http, utils) {
             $scope.locations = data.message;
 			
 			$scope.loadStatisticsArticles();
+			$scope.loadStatisticsSchedules();
         });      
     }
     
@@ -37,7 +38,7 @@ app.controller('DashboardCtrl', function ($scope, $http, utils) {
         $http({
             method: 'POST',
 			data : params,
-            url: myndie.apiURL + "article/getstatisticsarticles",
+            url: myndie.apiURL + "dashboard/getstatisticsarticles",
 			headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
         }).success(function (data) {
             if(!data.status) {
@@ -68,10 +69,7 @@ app.controller('DashboardCtrl', function ($scope, $http, utils) {
             
 			
 			var temp = data.message; 
-			
 			$scope.statistics_articles = [];
-			console.log(temp);
-			
 			var i = 0;
 			for(var k in $scope.locations)
 			{
@@ -100,6 +98,30 @@ app.controller('DashboardCtrl', function ($scope, $http, utils) {
 				}
 				$scope.statistics_articles.push(statistics_loc);
 			}
+        });      
+    }
+	
+	
+	$scope.loadStatisticsSchedules = function() {
+	
+		var params = "is_not_allocated=0";
+		var curDate = new Date();
+		var month = curDate.getMonth() + 1;
+		if(month < 10) month = '0' + month;
+		var day = curDate.getDate();
+		var year = curDate.getFullYear();
+		params += "&date_from_ge=" + day + "/" + month + "/" + year;
+	
+        $http({
+            method: 'POST',
+			data : params,
+            url: myndie.apiURL + "dashboard/getstatisticsschedules",
+			headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+        }).success(function (data) {
+            if(!data.status) {
+                alert(data.message);
+                return;
+            }
         });      
     }
     

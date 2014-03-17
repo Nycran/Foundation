@@ -100,29 +100,17 @@ class Model
             $orderBy = $this->defaultOrderBy;    
         }
 		
-
+		$suffix = "";
+		if($group_by != "")
+			$suffix .= "GROUP BY " . $group_by . " ";
+		$suffix .= $this->applyOrderAndLimit($orderBy, $page);
+		
         if((is_array($values)) && (!empty($where))) {
             $sql .= "WHERE " . $where;  
-			
-			$sql .= "GROUP BY " . $group_by . " ";
-		
-			$suffix = $this->applyOrderAndLimit($orderBy, $page);
-			
 			$sql .= $suffix . " ";
-			
-			// echo $sql;die;
-			
             $rows = R::getAll($sql, $values);
         } else {
-			
-			$sql .= "GROUP BY " . $group_by . " ";
-		
-			$suffix = $this->applyOrderAndLimit($orderBy, $page);
-			
 			$sql .= $suffix . " ";
-			
-			// echo $sql;die;
-		
             $rows = R::getAll($sql);
         }
               
