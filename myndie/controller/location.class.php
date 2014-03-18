@@ -88,12 +88,21 @@ class Location extends Controller
             $page = 0;
         }
                     
-        $locations = $this->model->getList($filters, $orderBy, $page, $this->numBeans);
+        $locations = $this->model->getList(array(), $orderBy, $page, $this->numBeans);
 		$schedules = array();
+		
+		$where = "";
+		$values = array();
+		if(array_key_exists("date_from_ge", $filters)) {
+            $where .= " date_from >= ? "; 
+			$filters["date_from_ge"] = Utils::convertUKDateToISODate($filters["date_from_ge"]);
+            $values[] = $filters["date_from_ge"];  
+        }
+
 		foreach($locations as $loc)
 		{
 			$schedule = $loc
-				->with( ' ORDER BY date_from ASC, date_to ASC ' )
+				->with( $where . ' ORDER BY date_from ASC, date_to ASC ', $values )
 				->sharedSchedule;
 			$schedules[] = R::exportAll($schedule);
 		}
