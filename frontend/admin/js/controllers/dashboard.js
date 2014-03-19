@@ -151,7 +151,7 @@ app.controller('DashboardCtrl', function ($scope, $http, utils) {
 			{
 				var curDate = new Date(first_day);
 				$('#statistics_schedules tbody').append('<tr></tr>');
-				$('#statistics_schedules tbody tr:nth-child('+(count_loc+1)+')').append('<td>'+k+'</td>');//will push location's name here
+				$('#statistics_schedules tbody tr:nth-child('+(count_loc+1)+')').append('<td>'+statistics_schedules[k][0].sharedLocation[0].name+'</td>');//will push location's name here
 				for(var j in statistics_schedules[k])
 				{
 					
@@ -170,8 +170,14 @@ app.controller('DashboardCtrl', function ($scope, $http, utils) {
 					timeDiff = Math.abs(date_to.getTime() - date_from.getTime());
 					diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
 					if(timeDiff > 0)
-						$('#statistics_schedules tbody tr:nth-child('+(count_loc+1)+')').append('<td class="success" colspan="' + diffDays +'"></td>');
-					
+					{
+						var _class = "";
+						if(statistics_schedules[k][j].is_confirmed == "1")
+							_class = "success";
+						else
+							_class = "warning";
+						$('#statistics_schedules tbody tr:nth-child('+(count_loc+1)+')').append('<td class="' + _class + '" colspan="' + diffDays +'"></td>');
+					}
 					curDate = date_to;
 					
 				}
