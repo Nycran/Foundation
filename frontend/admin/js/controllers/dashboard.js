@@ -1,8 +1,15 @@
-app.controller('DashboardCtrl', function ($scope, $http, utils) {
+app.controller('DashboardCtrl', function ($scope, $http, $route, $routeParams, $window, $timeout, globals, utils) {
     $scope.statistics_articles = false;
+    $scope.statistics_schedules = false;
 	$scope.SHOW_DAYS = 5;
 	$scope.SHOW_DAYS_IN_MONTH = 30;
 	$scope.locations = [];
+	
+	$scope.sponsor = false;
+	$scope.schedule = false;
+	$scope.loc_i = false;
+	$scope.schedule_i = false;
+	$scope.selectedLocation = false;
     
     $("#navDashboard a").focus();
     
@@ -23,6 +30,7 @@ app.controller('DashboardCtrl', function ($scope, $http, utils) {
 			
 			$scope.loadStatisticsArticles();
 			$scope.loadStatisticsSchedules();
+			
         });      
     }
     
@@ -146,6 +154,7 @@ app.controller('DashboardCtrl', function ($scope, $http, utils) {
 			
 			//calculate
 			var count_loc = 0;
+			$scope.statistics_schedules = data.message; 
 			var statistics_schedules = data.message; 
 			for(var k in statistics_schedules)
 			{
@@ -176,7 +185,7 @@ app.controller('DashboardCtrl', function ($scope, $http, utils) {
 							_class = "success";
 						else
 							_class = "warning";
-						$('#statistics_schedules tbody tr:nth-child('+(count_loc+1)+')').append('<td class="' + _class + '" colspan="' + diffDays +'"></td>');
+						$('#statistics_schedules tbody tr:nth-child('+(count_loc+1)+')').append('<td data-sponsor-id="'+statistics_schedules[k][j].sharedSponsor[0].id+'" data-loc-i="'+k+'" data-schedule-i="'+j+'" class="' + _class + '" colspan="' + diffDays +'"></td>');
 					}
 					curDate = date_to;
 					
@@ -191,14 +200,234 @@ app.controller('DashboardCtrl', function ($scope, $http, utils) {
 				}
 				count_loc++;
 			}
+			
+			
+			$scope.bindEvents();
         });      
+    }
+	
+	$scope.loadSchedule = function(loc_i, schedule_i) {
+		
+		
+		
+		// setTimeout(function() {
+            // Load the scheduleText epic editor
+            $scope.loadEpicEditor("epiceditor3", "schedule_text", "");
+            
+            // Invoke the second epic editor for the notes
+            $scope.loadEpicEditor("epiceditor4", "schedule_notes", "");        
+		// }, "500");
+		
+		$scope.schedule = $scope.statistics_schedules[loc_i][schedule_i];
+		
+		// Loop through the locations and find the selected location
+		for(var l in $scope.locations) {
+			if($scope.locations[l].id = $scope.schedule.sharedLocation[0].id) {
+				$scope.selectedLocation = $scope.locations[l];
+				break; 
+			}    
+		}
+		// console.log($scope.schedule.location_id);
+		console.log($scope.selectedLocation);
+		
+		$scope.$apply();
+		
+	}
+	
+	$scope.loadSponsor = function(id) {
+            
+		$http({
+            method: 'GET',
+            url: myndie.apiURL + "sponsor/get/" + id
+        }).success(function (data) {
+            if(!data.status) {
+                alert(data.message);
+                return;
+            }
+            
+            // Get the sponsor from the data
+            $scope.sponsor = data.message; 
+            
+            if($scope.sponsor.sharedImage) {
+                var image = $scope.sponsor.sharedImage[0];
+                var image_path = myndie.baseURL + image.path;
+                
+                $("#logoImageWrapper").html('<img src="' + image_path + '_thumb.jpg?=' + Math.floor(Math.random() * 99999) + '" width="150" />');
+                $("#deleteLogoWrapper").show();
+                $("#upload_logo").hide();
+            }
+            
+            $scope.$apply();
+			
+			// The modal window is opened by bootstap, and we have to wait for the modal
+			// to open fully before calling epic editor.
+			$scope.waitModalOpen("#scheduleModal", function() {
+
+				var default_text = $("#default_text").val();
+				$scope.loadEpicEditor("epiceditor", "default_text", default_text);
+				
+			}, 0);  
+			
+            
+
+            // Setup QQ uploader
+            // Setup hero image uploader
+            var gUploader = new qq.FileUploader(
+            {
+                // pass the dom node (ex. $(selector)[0] for jQuery users)
+                element: document.getElementById('upload_logo'),
+                // path to server-side upload script
+                action: myndie.apiURL + 'images/upload/sponsor_logo',
+                params: {"id" : id},    
+                allowedExtensions: ['jpg', 'jpeg', 'png', 'gif'],
+                sizeLimit: 2100000, // max size 
+                onComplete: function(id, fileName, data)
+                {
+                    if(data.status)
+                    {
+                        // The upload completed successfully.
+                        // Load the image into the wrapper
+                        $("#logoImageWrapper").html('<img src="' + myndie.baseURL + data.image_path + '_thumb.jpg?=' + Math.floor(Math.random() * 99999) + '" width="150" />');
+                        
+                        // Show the remove button
+                        $("#deleteLogoWrapper").show();
+                        
+                        // Hide the upload button
+                        $("#upload_logo").hide();
+                    }
+                }
+            });            
+            
+        });             
+
+    }
+	
+	$scope.loadEpicEditor = function(container, textarea, defaultText) {
+
+        var opts = {
+            container: container,
+            textarea: textarea,
+            basePath: 'epiceditor',
+            clientSideStorage: false,
+            localStorageName: container,
+            useNativeFullscreen: true,
+            parser: marked,
+            file: {
+                name: 'epiceditor',
+                defaultContent: defaultText,
+                autoSave: 100
+            },
+            theme: {
+                base: myndie.baseURL + 'frontend/admin/css/epiceditor/themes/base/epiceditor.css',
+                preview: myndie.baseURL + 'frontend/admin/css/epiceditor/themes/preview/preview-dark.css',
+                editor: myndie.baseURL + 'frontend/admin/css/epiceditor/themes/editor/epic-dark.css'
+            },
+            button: {
+                preview: true,
+                fullscreen: true,
+                bar: "auto"
+            },
+            focusOnLoad: false,
+            shortcut: {
+                modifier: 18,
+                fullscreen: 70,
+                preview: 80
+            },
+            string: {
+                togglePreview: 'Toggle Preview Mode',
+                toggleEdit: 'Toggle Edit Mode',
+                toggleFullscreen: 'Enter Fullscreen'
+            },
+            autogrow: false
+        }
+            
+        // Invoke the first epic editor for the ad text
+        var editor = new EpicEditor(opts).load();        
+    }
+	
+	/**
+    * The waitModalOpen function checks if a bootstrap modal window is open or not
+    * If it is NOT open, it waits for 200 millisecs and then tries again.   The loop
+    * will run at most for 10 times before timing out.
+    * 
+    */
+    $scope.waitModalOpen = function(selector, callback, attemptNo) {
+
+        if(!$(selector).hasClass("in")) {
+            attemptNo++;
+            
+            if(attemptNo < 10) {
+                setTimeout(function() {
+                    $scope.waitModalOpen(selector, callback, attemptNo);                
+                }, "500");
+            } else {
+                alert("waitModelOpen - Timeout error");
+            }
+        } else {
+            callback();
+        }
+    }
+	
+	$scope.showScheduleDetails = function(spondor_id, loc_i, schedule_i)
+	{
+		$scope.loadSponsor(spondor_id);
+		$scope.loadSchedule(loc_i, schedule_i);
+		$("#scheduleModal").modal("show");
+	}
+	
+	/**
+    * Save the sponsor
+    * If the sponsor ID is 0, a new sponsor will be created, otherwise we update the current sponsor
+    */
+    $scope.saveSponsor = function() {
+        
+        utils.hideMessages();   // Hide all message divs
+
+        // Because the default text textarea is written to automagically by epiceditor,
+        // Angular is NOT aware of the changes to the value.
+        // Explicity set the default text of the sponsor object in angular.
+        var default_text = $("#default_text").val();        
+        $scope.sponsor.default_text = default_text;     
+        
+        // Save the sponsor
+        var url =  myndie.apiURL + "sponsor/save/" + $scope.sponsor.id;
+
+        $http.post(url, $scope.sponsor).success(function(data) {        
+            if(!data.status) {
+                utils.showError(data.message);
+                return;
+            }
+            
+            // If we just added a new sponsor, return to the main listing screen
+            // if($scope.id == 0) {
+                // $window.location.href = "#!/sponsors/detail/" + data.message;
+                // return;
+            // }
+            
+            utils.showSuccess("The sponsor was updated successfully");
+        });            
+                    
     }
     
     $scope.bindEvents = function() {  
+		$('#statistics_schedules tbody td').click(function(e){
+			var sponsor_id = $(this).attr('data-sponsor-id');
+			var loc_i = $(this).attr('data-loc-i');
+			var schedule_i = $(this).attr('data-schedule-i');
+			$scope.showScheduleDetails(sponsor_id, loc_i, schedule_i);
+		});
+		
+		/**
+        * Handle the event when the user submits the sponsor details form.
+        */
+        $("#frmSponsorDetails").submit(function(e) {
+            e.preventDefault();
+
+            $scope.saveSponsor();
+        }); 
     }
 
-	$scope.loadLocations();
-    // $scope.loadStatisticsArticles();     
+	$scope.loadLocations(); 
     
-    $scope.bindEvents();   
+    // $scope.bindEvents();   
 }); 

@@ -166,5 +166,20 @@ class Sponsor extends Controller
         $this->result["status"] = true;
         $this->result["message"] = $id;
         $this->send();     
-    }       
+    }   
+
+	/***
+    * Returns the form validation rules for adding a new category.
+    * @param boolean $addNewMode Set to true if we're adding a new category
+    */
+    private function getValidationAttribs($addNewMode)
+    {
+        $attribs = [
+            'name' => true,
+            'notes' => true,         
+            'default_text' => true
+        ];
+        
+        return $attribs;
+    }   
 }

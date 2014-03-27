@@ -46,3 +46,110 @@
 		</tbody>
 	</table>
 </div> 
+
+
+<!-- Schedule modal -->
+    <div class="modal fade" id="scheduleModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <ul class="nav nav-tabs">
+					<li class="active"><a data-target="#tab_details" data-toggle="tab"><strong>Sponsor Details</strong></a></li>
+					<li class="hideOnNew"><a data-target="#tab_schedule" data-toggle="tab"><strong>Schedule Details</strong></a></li>
+				</ul> 
+				
+				<div class="modal-body">
+				<div class="tab-content">
+					<div class="tab-pane fade in active" id="tab_details">
+						<form id="frmSponsorDetails" role="form" method="post" action="sponsor/save">
+							<div class="row">
+								<div class="col-sm-4">
+									<div class="form-group">
+										<label class="control-label">Sponsor Name</label>
+										<input type="text" ng-model="sponsor.name" class="form-control" placeholder="Sponsor Name" id="name" name="name" required />
+									</div> 
+									
+									<div class="form-group hideOnNew">
+										<label class="control-label">Notes</label>
+										<textarea class="form-control" placeholder="General Notes" rows="4" ng-model="sponsor.notes" id="notes" name="notes"></textarea>
+									</div>                                                               
+								</div>
+								<div class="col-sm-4 hideOnNew">
+									<div class="form-group">
+										<label class="control-label">Default Advertising Text</label>
+										<div id="epiceditor"></div>
+										<textarea class="form-control hidden" rows="4" ng-model="sponsor.default_text" id="default_text" name="default_text"></textarea>
+									</div>                    
+								</div>
+								<div class="col-sm-4 hideOnNew">
+									<div class="form-group">
+										<label class="control-label">Sponsor Logo</label>
+										<div id="logoImageWrapper"></div>
+									</div>
+									
+									<div id="deleteLogoWrapper" class="form-group">
+										<a href="javascript:void(0);" class="btn btn-sm btn-danger" ng-click="deleteImage()"><i class="fa fa-trash-o"></i> Remove</a>
+									</div>
+									
+									<div class="form-group">
+										<div id="upload_logo"></div> 
+									</div>                    
+								</div>
+							</div>
+							
+							<p>
+								<button class="submit btn btn-primary"><i class="fa fa-save"></i> <strong>Save Changes</strong></button>
+							</p>
+						</form>            
+					</div><!-- End Details Tab --> 
+					
+					<div class="tab-pane fade in" id="tab_schedule">
+					
+						<div class="row">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="control-label">Date From</label>
+                                    <input type="text" ng-model="schedule.date_from" class="form-control datepicker" placeholder="Date From" id="schedule_date_from" name="date_from" required />
+                                </div> 
+                                
+                                <div class="form-group">
+                                    <label class="control-label">Date To</label>
+                                    <input type="text" ng-model="schedule.date_to" class="form-control datepicker" placeholder="Date To" id="schedule_date_to" name="date_to" required />
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="control-label">Location</label>
+                                    <select class="form-control" ng-model="selectedLocation" ng-options="l.name for l in locations" required>
+                                        <option value="">- Please select</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="checkbox">
+                                    <label><input type="checkbox" ng-model="use_default_text" id="schedule_use_default_text" value="1" ng-click="setDefaultText()" /> Use Default Text</label>
+                                </div>      
+
+								<div class="checkbox">
+                                    <label><input type="checkbox" id="is_confirmed" ng-model="schedule.is_confirmed" ng-checked="schedule.is_confirmed == 1"/> Confirmed</label>
+                                </div>    
+                            </div>
+                            
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                    <label class="control-label">Advertising Text</label>
+                                    <div id="epiceditor3"></div>
+                                    <textarea class="form-control hide" rows="4" ng-model="schedule.text" id="schedule_text" name="text"></textarea>
+                                </div> 
+                                
+                                <div class="form-group">
+                                    <label class="control-label">Notes</label>
+                                    <div id="epiceditor4"></div>
+                                    <textarea class="form-control hide" rows="4" ng-model="schedule.notes" id="schedule_notes" name="text"></textarea>
+                                </div>                                                               
+                            </div>
+                         </div>   
+					
+					</div><!-- End Schedule Tab -->       
+				</div>
+				</div
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal --> 

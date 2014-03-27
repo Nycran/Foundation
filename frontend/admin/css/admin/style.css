@@ -44,3 +44,8 @@ a:link,a:visited,a:focus,a:hover,a:active {outline:none;}
     margin-top: -32px;  /* -1 * image height / 2 */
     display: block;     
 }
+
+.modal-lg
+{
+	width: 900px;
+}
