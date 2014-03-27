@@ -206,19 +206,19 @@ app.controller('DashboardCtrl', function ($scope, $http, $route, $routeParams, $
         });      
     }
 	
-	$scope.loadSchedule = function(loc_i, schedule_i) {
+	$scope.loadSchedule = function() {
 		
 		
 		
-		// setTimeout(function() {
+		setTimeout(function() {
             // Load the scheduleText epic editor
             $scope.loadEpicEditor("epiceditor3", "schedule_text", "");
             
             // Invoke the second epic editor for the notes
             $scope.loadEpicEditor("epiceditor4", "schedule_notes", "");        
-		// }, "500");
+		}, "500");
 		
-		$scope.schedule = $scope.statistics_schedules[loc_i][schedule_i];
+		$scope.schedule = $scope.statistics_schedules[$scope.loc_i][$scope.schedule_i];
 		
 		// Loop through the locations and find the selected location
 		for(var l in $scope.locations) {
@@ -227,8 +227,6 @@ app.controller('DashboardCtrl', function ($scope, $http, $route, $routeParams, $
 				break; 
 			}    
 		}
-		// console.log($scope.schedule.location_id);
-		console.log($scope.selectedLocation);
 		
 		$scope.$apply();
 		
@@ -368,10 +366,10 @@ app.controller('DashboardCtrl', function ($scope, $http, $route, $routeParams, $
         }
     }
 	
-	$scope.showScheduleDetails = function(spondor_id, loc_i, schedule_i)
+	$scope.showScheduleDetails = function(spondor_id)
 	{
 		$scope.loadSponsor(spondor_id);
-		$scope.loadSchedule(loc_i, schedule_i);
+		$scope.loadSchedule();
 		$("#scheduleModal").modal("show");
 	}
 	
@@ -412,9 +410,9 @@ app.controller('DashboardCtrl', function ($scope, $http, $route, $routeParams, $
     $scope.bindEvents = function() {  
 		$('#statistics_schedules tbody td').click(function(e){
 			var sponsor_id = $(this).attr('data-sponsor-id');
-			var loc_i = $(this).attr('data-loc-i');
-			var schedule_i = $(this).attr('data-schedule-i');
-			$scope.showScheduleDetails(sponsor_id, loc_i, schedule_i);
+			$scope.loc_i = $(this).attr('data-loc-i');
+			$scope.schedule_i = $(this).attr('data-schedule-i');
+			$scope.showScheduleDetails(sponsor_id);
 		});
 		
 		/**
