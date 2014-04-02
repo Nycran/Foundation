@@ -410,9 +410,13 @@ app.controller('DashboardCtrl', function ($scope, $http, $route, $routeParams, $
     $scope.bindEvents = function() {  
 		$('#statistics_schedules tbody td').click(function(e){
 			var sponsor_id = $(this).attr('data-sponsor-id');
-			$scope.loc_i = $(this).attr('data-loc-i');
-			$scope.schedule_i = $(this).attr('data-schedule-i');
-			$scope.showScheduleDetails(sponsor_id);
+			if(sponsor_id == undefined)
+				sponsor_id = 0;
+			$window.location.href = "#!/sponsors/detail/" + sponsor_id;
+			
+			// $scope.loc_i = $(this).attr('data-loc-i');
+			// $scope.schedule_i = $(this).attr('data-schedule-i');
+			// $scope.showScheduleDetails(sponsor_id);
 		});
 		
 		/**
