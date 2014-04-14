@@ -83,6 +83,7 @@ app.controller('DashboardCtrl', function ($scope, $http, $route, $routeParams, $
 			for(var k in $scope.locations)
 			{
 				var statistics_loc = [];
+                statistics_loc.location_id = $scope.locations[k].id;
 				statistics_loc.location = $scope.locations[k].name;
 				statistics_loc.show_day = [];
 				for(var j in arr_show_day)

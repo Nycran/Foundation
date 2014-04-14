@@ -5,6 +5,7 @@ a:link,a:visited,a:focus,a:hover,a:active {outline:none;}
 .red {color:#F00}
 .nav-tabs {margin-bottom:1.5em;}
 .tab-content {margin-bottom:1.5em;}
+.top-margin { margin-top: 20px;}
 
 .gotopage {margin:21px 0;}
 #footer {background:#2C3E50;}
@@ -48,4 +49,8 @@ a:link,a:visited,a:focus,a:hover,a:active {outline:none;}
 .modal-lg
 {
 	width: 900px;
+}
+
+#tblDashArticles th, #tblDashArticles td {
+    text-align: center;
 }

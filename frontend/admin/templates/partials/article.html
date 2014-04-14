@@ -25,6 +25,8 @@
                     <div class="col-sm-8">
                         <div class="form-group">
                             <input type="text" ng-model="article.title" class="form-control" placeholder="Enter title here" id="title" name="title" required />
+                        </div>
+                        <div class="form-group">
                             <input type="text" ng-model="article.author" class="form-control" placeholder="Author's Name" id="author" name="author" required />	
                         </div>                                         
                     </div>
@@ -65,13 +67,13 @@
 					</div>
 				</div>
                 
-				<div class="row">
+				<div class="row top-margin">
 					<div class="col-sm-12">
 						<label class="control-label">Content</label>
 						<div id="epiceditor2"></div>
 						<textarea class="form-control hidden" rows="4" ng-model="article.content" id="content" name="content"></textarea>
 						
-						<label class="control-label">Source URL</label>
+						<label class="control-label top-margin">Source URL</label>
 						<input type="text" ng-model="article.source_url" class="form-control" placeholder="http://" id="source_url" name="source_url" required />	
 					</div>  
                 </div>
@@ -85,11 +87,13 @@
 						<textarea class="form-control hidden" rows="4" ng-model="article.notes" id="notes" name="notes"></textarea>
 					</div>  
                 </div>
-				
-                <p>
-                    <button class="submit btn btn-primary" ng-click="save()"><i class="fa fa-save"></i> <strong>Save Changes</strong></button>
-                    <button class="submit btn btn-primary" ng-click="delete()"><i class="fa fa-delete"></i> <strong>Delete</strong></button>
-                </p>
+                
+                <div class="row top-margin">
+                    <div class="col-sm-12">                
+                        <button class="submit btn btn-primary" ng-click="save()"><i class="fa fa-save"></i> <strong>Save Changes</strong></button>
+                        <button class="submit btn btn-primary" ng-click="delete()"><i class="fa fa-delete"></i> <strong>Delete</strong></button>
+                    </div>
+                </div>
             </form>            
         </div> <!-- End Details Tab -->
     </div>    

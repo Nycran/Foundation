@@ -176,8 +176,8 @@ class Sponsor extends Controller
     {
         $attribs = [
             'name' => true,
-            'notes' => true,         
-            'default_text' => true
+            'notes' => false,         
+            'default_text' => false
         ];
         
         return $attribs;

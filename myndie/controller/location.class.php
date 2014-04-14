@@ -69,7 +69,8 @@ class Location extends Controller
     private function getValidationAttribs($addNewMode)
     {
         $attribs = [
-            'name' => true         
+            'name' => true,         
+            'enabled' => false,
         ];
         
         return $attribs;

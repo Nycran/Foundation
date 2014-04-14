@@ -90,6 +90,7 @@
                             <th>From</a></th>
                             <th>To</th>
                             <th>Location</th>
+                            <th>Confirmed</th>
                             <th>Actions</th>
                             <th width="10%">Added On</th>
                         </tr>
@@ -99,6 +100,7 @@
                             <td>{{schedule.date_from}}</td>
                             <td>{{schedule.date_to}}</td>
                             <td>{{schedule.location_name}}</td>
+                            <td>{{schedule.is_confirmed == true | iif : "Yes" : "No"}}</td>
                             <td myn-edit-remove callback-fn="handleAction(arg1, arg2)" data-id="{{schedule.id}}" item="schedule"></td>
                             <td myn-iso-to-uk-date-time-converter>{{schedule.created_dtm}}</td>
                         </tr>

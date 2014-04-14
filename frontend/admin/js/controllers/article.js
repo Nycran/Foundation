@@ -223,7 +223,9 @@ app.controller('ArticleCtrl', function ($scope, $http, $route, $routeParams, $wi
     if($scope.id > 0) {
         $scope.load();
     } else {
-        // We're adding a new article. 
+        // We're adding a new article.
+        $scope.loadEpicEditor("epiceditor2", "content", "");
+        $scope.loadEpicEditor("epiceditor", "notes", "");         
     }           
     
 	$scope.loadCategories();

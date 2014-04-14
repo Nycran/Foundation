@@ -169,6 +169,8 @@ class Session
         }
         
         // Test Last Activity
+        //$bean->timeout = 0;
+        
         if($bean->timeout < time()) {
             if($throwException) {
                 $app->error(new \Exception("Myndie/Lib/Session::sessionValid - Invalid Session - Error Code 5"));

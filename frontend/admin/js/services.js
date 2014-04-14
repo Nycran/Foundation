@@ -22,6 +22,21 @@
                     // todo hide the spinner
                     //alert('stop spinner');
                     $('#loading').hide();
+                    
+                    if($window.location.href.indexOf("logout") <= 0) {
+                        if(response.hasOwnProperty("data")) {
+                            if(response.data.hasOwnProperty("message")) {
+                                if((typeof response.data.message).toLowerCase() == "string") {
+                                    if(response.data.message.indexOf("Invalid Session") > 0) {
+                                        alert("Sorry your session has expired");
+                                        $window.location.href = myndie.baseURL + "admin/#!logout";
+                                        return false;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     return response;
 
                 }, function (response) {

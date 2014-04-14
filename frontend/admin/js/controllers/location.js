@@ -1,4 +1,4 @@
-app.controller('LocationCtrl', function ($scope, $http, $route, $routeParams, $window, globals, utils) {
+app.controller('LocationCtrl', function ($scope, $http, $route, $routeParams, $window, globals, utils, $timeout) {
     $scope.id = 0;  // Default the ID to 0.
     $scope.location = false;
     
@@ -70,7 +70,10 @@ app.controller('LocationCtrl', function ($scope, $http, $route, $routeParams, $w
     if($scope.id > 0) {
         $scope.load();
     } else {
-        // We're adding a new location. 
+        // We're adding a new location.
+        // Check the enabled flag by default.
+        $scope.location = { enabled: true };
+
     }           
     
     $scope.bindEvents();   

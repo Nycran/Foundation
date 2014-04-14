@@ -70,7 +70,8 @@ app.controller('CategoryCtrl', function ($scope, $http, $route, $routeParams, $w
     if($scope.id > 0) {
         $scope.load();
     } else {
-        // We're adding a new category. 
+        // We're adding a new category.
+        $scope.category = { enabled: true }; 
     }           
     
     $scope.bindEvents();   
