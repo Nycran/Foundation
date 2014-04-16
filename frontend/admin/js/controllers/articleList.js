@@ -1,4 +1,4 @@
-app.controller('ArticleListCtrl', function ($scope, $http, $window, utils) {
+app.controller('ArticleListCtrl', function ($scope, $http, $window, utils, $timeout) {
     $scope.articles = [];    // Start off with empty clients array
     $scope.asignment_days = [];    // Start off with empty clients array
     $scope.pages = [];
@@ -11,11 +11,19 @@ app.controller('ArticleListCtrl', function ($scope, $http, $window, utils) {
     $("#navArticles a").focus();
 	
 	$scope.load = function() {
-		$scope.loadNotAsignmentArticle();
-		$scope.loadAsignmentArticle();
+        if (typeof $scope.selectedLocationOption === 'object') {
+		    $scope.loadUnassignedArticles();
+		    $scope.loadAssignedArticles();
+            
+            // save the selected location
+            var locationID = $scope.selectedLocationOption.id;
+            document.cookie="selectedLocationID=" + locationID;
+        } else {
+            alert("Please select a valid location");
+        }
 	}
 
-    $scope.loadNotAsignmentArticle = function() {
+    $scope.loadUnassignedArticles = function() {
 		
 		if(!$scope.selectedLocationOption)
 			return;
@@ -73,6 +81,31 @@ app.controller('ArticleListCtrl', function ($scope, $http, $window, utils) {
             }
 
             $scope.locations = data.message;
+            
+            // If there is at least one location, preselect the location
+            // and then load the assigned and unassigned articles for this location.
+            if($scope.locations.length > 0) {
+                
+                preselected = false;
+                
+                // Is there a selectedLocationID cookie?
+                var selectedLocationID = getCookie("selectedLocationID");
+                if((selectedLocationID != "") && (!isNaN(selectedLocationID))) {
+                    for(var i in $scope.locations) {
+                        if($scope.locations[i].id == selectedLocationID) {
+                            $scope.selectedLocationOption = $scope.locations[i];
+                            preselected = true; 
+                            break;           
+                        } 
+                    }
+                }
+                
+                if(!$scope.selectedLocationOption) {
+                    $scope.selectedLocationOption = $scope.locations[0];
+                }
+                
+                $scope.load();
+            }            
         });      
     }
     
@@ -110,12 +143,12 @@ app.controller('ArticleListCtrl', function ($scope, $http, $window, utils) {
                 return;
             }   
             
-            $scope.loadNotAsignmentArticle();
+            $scope.loadUnassignedArticles();
         });     
     }
 	
 	
-	$scope.loadAsignmentArticle = function(dateObj) {
+	$scope.loadAssignedArticles = function(dateObj) {
 		if(!$scope.selectedLocationOption)
 			return;
 			
@@ -156,7 +189,6 @@ app.controller('ArticleListCtrl', function ($scope, $http, $window, utils) {
 				$('table#asignment_days tr#position_' + $scope.asignment_days[i].position_no +' td:nth-child(2)').empty();
 				$('table#asignment_days tr#position_' + $scope.asignment_days[i].position_no +' td:nth-child(2)').append('<a href="#!articles/detail/' + $scope.asignment_days[i].id +'">' + $scope.asignment_days[i].title + '</a>');
 			}
-            
         });    
     }
     
@@ -169,7 +201,7 @@ app.controller('ArticleListCtrl', function ($scope, $http, $window, utils) {
         $("#page").val(pageNo);
         
         // Reload the listing
-        $scope.loadNotAsignmentArticle();        
+        $scope.loadUnassignedArticles();        
     }   
 	
 	
@@ -223,7 +255,7 @@ app.controller('ArticleListCtrl', function ($scope, $http, $window, utils) {
         $('#published_date').datepicker({
 			todayHighlight: 'true',
 		}).on('changeDate', function(e){
-			$scope.loadAsignmentArticle($('#published_date').datepicker('getDate'));
+			$scope.loadAssignedArticles($('#published_date').datepicker('getDate'));
 		});
 		
 		$('#published_date').datepicker('setDate', new Date());
@@ -232,5 +264,4 @@ app.controller('ArticleListCtrl', function ($scope, $http, $window, utils) {
 	$scope.bindEvents();  
     
 	$scope.loadLocations();
-	$scope.load();
 }); 

@@ -17,7 +17,7 @@
 	<div class="row">
 		<div class="col-sm-4">     
 			<label class="control-label">Location</label>
-			<select class="form-control" ng-model="selectedLocationOption" ng-change="load()" ng-options="l.name for l in locations" required>
+			<select id="articleLocations" class="form-control" ng-model="selectedLocationOption" ng-change="load()" ng-options="l.name for l in locations" required>
 				<option value="">- Please select</option>
 			</select>
 		</div>
