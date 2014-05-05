@@ -10,7 +10,23 @@ app.controller('DashboardCtrl', function ($scope, $http, $route, $routeParams, $
 	$scope.loc_i = false;
 	$scope.schedule_i = false;
 	$scope.selectedLocation = false;
+	// $scope.MONTHS = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
     
+	$scope.MONTHS = new Array();
+	$scope.MONTHS[0] = "January";
+	$scope.MONTHS[1] = "February";
+	$scope.MONTHS[2] = "March";
+	$scope.MONTHS[3] = "April";
+	$scope.MONTHS[4] = "May";
+	$scope.MONTHS[5] = "June";
+	$scope.MONTHS[6] = "July";
+	$scope.MONTHS[7] = "August";
+	$scope.MONTHS[8] = "September";
+	$scope.MONTHS[9] = "October";
+	$scope.MONTHS[10] = "November";
+	$scope.MONTHS[11] = "December";
+	
+	
     $("#navDashboard a").focus();
     
 	$scope.loadLocations = function() {
@@ -135,21 +151,33 @@ app.controller('DashboardCtrl', function ($scope, $http, $route, $routeParams, $
 			
 			var end_day = new Date();
 			var first_day = new Date();//Should be the 1st monday of this week * will modify later
+			first_day.setDate(4);
+			end_day.setDate(4);
 			var month = end_day.getMonth() + 1;
 			if(month < 10) month = '0' + month;
 			var day = end_day.getDate();
 			var year = end_day.getFullYear();
-			$('#statistics_schedules thead tr').append('<th>'+day+'</th>');
+			$('#statistics_schedules thead tr:nth-child(2)').append('<th>'+day+'</th>');
+			var _count = 0;
 			for(var j = 1; j < $scope.SHOW_DAYS_IN_MONTH; j++)
 			{
+				if(day == 1)
+				{
+					if(_count != 0)
+						$('#statistics_schedules thead tr:first-child').append('<th colspan="'+_count+'">'+$scope.MONTHS[month-2]+',&nbsp&nbsp'+year+'</th>');
+					$('#statistics_schedules thead tr:first-child').append('<th colspan="'+($scope.SHOW_DAYS_IN_MONTH - _count)+'">'+$scope.MONTHS[month-1]+',&nbsp&nbsp'+year+'</th>');
+					
+				}
+				else
+					_count += 1;
+			
 				end_day.setDate(end_day.getDate()+1);
-				
 				month = end_day.getMonth() + 1;
 				if(month < 10) month = '0' + month;
 				day = end_day.getDate();
 				year = end_day.getFullYear();
 				
-				$('#statistics_schedules thead tr').append('<th>'+day+'</th>');
+				$('#statistics_schedules thead tr:nth-child(2)').append('<th>'+day+'</th>');
 			}
 			
 			
@@ -159,6 +187,7 @@ app.controller('DashboardCtrl', function ($scope, $http, $route, $routeParams, $
 			var statistics_schedules = data.message; 
 			for(var k in statistics_schedules)
 			{
+				
 				var curDate = new Date(first_day);
 				$('#statistics_schedules tbody').append('<tr></tr>');
 				$('#statistics_schedules tbody tr:nth-child('+(count_loc+1)+')').append('<td>'+statistics_schedules[k][0].sharedLocation[0].name+'</td>');//will push location's name here

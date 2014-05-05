@@ -54,3 +54,7 @@ a:link,a:visited,a:focus,a:hover,a:active {outline:none;}
 #tblDashArticles th, #tblDashArticles td {
     text-align: center;
 }
+
+#statistics_schedules th, #tblDashArticles td {
+    text-align: center;
+}
