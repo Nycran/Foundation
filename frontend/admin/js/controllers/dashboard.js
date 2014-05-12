@@ -151,8 +151,6 @@ app.controller('DashboardCtrl', function ($scope, $http, $route, $routeParams, $
 			
 			var end_day = new Date();
 			var first_day = new Date();//Should be the 1st monday of this week * will modify later
-			first_day.setDate(4);
-			end_day.setDate(4);
 			var month = end_day.getMonth() + 1;
 			if(month < 10) month = '0' + month;
 			var day = end_day.getDate();
@@ -180,6 +178,19 @@ app.controller('DashboardCtrl', function ($scope, $http, $route, $routeParams, $
 				$('#statistics_schedules thead tr:nth-child(2)').append('<th>'+day+'</th>');
 			}
 			
+			for (var k=0;k<$scope.locations.length;k++)
+			{
+				
+				$('#statistics_schedules tbody').append('<tr></tr>');
+				if(k == 0)
+				{
+					$('#statistics_schedules tbody tr:first-child').append('<td>'+$scope.locations[k].name+'</td>');
+				}
+				else
+				{
+					$('#statistics_schedules tbody tr:nth-child('+(k+1)+')').append('<td>'+$scope.locations[k].name+'</td>');
+				}
+			}
 			
 			//calculate
 			var count_loc = 0;
@@ -189,8 +200,7 @@ app.controller('DashboardCtrl', function ($scope, $http, $route, $routeParams, $
 			{
 				
 				var curDate = new Date(first_day);
-				$('#statistics_schedules tbody').append('<tr></tr>');
-				$('#statistics_schedules tbody tr:nth-child('+(count_loc+1)+')').append('<td>'+statistics_schedules[k][0].sharedLocation[0].name+'</td>');//will push location's name here
+				
 				for(var j in statistics_schedules[k])
 				{
 					
@@ -226,7 +236,7 @@ app.controller('DashboardCtrl', function ($scope, $http, $route, $routeParams, $
 					var timeDiff = Math.abs(end_day.getTime() - curDate.getTime());
 					var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
 					if(timeDiff > 0)
-						$('#statistics_schedules tbody tr:nth-child('+(count_loc+1)+')').append('<td class="danger" colspan="' + diffDays +'"></td>');
+						$('#statistics_schedules tbody tr:nth-child('+(count_loc+1)+')').append('<td class="danger" colspan="' + (diffDays+1) +'"></td>');
 				}
 				count_loc++;
 			}
